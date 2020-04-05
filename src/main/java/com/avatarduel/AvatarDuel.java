@@ -11,8 +11,8 @@ import javafx.scene.Scene;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import com.avatarduel.model.Element;
-import com.avatarduel.model.Land;
+import com.avatarduel.model.enums.Element;
+import com.avatarduel.model.card.Land;
 import com.avatarduel.util.CSVReader;
 
 public class AvatarDuel extends Application {
