@@ -1,7 +1,7 @@
 package com.avatarduel.gui;
 
 /**
- * Arena 1 pemain
+ * Class yang bertanggung jawab sebagai 1 arena player
  */
 public class PlayerField {
 
