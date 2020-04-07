@@ -16,4 +16,28 @@ public abstract class Card {
         this.description = "";
         this.element = null;
     }
+
+    public void setName(String name) {
+    	this.name = name;
+    }
+
+    public String getName() {
+    	return this.name;
+    }
+
+    public void setDescription(String description) {
+    	this.description = description;
+    }
+
+    public String getDescription() {
+    	return this.description;
+    }
+
+    public void seteElement(Element element) {
+    	this.element = element;
+    }
+
+    public Element geteElement() {
+    	return this.element;
+    }
 }
