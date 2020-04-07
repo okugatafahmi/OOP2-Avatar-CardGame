@@ -17,27 +17,27 @@ public class Character extends Card{
 		this.power = 0;
     }
 
-    public setAttack(int attack) {
+    public void setAttack(int attack) {
     	this.attack = attack;
     }
 
-    public getAttack() {
+    public int getAttack() {
     	return this.attack;
     }
 
-    public setDefense(int defense) {
+    public void setDefense(int defense) {
     	this.defense = defense;
     }
 
-    public getDefense() {
+    public int getDefense() {
     	return this.defense;
     }
 
-    public setPower(int power) {
+    public void setPower(int power) {
     	this.power = power;
     }
 
-    public getPower() {
+    public int getPower() {
     	return this.power;
     }
 }
