@@ -7,9 +7,22 @@ import com.avatarduel.model.enums.Element;
  */
 public class CardBuilder {
     private Card card;
+    private String type;
 
-    public CardBuilder(){
-        card = new Card();
+    public CardBuilder(String type){
+        if (type.equals("Character")){
+            card = new Character();
+        }
+        else if (type.equals("Land")){
+            card = new Land();
+        }
+        else if (type.equals("Skill")){
+            card = new Skill();
+        }
+        else{
+            card = null;
+        }
+        this.type = type;
     }
 
     public CardBuilder name(String name){
