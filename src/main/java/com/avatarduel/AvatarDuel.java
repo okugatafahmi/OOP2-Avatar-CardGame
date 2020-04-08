@@ -3,6 +3,7 @@ package com.avatarduel;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.LinkedList;
 import java.util.List;
 
 import javafx.application.Application;
@@ -12,20 +13,56 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import com.avatarduel.model.enums.Element;
-import com.avatarduel.model.card.Land;
+import com.avatarduel.model.card.Card;
+import com.avatarduel.model.builder.*;
 import com.avatarduel.util.CSVReader;
 
 public class AvatarDuel extends Application {
-  private static final String LAND_CSV_FILE_PATH = "card/data/land.csv";
+  private static final String CARD_CSV_FOLDER_PATH = "card/data/";
 
-  public void loadCards() throws IOException, URISyntaxException {
-    File landCSVFile = new File(getClass().getResource(LAND_CSV_FILE_PATH).toURI());
-    CSVReader landReader = new CSVReader(landCSVFile, "\t");
-    landReader.setSkipHeader(true);
-    List<String[]> landRows = landReader.read();
-    for (String[] row : landRows) {
-      Land l = new Land(row[1], row[3], Element.valueOf(row[2]));
+  public LinkedList<Card> loadCards() throws IOException, URISyntaxException {
+    File folder = new File(getClass().getResource(CARD_CSV_FOLDER_PATH).toURI());
+    LinkedList<Card> loaded = new LinkedList<>();
+    for (File file: folder.listFiles()){
+      String filename = file.getName();
+      CSVReader landReader = new CSVReader(file, "\t");
+      landReader.setSkipHeader(true);
+      List<String[]> landRows = landReader.read();
+      for (String[] row : landRows) {
+        if (filename.equals("character.csv")){
+          loaded.add(new CharacterBuilder()
+                         .name(row[1])
+                         .element(Element.valueOf(row[2]))
+                         .description(row[3])
+                         .image(row[4])
+                         .attack(Integer.parseInt(row[5]))
+                         .defense(Integer.parseInt(row[6]))
+                         .power(Integer.parseInt(row[7]))
+                         .build());
+        }
+        else if (filename.equals("land.csv")){
+          loaded.add(new LandBuilder()
+                         .name(row[1])
+                         .element(Element.valueOf(row[2]))
+                         .description(row[3])
+                         .image(row[4])
+                         .build());
+        }
+        else if (filename.equals("skill.csv")){
+          loaded.add(new SkillBuilder()
+                         .name(row[1])
+                         .element(Element.valueOf(row[2]))
+                         .description(row[3])
+                         .image(row[4])
+                         .attack(Integer.parseInt(row[5]))
+                         .defense(Integer.parseInt(row[6]))
+                         .power(Integer.parseInt(row[7]))
+                         .effect(row[8])
+                         .build());
+        }
+      }
     }
+    return loaded;
   }
 
   @Override
@@ -45,7 +82,7 @@ public class AvatarDuel extends Application {
     stage.show();
 
     try {
-      this.loadCards();
+      LinkedList<Card> listCard = this.loadCards();
       text.setText("Avatar Duel!");
     } catch (Exception e) {
       text.setText("Failed to load cards: " + e);

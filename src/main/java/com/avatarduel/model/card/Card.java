@@ -3,41 +3,50 @@ package com.avatarduel.model.card;
 import com.avatarduel.model.enums.Element;
 
 /**
- * Class yang bertanggung jawab untuk sebuah kartu. Cara constructnya
- * dapat menggunakan CardBuilder.
+ * Class yang bertanggung jawab untuk sebuah kartu. Cara constructnya dapat
+ * menggunakan CardBuilder.
  */
 public abstract class Card {
     private String name;
     private String description;
     private Element element;
+    private String imagePath;
 
-    public Card(){
+    public Card() {
         this.name = "";
         this.description = "";
         this.element = null;
     }
 
     public void setName(String name) {
-    	this.name = name;
+        this.name = name;
     }
 
     public String getName() {
-    	return this.name;
+        return this.name;
     }
 
     public void setDescription(String description) {
-    	this.description = description;
+        this.description = description;
     }
 
     public String getDescription() {
-    	return this.description;
+        return this.description;
     }
 
-    public void seteElement(Element element) {
-    	this.element = element;
+    public void setElement(Element element) {
+        this.element = element;
     }
 
-    public Element geteElement() {
-    	return this.element;
+    public Element getElement() {
+        return this.element;
+    }
+
+    public void setImagePath(String path) {
+        this.imagePath = path;
+    }
+
+    public String getImagePath() {
+        return this.imagePath;
     }
 }
