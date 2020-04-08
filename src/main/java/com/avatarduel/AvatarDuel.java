@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 
 import com.avatarduel.model.enums.Element;
 import com.avatarduel.model.card.Card;
-import com.avatarduel.model.builder.*;
+import com.avatarduel.model.card.CardBuilder;
 import com.avatarduel.util.CSVReader;
 
 public class AvatarDuel extends Application {
@@ -24,42 +24,23 @@ public class AvatarDuel extends Application {
     File folder = new File(getClass().getResource(CARD_CSV_FOLDER_PATH).toURI());
     LinkedList<Card> loaded = new LinkedList<>();
     for (File file: folder.listFiles()){
-      String filename = file.getName();
+      String filename = file.getName().split("[.]")[0];
       CSVReader landReader = new CSVReader(file, "\t");
       landReader.setSkipHeader(true);
       List<String[]> landRows = landReader.read();
       for (String[] row : landRows) {
-        if (filename.equals("character.csv")){
-          loaded.add(new CharacterBuilder()
-                         .name(row[1])
-                         .element(Element.valueOf(row[2]))
-                         .description(row[3])
-                         .image(row[4])
-                         .attack(Integer.parseInt(row[5]))
-                         .defense(Integer.parseInt(row[6]))
-                         .power(Integer.parseInt(row[7]))
-                         .build());
+        CardBuilder builder = new CardBuilder(filename)
+                                  .name(row[1])
+                                  .element(Element.valueOf(row[2]))
+                                  .description(row[3])
+                                  .image(row[4]);
+
+        if (filename.equals("character") || filename.equals("skill")){
+          builder = builder.power(Integer.parseInt(row[5]))
+                           .attack(Integer.parseInt(row[6]))
+                           .defense(Integer.parseInt(row[7]));
         }
-        else if (filename.equals("land.csv")){
-          loaded.add(new LandBuilder()
-                         .name(row[1])
-                         .element(Element.valueOf(row[2]))
-                         .description(row[3])
-                         .image(row[4])
-                         .build());
-        }
-        else if (filename.equals("skill.csv")){
-          loaded.add(new SkillBuilder()
-                         .name(row[1])
-                         .element(Element.valueOf(row[2]))
-                         .description(row[3])
-                         .image(row[4])
-                         .attack(Integer.parseInt(row[5]))
-                         .defense(Integer.parseInt(row[6]))
-                         .power(Integer.parseInt(row[7]))
-                         .effect(row[8])
-                         .build());
-        }
+        loaded.add(builder.build());
       }
     }
     return loaded;
