@@ -2,14 +2,14 @@ package com.avatarduel.model.player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
 import com.avatarduel.exceptions.PowerElementNotEnough;
 import com.avatarduel.model.card.Card;
+import com.avatarduel.model.card.Character;
+import com.avatarduel.model.card.Skill;
 import com.avatarduel.model.enums.Element;
 
 /**
@@ -19,9 +19,11 @@ public class Player {
     private int health;
     private String name;
     private Stack<Card> deck;
-    private List<Card> inHand;
-    private Map<Element, Integer> powerTotal;
-    private Map<Element, Integer> powerCanUse;
+    private ArrayList<Card> inHand;
+    private HashMap<Element, Integer> powerTotal;
+    private HashMap<Element, Integer> powerCanUse;
+    private Character[] charactersField;
+    private Skill[] skillField;
 
     public Player(String name) {
         this.health = 80;
@@ -29,6 +31,8 @@ public class Player {
         this.inHand = new ArrayList<>();
         this.powerTotal = new HashMap<>();
         this.powerCanUse = new HashMap<>();
+        this.charactersField = new Character[8];
+        this.skillField = new Skill[8];
     }
 
     public void setDeck(Stack<Card> deck) {
@@ -86,6 +90,7 @@ public class Player {
 
     /**
      * Procedure ketika pemain mengeluarkan suatu kartu
+     * 
      * @param card
      * @throws PowerElementNotEnough
      * @throws NoSuchElementException
@@ -96,14 +101,13 @@ public class Player {
             throw new NoSuchElementException();
         } else {
             if (card.getClass().getName().equals("Land")) {
-                // addPower(card.getElement());
+                addPower(card.getElement());
             } else {
-                Integer freq = 0; // powerCanUse.get(card.getElement());
-                if (freq > 0){
-                    // powerCanUse.put(card.getElement(), freq-1);
-                }
-                else{
-                    // throw new PowerElementNotEnough(card.getElement());
+                Integer freq = powerCanUse.get(card.getElement());
+                if (freq > 0) {
+                    powerCanUse.put(card.getElement(), freq-1);
+                } else {
+                    throw new PowerElementNotEnough(card.getElement());
                 }
             }
         }
@@ -117,5 +121,25 @@ public class Player {
     public void getDamage(int damage) {
         int res = this.health - damage;
         this.health = ((res > 0) ? res : 0);
+    }
+
+    /**
+     * Mengeset kartu character di field
+     * 
+     * @param card
+     * @param index
+     */
+    public void setCharacterFieldAt(Character card, int index) {
+        this.charactersField[index] = card;
+    }
+
+    /**
+     * * Mengeset kartu field di field
+     * 
+     * @param card
+     * @param index
+     */
+    public void setSkillFieldAt(Skill card, int index) {
+        this.skillField[index] = card;
     }
 }
