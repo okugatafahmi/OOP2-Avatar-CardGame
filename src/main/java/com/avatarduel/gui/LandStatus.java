@@ -13,8 +13,8 @@ import javafx.scene.text.Text;
 public class LandStatus extends GridPane {
 
     public LandStatus() {
-        super.setMinSize(150, 150);
-        super.setMaxSize(150, 150);
+        super.setMinSize(150, 100);
+        super.setMaxSize(150, 100);
         super.setAlignment(Pos.CENTER);
         super.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));

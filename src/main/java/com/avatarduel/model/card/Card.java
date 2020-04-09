@@ -1,7 +1,5 @@
 package com.avatarduel.model.card;
 
-import com.avatarduel.model.enums.Element;
-
 /**
  * Class yang bertanggung jawab untuk sebuah kartu. Cara constructnya dapat
  * menggunakan CardBuilder.

@@ -1,24 +1,21 @@
 
 package com.avatarduel.gui;
 
-/**
- * Class yang bertanggung jawab sebagai satu kotak field tempat menaruh kartu player
- */
 import com.avatarduel.model.card.Character;
-import com.avatarduel.model.enums.*;
+import com.avatarduel.model.field.Stance;
 
 import javafx.scene.text.Text;
 
 
-public class CharacterField extends Field {
+public class CharacterFieldView extends FieldView {
     private Stance currentStance;
     
-    public CharacterField() {
+    public CharacterFieldView() {
         currentStance = Stance.ATTACK;
         super.getChildren().add(new Text("Character"));
     }
     
-    public CharacterField(Character card) {
+    public CharacterFieldView(Character card) {
         super(card);
         currentStance = Stance.ATTACK;
     }

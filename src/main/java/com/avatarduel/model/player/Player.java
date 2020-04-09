@@ -10,7 +10,7 @@ import com.avatarduel.exceptions.PowerElementNotEnough;
 import com.avatarduel.model.card.Card;
 import com.avatarduel.model.card.Character;
 import com.avatarduel.model.card.Skill;
-import com.avatarduel.model.enums.Element;
+import com.avatarduel.model.card.Element;
 
 /**
  * Class yang bertanggung jawab dengan suatu karakter Player
@@ -24,8 +24,9 @@ public class Player {
     private HashMap<Element, Integer> powerCanUse;
     private Character[] charactersField;
     private Skill[] skillField;
+    private int totalDeckCard;
 
-    public Player(String name) {
+    public Player(String name, int totalDeckCard) {
         this.health = 80;
         this.name = name;
         this.inHand = new ArrayList<>();
@@ -33,6 +34,7 @@ public class Player {
         this.powerCanUse = new HashMap<>();
         this.charactersField = new Character[8];
         this.skillField = new Skill[8];
+        this.totalDeckCard = totalDeckCard;
     }
 
     public void setDeck(Stack<Card> deck) {
@@ -55,6 +57,14 @@ public class Player {
      */
     public String getName() {
         return this.name;
+    }
+
+    /**
+     * Mengembalikan total kartu deck
+     * @return banyak kartu deck
+     */
+    public int getTotalDeckCard(){
+        return this.totalDeckCard;
     }
 
     /**

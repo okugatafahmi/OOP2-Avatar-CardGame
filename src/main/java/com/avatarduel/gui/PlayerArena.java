@@ -12,24 +12,24 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
 public class PlayerArena extends GridPane {
-    private CharacterField[] characterFields;
-    private Field[] skillFields;
+    private CharacterFieldView[] characterFields;
+    private FieldView[] skillFields;
     private LandStatus landStatus;
     private CardInHand cardInHand;
 
     public PlayerArena(boolean isMirror) {
-        characterFields = new CharacterField[8];
-        skillFields = new Field[8];
+        characterFields = new CharacterFieldView[8];
+        skillFields = new FieldView[8];
 
         GridPane arena = new GridPane();
         int rowField = ((isMirror) ? 1 : 0);
         for (int i = 0; i < characterFields.length; i++) {
-            characterFields[i] = new CharacterField();
+            characterFields[i] = new CharacterFieldView();
             arena.add(characterFields[i], i, rowField);
         }
 
         for (int i = 0; i < skillFields.length; i++) {
-            skillFields[i] = new Field();
+            skillFields[i] = new FieldView();
             arena.add(skillFields[i], i, (rowField + 1) % 2);
         }
         arena.setVgap(20);
@@ -47,10 +47,11 @@ public class PlayerArena extends GridPane {
         super.add(landStatus, 1, rowInHand);
         super.add(arena, 0, rowInHand);
         super.setHgap(20);
+        super.setVgap(10);
         super.setAlignment(Pos.CENTER);
     }
 
-    public Field getSkillField(int idx) throws Exception {
+    public FieldView getSkillField(int idx) throws Exception {
         if (idx < 0 || idx >= skillFields.length) {
             throw new IndexOutOfBoundsException("Requested index not in Field");
         }
@@ -60,7 +61,7 @@ public class PlayerArena extends GridPane {
         return skillFields[idx];
     }
 
-    public CharacterField getCharacterField(int idx) throws Exception {
+    public CharacterFieldView getCharacterField(int idx) throws Exception {
         if (idx < 0 || idx >= characterFields.length) {
             throw new IndexOutOfBoundsException("Requested index not in Field");
         }
@@ -70,7 +71,7 @@ public class PlayerArena extends GridPane {
         return characterFields[idx];
     }
 
-    public void setCharacterField(int idx, CharacterField charField) throws Exception {
+    public void setCharacterField(int idx, CharacterFieldView charField) throws Exception {
         if (idx < 0 || idx >= characterFields.length) {
             throw new IndexOutOfBoundsException("Requested index not in Field");
         }
@@ -91,10 +92,10 @@ public class PlayerArena extends GridPane {
             throw new Exception("Field position already taken");
         }
 
-        this.characterFields[idx] = new CharacterField(charCard);
+        this.characterFields[idx] = new CharacterFieldView(charCard);
     }
 
-    public void setSkillField(int idx, Field skillField) throws Exception {
+    public void setSkillField(int idx, FieldView skillField) throws Exception {
         if (idx < 0 || idx >= skillFields.length) {
             throw new IndexOutOfBoundsException("Requested index not in Field");
         }
@@ -115,6 +116,6 @@ public class PlayerArena extends GridPane {
             throw new Exception("Field position already taken");
         }
 
-        this.skillFields[idx] = new Field(skillCard);
+        this.skillFields[idx] = new FieldView(skillCard);
     }
 }

@@ -1,4 +1,4 @@
-package com.avatarduel.model.enums;
+package com.avatarduel.model.card;
 
 public enum Element {
   WATER,

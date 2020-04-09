@@ -16,10 +16,10 @@ import javafx.scene.paint.Color;
  * Class yang bertanggung jawab sebagai satu kotak field tempat menaruh kartu
  * player
  */
-public class Field extends GridPane {
+public class FieldView extends GridPane {
     private Card card;
 
-    public Field() {
+    public FieldView() {
         this.card = null;
         super.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
@@ -28,7 +28,7 @@ public class Field extends GridPane {
         super.setAlignment(Pos.CENTER);
     }
 
-    public Field(Card card) {
+    public FieldView(Card card) {
         this.card = card;
     }
 

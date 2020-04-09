@@ -1,6 +1,6 @@
 package com.avatarduel.exceptions;
 
-import com.avatarduel.model.enums.Element;
+import com.avatarduel.model.card.Element;
 
 public class PowerElementNotEnough extends Exception{
 
