@@ -1,92 +1,82 @@
 package com.avatarduel;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.LinkedList;
-import java.util.List;
-
 import javafx.application.Application;
-import javafx.scene.Group;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import com.avatarduel.model.enums.Element;
-import com.avatarduel.model.card.Card;
-import com.avatarduel.model.builder.*;
-import com.avatarduel.util.CSVReader;
+import com.avatarduel.model.player.Player;
+import com.avatarduel.controller.PlayerController;
+import com.avatarduel.gameplay.Gameplay;
 
 public class AvatarDuel extends Application {
-  private static final String CARD_CSV_FOLDER_PATH = "card/data/";
-
-  public LinkedList<Card> loadCards() throws IOException, URISyntaxException {
-    File folder = new File(getClass().getResource(CARD_CSV_FOLDER_PATH).toURI());
-    LinkedList<Card> loaded = new LinkedList<>();
-    for (File file: folder.listFiles()){
-      String filename = file.getName();
-      CSVReader landReader = new CSVReader(file, "\t");
-      landReader.setSkipHeader(true);
-      List<String[]> landRows = landReader.read();
-      for (String[] row : landRows) {
-        if (filename.equals("character.csv")){
-          loaded.add(new CharacterBuilder()
-                         .name(row[1])
-                         .element(Element.valueOf(row[2]))
-                         .description(row[3])
-                         .image(row[4])
-                         .attack(Integer.parseInt(row[5]))
-                         .defense(Integer.parseInt(row[6]))
-                         .power(Integer.parseInt(row[7]))
-                         .build());
-        }
-        else if (filename.equals("land.csv")){
-          loaded.add(new LandBuilder()
-                         .name(row[1])
-                         .element(Element.valueOf(row[2]))
-                         .description(row[3])
-                         .image(row[4])
-                         .build());
-        }
-        else if (filename.equals("skill.csv")){
-          loaded.add(new SkillBuilder()
-                         .name(row[1])
-                         .element(Element.valueOf(row[2]))
-                         .description(row[3])
-                         .image(row[4])
-                         .attack(Integer.parseInt(row[5]))
-                         .defense(Integer.parseInt(row[6]))
-                         .power(Integer.parseInt(row[7]))
-                         .effect(row[8])
-                         .build());
-        }
-      }
-    }
-    return loaded;
-  }
+  private static final int WIDTH = 1280;
+  private static final int HEIGHT = 720;
+  private static final String[] playerNames = { "Qihla", "Hojun" };
+  private static final int[] playerTotalDeck = { 60, 60 };
+  public static final GridPane hover = new GridPane();
+  public static final Text status = new Text();
 
   @Override
   public void start(Stage stage) {
-    Text text = new Text();
-    text.setText("Loading...");
-    text.setX(50);
-    text.setY(50);
+    Gameplay gameplay = new Gameplay(playerTotalDeck);
+    status.setText("Loading...");
 
-    Group root = new Group();
-    root.getChildren().add(text);
+    Line line = new Line();
+    line.setStartX(100);
+    line.setStartY(HEIGHT / 2);
+    line.setEndX(940);
+    line.setEndY(HEIGHT / 2);
 
-    Scene scene = new Scene(root, 1280, 720);
+    GridPane gridPane = new GridPane();
+    gridPane.setAlignment(Pos.CENTER);
+    gridPane.getChildren().add(status);
+
+    Scene scene = new Scene(gridPane, WIDTH, HEIGHT, Color.WHITESMOKE);
 
     stage.setTitle("Avatar Duel");
     stage.setScene(scene);
+    stage.setFullScreen(true);
     stage.show();
 
     try {
-      LinkedList<Card> listCard = this.loadCards();
-      text.setText("Avatar Duel!");
+      gameplay.loadCards();
+      status.setText("Avatar Duel!");
     } catch (Exception e) {
-      text.setText("Failed to load cards: " + e);
+      status.setText("Failed to load cards: " + e);
+      return;
     }
+
+    Player[] players = new Player[2];
+    PlayerController[] playerControllers = new PlayerController[2];
+    for (int i = 0; i < 2; ++i) {
+      players[i] = new Player(playerNames[i], playerTotalDeck[i]);
+      playerControllers[i] = new PlayerController(players[i], ((i == 0) ? false : true));
+    }
+    gridPane.getChildren().remove(status);
+    gridPane.add(playerControllers[0].getPlayerArena(), 1, 2, 2, 1); // bawah
+    gridPane.add(playerControllers[1].getPlayerArena(), 1, 0, 2, 1); // atas
+    gridPane.add(line, 1, 1);
+    gridPane.add(status, 2, 1);
+
+    gameplay.addPlayers(playerControllers);
+
+    hover.setBorder(
+        new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+    hover.getChildren().add(new Text("Ini buat hover"));
+    hover.setMinSize(240, 320);
+    hover.setMaxSize(240, 320);
+    gridPane.add(hover, 0, 0, 1, 3);
+    gridPane.setHgap(20);
   }
 
   public static void main(String[] args) {
