@@ -28,12 +28,12 @@ public class Gameplay {
 
     /**
      * Meload kartu
-     * @throws IOException
-     * @throws URISyntaxException
+     * @throws IOException if the file is not found
+     * @throws URISyntaxException if this URL is not formatted strictly according to
+     *            to RFC2396 and cannot be converted to a URI.
      */
     public void loadCards() throws IOException, URISyntaxException {
         File folder = new File(getClass().getResource(CARD_CSV_FOLDER_PATH).toURI());
-        System.out.println("tes");
         LinkedList<Card> loaded = new LinkedList<>();
         for (File file : folder.listFiles()) {
             String filename = file.getName().split("[.]")[0];
@@ -41,7 +41,7 @@ public class Gameplay {
             landReader.setSkipHeader(true);
             List<String[]> landRows = landReader.read();
             for (String[] row : landRows) {
-            CardBuilder builder = new CardBuilder(filename)
+            CardBuilder builder = new CardBuilder()
                                         .name(row[1])
                                         .element(Element.valueOf(row[2]))
                                         .description(row[3])
@@ -55,7 +55,7 @@ public class Gameplay {
                     builder = builder.effect(row[8]);
                 }
             }
-                loaded.add(builder.build());
+                loaded.add(builder.build(filename));
             }
         }
         listCard = loaded;
@@ -63,7 +63,7 @@ public class Gameplay {
 
     /**
      * Menambahkan controller pemain
-     * @param playerControllers
+     * @param playerControllers player control which should have length 2
      */
     public void addPlayers(PlayerController[] playerControllers){
         this.playerControllers = playerControllers;
@@ -71,7 +71,8 @@ public class Gameplay {
 
     /**
      * Mengembalikan deck pemain
-     * @return
+     * @param nCard maximal card in deck
+     * @return stack of card which represent the deck
      */
     public Stack<Card> setDeck(int nCard){
         Stack<Card> deck = new Stack<>();

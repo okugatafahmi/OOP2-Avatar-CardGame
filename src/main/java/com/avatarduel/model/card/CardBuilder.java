@@ -1,73 +1,91 @@
 package com.avatarduel.model.card;
 
+/**
+ * Class that responsible to build card
+ */
 public class CardBuilder {
-    private Card card;
+    private String name;
+    private String description;
+    private Element element;
+    private String imagePath;
+    private int attack;
+    private int defense;
+    private int power;
+    private String effect;
 
-    public CardBuilder(String type) {
-        if (type.toLowerCase().equals("character")) {
-            this.card = new Character();
-        } else if (type.toLowerCase().equals("land")) {
-            this.card = new Land();
-        } else if (type.toLowerCase().equals("skill")) {
-            this.card = new Skill();
-        }
+    public String getName() {
+        return this.name;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public Element getElement() {
+        return this.element;
+    }
+
+    public String getImagePath() {
+        return this.imagePath;
+    }
+
+    public int getAttack() {
+        return this.attack;
+    }
+
+    public int getDefense() {
+        return this.defense;
+    }
+
+    public int getPower() {
+        return this.power;
+    }
+
+    public String getEffect() {
+        return this.effect;
     }
 
     public CardBuilder name(String name) {
-        this.card.setName(name);
+        this.name = name;
         return this;
     }
 
     public CardBuilder description(String description) {
-        this.card.setDescription(description);
+        this.description = description;
         return this;
     }
 
     public CardBuilder element(Element element) {
-        this.card.setElement(element);
+        this.element = element;
         return this;
     }
 
     public CardBuilder image(String path) {
-        this.card.setImagePath(path);
+        this.imagePath = path;
         return this;
     }
 
     public CardBuilder attack(int attack) {
-        if (this.card instanceof Character) {
-            ((Character) this.card).setAttack(attack);
-        } else if (this.card instanceof Skill) {
-            ((Skill) this.card).setAttack(attack);
-        }
+        this.attack = attack;
         return this;
     }
 
     public CardBuilder defense(int defense) {
-        if (this.card instanceof Character) {
-            ((Character) this.card).setDefense(defense);
-        } else if (this.card instanceof Skill) {
-            ((Skill) this.card).setDefense(defense);
-        }
+        this.defense = defense;
         return this;
     }
 
     public CardBuilder power(int power) {
-        if (this.card instanceof Character) {
-            ((Character) this.card).setPower(power);
-        } else if (this.card instanceof Skill) {
-            ((Skill) this.card).setPower(power);
-        }
+        this.power = power;
         return this;
     }
 
     public CardBuilder effect(String effect) {
-        if (this.card instanceof Skill) {
-            ((Skill) this.card).setEffect(effect);
-        }
+        this.effect = effect;
         return this;
     }
 
-    public Card build() {
-        return this.card;
+    public Card build(String typeCard) {
+        return new CardFactory().getCard(typeCard, this);
     }
 }

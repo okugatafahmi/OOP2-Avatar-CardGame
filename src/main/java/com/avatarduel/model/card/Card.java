@@ -5,43 +5,28 @@ package com.avatarduel.model.card;
  * menggunakan CardBuilder.
  */
 public abstract class Card {
-    private String name;
-    private String description;
-    private Element element;
-    private String imagePath;
+    protected String name;
+    protected String description;
+    protected Element element;
+    protected String imagePath;
 
-    public Card() {
-        this.name = "";
-        this.description = "";
-        this.element = null;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public Card(CardBuilder cardBuilder) {
+        this.name = cardBuilder.getName();
+        this.description = cardBuilder.getDescription();
+        this.element = cardBuilder.getElement();
+        this.imagePath = cardBuilder.getImagePath();
     }
 
     public String getName() {
         return this.name;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getDescription() {
         return this.description;
     }
 
-    public void setElement(Element element) {
-        this.element = element;
-    }
-
     public Element getElement() {
         return this.element;
-    }
-
-    public void setImagePath(String path) {
-        this.imagePath = path;
     }
 
     public String getImagePath() {
