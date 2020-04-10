@@ -9,24 +9,39 @@ public class Skill extends Card {
     private int power;
     private String effect;
 
-    public Skill(CardBuilder cardBuilder) {
-        super(cardBuilder);
-        this.attack = cardBuilder.getAttack();
-        this.defense = cardBuilder.getDefense();
-        this.power = cardBuilder.getPower();
-        this.effect = cardBuilder.getEffect();
+    public Skill() {
+        this.attack = 0;
+        this.defense = 0;
+        this.power = 0;
+        this.effect = "";
+    }
+
+    public void setAttack(int attack) {
+        this.attack = attack;
     }
 
     public int getAttack() {
         return this.attack;
     }
 
+    public void setDefense(int defense) {
+        this.defense = defense;
+    }
+
     public int getDefense() {
         return this.defense;
     }
 
+    public void setPower(int power) {
+        this.power = power;
+    }
+
     public int getPower() {
         return this.power;
+    }
+
+    public void setEffect(String effect) {
+        this.effect = effect;
     }
 
     public String getEffect() {

@@ -5,23 +5,22 @@ package com.avatarduel.model.card;
  */
 public class CardFactory {
     /**
-     * Retun card based on type and the attribute was set using cardBuilder
+     * Retun card based on type (character, land, or skill)
      * 
-     * @param type        card type (character, land, or skill)
-     * @param cardBuilder cardBuilder which attribut has been set
+     * @param type card type
      * @return card that be produced, return null if type is null or not equal with
-     *         card types or cardBuilder is null
+     *         card types
      */
-    public Card getCard(String type, CardBuilder cardBuilder) {
-        if (type == null || cardBuilder == null) {
+    public Card getCard(String type) {
+        if (type == null) {
             return null;
         }
         if (type.toLowerCase().equals("character")) {
-            return new Character(cardBuilder);
+            return new Character();
         } else if (type.toLowerCase().equals("land")) {
-            return new Land(cardBuilder);
+            return new Land();
         } else if (type.toLowerCase().equals("skill")) {
-            return new Skill(cardBuilder);
+            return new Skill();
         } else {
             return null;
         }
