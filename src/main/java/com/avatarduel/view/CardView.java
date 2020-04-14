@@ -26,15 +26,19 @@ import javafx.scene.text.TextFlow;
 public class CardView extends GridPane {
     private Card card;
     private GridPane containerCardView;
+    private final ImageView backCard = new ImageView(
+            new Image(getClass().getResource("/com/avatarduel/card/image/Back.jpg").toString()));
+    private boolean isFaceUp;
 
     public CardView(Card card) {
         this.card = card;
         this.containerCardView = new GridPane();
+        this.isFaceUp = true;
 
         this.containerCardView.getColumnConstraints().add(new ColumnConstraints(25));
         this.containerCardView.getColumnConstraints().add(new ColumnConstraints(25));
         this.containerCardView.getRowConstraints().add((new RowConstraints(15)));
-        this.containerCardView.setStyle("-fx-background-color: #ccceff");
+        this.containerCardView.setStyle("-fx-background-color: #f7da00");
 
         // Setting names
         GridPane header = new GridPane();
@@ -70,12 +74,12 @@ public class CardView extends GridPane {
         header.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         header.setAlignment(Pos.CENTER);
-        header.setStyle("-fx-background-color: #0006ab");
+        header.setStyle("-fx-background-color: #000000");
         header.getColumnConstraints().add(new ColumnConstraints(35));
         header.getColumnConstraints().add(new ColumnConstraints(15));
         header.getRowConstraints().add(new RowConstraints(1));
         this.containerCardView.add(header, 0, 0, 2, 1);
-        if (card instanceof Character || card instanceof Land){
+        if (card instanceof Character || card instanceof Land) {
             this.containerCardView.add(tipeFlow, 0, 1, 2, 1);
             if(card instanceof Character){
                 Text info_char = new Text("ATK/"+Integer.toString(((Character) this.card).getAttack()) + " | DEF/"+Integer.toString(((Character) this.card).getDefense()) + " | POW/"+Integer.toString(((Character) this.card).getPower()));
@@ -90,7 +94,7 @@ public class CardView extends GridPane {
                 info_box.setBorder(new Border(
                     new BorderStroke(Color.BLACK,BorderStrokeStyle.SOLID, CornerRadii.EMPTY,BorderWidths.DEFAULT)));
                 info_box.setAlignment(Pos.CENTER);
-                info_box.setStyle("-fx-background-color: #0006ab");
+                info_box.setStyle("-fx-background-color: #000000");
                 info_box.getColumnConstraints().add(new ColumnConstraints(50));
                 
                 this.containerCardView.add(info_box,0,6,2,1);
@@ -127,7 +131,7 @@ public class CardView extends GridPane {
             info_skill_box.setBorder(new Border(
                 new BorderStroke(Color.BLACK,BorderStrokeStyle.SOLID, CornerRadii.EMPTY,BorderWidths.DEFAULT)));
             info_skill_box.setAlignment(Pos.CENTER);
-            info_skill_box.setStyle("-fx-background-color: #0006ab");
+            info_skill_box.setStyle("-fx-background-color: #000000");
             info_skill_box.getColumnConstraints().add(new ColumnConstraints(35));
             info_skill_box.getColumnConstraints().add(new ColumnConstraints(15));
             
@@ -149,7 +153,7 @@ public class CardView extends GridPane {
         deskripsi_box.setBorder(new Border(
                         new BorderStroke(Color.BLACK,BorderStrokeStyle.SOLID, CornerRadii.EMPTY,BorderWidths.DEFAULT)));
         deskripsi_box.setAlignment(Pos.CENTER);
-        deskripsi_box.setStyle("-fx-background-color: #e6e6e6");
+        deskripsi_box.setStyle("-fx-background-color: #fffeb3");
         deskripsi_box.getColumnConstraints().add(new ColumnConstraints(50));
         deskripsi_box.getRowConstraints().add(new RowConstraints(20));
         this.containerCardView.add(deskripsi_box,0,5,1,1);
@@ -157,12 +161,37 @@ public class CardView extends GridPane {
         super.add(containerCardView, 0, 0);
         super.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-        super.setMinSize(65, 90);
-        super.setMaxSize(65, 90);
+        super.setMinSize(63, 90);
+        super.setMaxSize(63, 90);
         super.setPadding(new Insets(3, 3, 3, 3));
         super.setHgap(2);
         super.setAlignment(Pos.TOP_CENTER);
 
+        backCard.setFitHeight(90);
+        backCard.setPreserveRatio(true);
     }
 
+    /**
+     * Procedure that make the card in view will be face down
+     */
+    public void faceDown() {
+        if (isFaceUp){
+            this.getChildren().remove(containerCardView);
+            super.setPadding(new Insets(0, 0, 0, 0));
+            this.getChildren().add(backCard);
+            isFaceUp = false;
+        }
+    }
+
+    /**
+     * Procedure that make the card in view will be face up
+     */
+    public void faceUp() {
+        if (!isFaceUp){
+            this.getChildren().remove(backCard);
+            super.setPadding(new Insets(3, 3, 3, 3));
+            this.getChildren().add(containerCardView);
+            isFaceUp = true;
+        }
+    }
 }
