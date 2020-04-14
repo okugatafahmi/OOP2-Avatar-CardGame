@@ -26,10 +26,14 @@ import javafx.scene.text.TextFlow;
 public class CardView extends GridPane {
     private Card card;
     private GridPane containerCardView;
+    private final ImageView backCard = new ImageView(
+            new Image(getClass().getResource("/com/avatarduel/card/image/Back.jpg").toString()));
+    private boolean isFaceUp;
 
     public CardView(Card card) {
         this.card = card;
         this.containerCardView = new GridPane();
+        this.isFaceUp = true;
 
         this.containerCardView.getColumnConstraints().add(new ColumnConstraints(25));
         this.containerCardView.getColumnConstraints().add(new ColumnConstraints(25));
@@ -61,10 +65,9 @@ public class CardView extends GridPane {
         header.getColumnConstraints().add(new ColumnConstraints(35));
         header.getColumnConstraints().add(new ColumnConstraints(15));
         this.containerCardView.add(header, 0, 0, 2, 1);
-        if (card instanceof Character || card instanceof Land){
+        if (card instanceof Character || card instanceof Land) {
             this.containerCardView.add(tipeFlow, 0, 1, 2, 1);
-        }
-        else {
+        } else {
             Text effect = new Text(((Skill) this.card).getEffect());
             effect.setStyle("-fx-font: 4 arial");
             TextFlow effectFlow = new TextFlow(effect);
@@ -83,11 +86,37 @@ public class CardView extends GridPane {
         super.add(containerCardView, 0, 0);
         super.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-        super.setMinSize(65, 90);
-        super.setMaxSize(65, 90);
+        super.setMinSize(63, 90);
+        super.setMaxSize(63, 90);
         super.setPadding(new Insets(3, 3, 3, 3));
         super.setHgap(2);
         super.setAlignment(Pos.TOP_CENTER);
+
+        backCard.setFitHeight(90);
+        backCard.setPreserveRatio(true);
     }
 
+    /**
+     * Procedure that make the card in view will be face down
+     */
+    public void faceDown() {
+        if (isFaceUp){
+            this.getChildren().remove(containerCardView);
+            super.setPadding(new Insets(0, 0, 0, 0));
+            this.getChildren().add(backCard);
+            isFaceUp = false;
+        }
+    }
+
+    /**
+     * Procedure that make the card in view will be face up
+     */
+    public void faceUp() {
+        if (!isFaceUp){
+            this.getChildren().remove(backCard);
+            super.setPadding(new Insets(3, 3, 3, 3));
+            this.getChildren().add(containerCardView);
+            isFaceUp = true;
+        }
+    }
 }

@@ -9,6 +9,7 @@ import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
@@ -51,7 +52,7 @@ public class AvatarDuel extends Application {
     PlayerController[] playerControllers = new PlayerController[2];
     for (int i = 0; i < 2; ++i) {
       players[i] = new Player(playerNames[i], playerTotalDeck[i]);
-      playerControllers[i] = new PlayerController(players[i], ((i == 0) ? false : true));
+      playerControllers[i] = new PlayerController(players[i], i, ((i == 0) ? false : true));
     }
     Gameplay gameplay = new Gameplay(playerControllers);
 
@@ -76,6 +77,9 @@ public class AvatarDuel extends Application {
     hover.setMaxSize(240, 320);
     gridPane.add(hover, 0, 0, 1, 3);
     gridPane.setHgap(20);
+    gridPane.getRowConstraints().add(new RowConstraints());
+    gridPane.getRowConstraints().add(new RowConstraints(1));
+    gridPane.getRowConstraints().add(new RowConstraints());
     gameplay.run();
   }
 

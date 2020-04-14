@@ -21,8 +21,8 @@ public class FieldView extends GridPane {
         this.cardView = null;
         super.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-        super.setMinSize(90, 105);
-        super.setMaxSize(90, 105);
+        super.setMinSize(90, 95);
+        super.setMaxSize(90, 95);
         super.setAlignment(Pos.CENTER);
     }
 

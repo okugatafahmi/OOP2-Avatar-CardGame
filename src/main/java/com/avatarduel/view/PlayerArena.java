@@ -16,10 +16,12 @@ public class PlayerArena extends GridPane {
     private FieldView[] skillFields;
     private LandStatus landStatus;
     private CardInHand cardInHand;
+    private boolean inHandFaceDown;
 
     public PlayerArena(boolean isMirror) {
         characterFields = new CharacterFieldView[8];
         skillFields = new FieldView[8];
+        inHandFaceDown = true;
 
         GridPane arena = new GridPane();
         int rowField = ((isMirror) ? 1 : 0);
@@ -47,7 +49,6 @@ public class PlayerArena extends GridPane {
         super.add(landStatus, 1, rowInHand);
         super.add(arena, 0, rowInHand);
         super.setHgap(20);
-        super.setVgap(10);
         super.setAlignment(Pos.CENTER);
     }
 
@@ -119,7 +120,22 @@ public class PlayerArena extends GridPane {
         // this.skillFields[idx] = new FieldView(skillCard);
     }
 
+    /**
+     * Procedure that will add card in hand visually
+     * @param cardView card view will be added
+     */
     public void addInHand(CardView cardView){
+        if (inHandFaceDown) {
+            cardView.faceDown();
+        }
         this.cardInHand.getChildren().add(cardView);
+    }
+
+    /**
+     * Set face card in hand
+     * @param isFaceUp set true if the card in hand should be face up
+     */
+    public void setFaceCardInHand(boolean isFaceUp){
+        this.cardInHand.setFaceCard(isFaceUp);
     }
 }

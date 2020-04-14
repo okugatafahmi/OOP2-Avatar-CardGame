@@ -21,19 +21,18 @@ import com.avatarduel.util.CSVReader;
 /**
  * Kelas Gameplay yang bertanggung jawab dalam permainan
  */
-public class Gameplay {
+public class Gameplay implements Subject {
     private static final String CARD_CSV_FOLDER_PATH = "../card/data/";
     private LinkedList<Card> listCard;
     private PlayerController[] playerControllers;
-    private Phase phase;
-    private int turn;
+    private GameState gameState;
 
-    public Gameplay(PlayerController[] playerControllers){
+    public Gameplay(PlayerController[] playerControllers) {
         this.playerControllers = playerControllers;
     }
 
     /**
-     * Meload kartu
+     * Load cards
      * 
      * @throws IOException        if the file is not found
      * @throws URISyntaxException if this URL is not formatted strictly according to
@@ -59,8 +58,7 @@ public class Gameplay {
                     ((Character) card).setPower(Integer.parseInt(row[5]));
                     ((Character) card).setAttack(Integer.parseInt(row[6]));
                     ((Character) card).setDefense(Integer.parseInt(row[7]));
-                }
-                else if (filename.equals("skill")) {
+                } else if (filename.equals("skill")) {
                     ((Skill) card).setPower(Integer.parseInt(row[5]));
                     ((Skill) card).setAttack(Integer.parseInt(row[6]));
                     ((Skill) card).setDefense(Integer.parseInt(row[7]));
@@ -73,39 +71,49 @@ public class Gameplay {
     }
 
     /**
-     * Mengembalikan deck pemain
+     * Return player's deck
      * 
      * @param nCard maximal card in deck
      * @return stack of card which represent the deck
      */
     public Stack<Card> setDeck(int nCard) {
         Stack<Card> deck = new Stack<>();
-        List<Card> listCard; 
-        listCard = this.listCard.stream()
-                                .filter(card -> card instanceof Character)
-                                .collect(Collectors.toList());
+        List<Card> listCard;
+        listCard = this.listCard.stream().filter(card -> card instanceof Character).collect(Collectors.toList());
         Collections.shuffle(listCard);
-        listCard.subList(0, nCard*2/5).stream().forEach(card -> deck.push(card));
-        listCard = this.listCard.stream()
-                                .filter(card -> card instanceof Land)
-                                .collect(Collectors.toList());
+        listCard.subList(0, nCard * 2 / 5).stream().forEach(card -> deck.push(card));
+        listCard = this.listCard.stream().filter(card -> card instanceof Land).collect(Collectors.toList());
         Collections.shuffle(listCard);
-        listCard.subList(0, nCard*2/5).stream().forEach(card -> deck.push(card));
-        listCard = this.listCard.stream()
-                                .filter(card -> card instanceof Skill)
-                                .collect(Collectors.toList());
+        listCard.subList(0, nCard * 2 / 5).stream().forEach(card -> deck.push(card));
+        listCard = this.listCard.stream().filter(card -> card instanceof Skill).collect(Collectors.toList());
         Collections.shuffle(listCard);
-        listCard.subList(0, nCard/5).stream().forEach(card -> deck.push(card));
+        listCard.subList(0, nCard / 5).stream().forEach(card -> deck.push(card));
         Collections.shuffle(deck);
         return deck;
     }
 
+    /**
+     * Run the game
+     */
     public void run() {
-        playerControllers[0].setDeck(this.setDeck(playerControllers[0].getTotalDeckCard()));
-        playerControllers[1].setDeck(this.setDeck(playerControllers[1].getTotalDeckCard()));
-        phase = Phase.DRAW;
-        turn = 0;
-        playerControllers[0].firstDrawCard();
-        playerControllers[1].firstDrawCard();
+        for (int i = 0; i < 2; ++i) {
+            playerControllers[i].setSubject(this);
+            playerControllers[i].setDeck(this.setDeck(playerControllers[i].getTotalDeckCard()));
+            playerControllers[i].firstDrawCard();
+        }
+        this.gameState = new GameState();
+        notifyObserver();
+    }
+
+    @Override
+    public GameState getUpdate() {
+        return this.gameState;
+    }
+
+    @Override
+    public void notifyObserver(){
+        for (Observer observer : this.playerControllers) {
+            observer.update();
+        }
     }
 }
