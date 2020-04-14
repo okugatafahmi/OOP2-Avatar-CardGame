@@ -23,14 +23,13 @@ public class AvatarDuel extends Application {
   private static final int WIDTH = 1280;
   private static final int HEIGHT = 720;
   private static final String[] playerNames = { "Qihla", "Hojun" };
-  private static final int[] playerTotalDeck = { 60, 60 };
+  private static final int[] playerTotalDeck = { 40, 40 };
   public static final GridPane hover = new GridPane();
   public static final Text status = new Text();
   // public static CardView view_card = new CardView();
 
   @Override
   public void start(Stage stage) {
-    Gameplay gameplay = new Gameplay(playerTotalDeck);
     status.setText("Loading...");
 
     Line line = new Line();
@@ -50,6 +49,14 @@ public class AvatarDuel extends Application {
     stage.setFullScreen(true);
     stage.show();
 
+    Player[] players = new Player[2];
+    PlayerController[] playerControllers = new PlayerController[2];
+    for (int i = 0; i < 2; ++i) {
+      players[i] = new Player(playerNames[i], playerTotalDeck[i]);
+      playerControllers[i] = new PlayerController(players[i], ((i == 0) ? false : true));
+    }
+    Gameplay gameplay = new Gameplay(playerControllers);
+
     try {
       gameplay.loadCards();
       status.setText("Avatar Duel!");
@@ -58,19 +65,11 @@ public class AvatarDuel extends Application {
       return;
     }
 
-    Player[] players = new Player[2];
-    PlayerController[] playerControllers = new PlayerController[2];
-    for (int i = 0; i < 2; ++i) {
-      players[i] = new Player(playerNames[i], playerTotalDeck[i]);
-      playerControllers[i] = new PlayerController(players[i], ((i == 0) ? false : true));
-    }
     gridPane.getChildren().remove(status);
     gridPane.add(playerControllers[0].getPlayerArena(), 1, 2, 2, 1); // bawah
     gridPane.add(playerControllers[1].getPlayerArena(), 1, 0, 2, 1); // atas
     gridPane.add(line, 1, 1);
     gridPane.add(status, 2, 1);
-
-    gameplay.addPlayers(playerControllers);
 
     hover.setBorder(
         new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
@@ -79,8 +78,7 @@ public class AvatarDuel extends Application {
     hover.setMaxSize(240, 320);
     gridPane.add(hover, 0, 0, 1, 3);
     gridPane.setHgap(20);
-    
-    
+    gameplay.run();
   }
 
   public static void main(String[] args) {

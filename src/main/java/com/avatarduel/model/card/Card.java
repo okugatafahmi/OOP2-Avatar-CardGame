@@ -14,6 +14,7 @@ public abstract class Card {
         this.name = "";
         this.description = "";
         this.element = null;
+        this.imagePath = "";
     }
 
     public void setName(String name) {

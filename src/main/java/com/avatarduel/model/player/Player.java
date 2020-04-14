@@ -70,7 +70,7 @@ public class Player {
     /**
      * Menambahkan element power player sesuai dengan element-nya
      * 
-     * @param element
+     * @param element element power to be added
      */
     public void addPower(Element element) {
         Integer freqTotal = this.powerTotal.get(element);
@@ -101,9 +101,9 @@ public class Player {
     /**
      * Procedure ketika pemain mengeluarkan suatu kartu
      * 
-     * @param card
-     * @throws PowerElementNotEnough
-     * @throws NoSuchElementException
+     * @param card Card that be thrown
+     * @throws PowerElementNotEnough if the player doesn't have enough power to throw that card
+     * @throws NoSuchElementException if there isn't card at inHand
      */
     public void throwCard(Card card) throws PowerElementNotEnough, NoSuchElementException {
         int index = this.inHand.indexOf(card);
@@ -124,9 +124,9 @@ public class Player {
     }
 
     /**
-     * Mengurangi health player sebanyak damage. Jika health < 0, health menjadi 0
+     * Mengurangi health player sebanyak damage. Jika health kurang dari 0, health menjadi 0
      * 
-     * @param damage
+     * @param damage the amount damage of the player got
      */
     public void getDamage(int damage) {
         int res = this.health - damage;
@@ -136,8 +136,8 @@ public class Player {
     /**
      * Mengeset kartu character di field
      * 
-     * @param card
-     * @param index
+     * @param card Skill card to be set
+     * @param index Index of field to be set
      */
     public void setCharacterFieldAt(Character card, int index) {
         this.charactersField[index] = card;
@@ -146,8 +146,8 @@ public class Player {
     /**
      * * Mengeset kartu field di field
      * 
-     * @param card
-     * @param index
+     * @param card Character card to be set
+     * @param index Index of field to be set
      */
     public void setSkillFieldAt(Skill card, int index) {
         this.skillField[index] = card;
