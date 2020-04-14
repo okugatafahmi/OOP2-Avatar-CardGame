@@ -53,6 +53,7 @@ public class Gameplay implements Subject {
                 card.setElement(Element.valueOf(row[2]));
                 card.setDescription(row[3]);
                 card.setImagePath(getClass().getResource(row[4]).toString());
+                card.setElementImagePath();
 
                 if (filename.equals("character")) {
                     ((Character) card).setPower(Integer.parseInt(row[5]));

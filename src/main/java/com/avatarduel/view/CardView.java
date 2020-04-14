@@ -46,31 +46,39 @@ public class CardView extends GridPane {
         GridPane white_space = new GridPane();
         Text empty = new Text(" ");
         Text nama = new Text(this.card.getName());
-        Text element = new Text(this.card.getElement().toString());
+        // Text element = new Text(this.card.getElement().toString());
         Text tipe = new Text("[" + this.card.getClass().getSimpleName() + "]");
         Text deskripsi = new Text(this.card.getDescription());
 
         empty.setStyle("-fx-font: 4 helvetica");
         nama.setStyle("-fx-font: bold 4 helvetica");
         nama.setFill(Color.WHITE);
-        element.setStyle("-fx-font: 4 helvetica");
-        element.setFill(Color.WHITE);
+        // element.setStyle("-fx-font: 4 helvetica");
+        // element.setFill(Color.WHITE);
         tipe.setStyle("-fx-font: 4 helvetica");
         deskripsi.setStyle("-fx-font: 3 helvetica");
 
         TextFlow emptyFlow = new TextFlow(empty);
         TextFlow namaFlow = new TextFlow(nama);
-        TextFlow elementFlow = new TextFlow(element);
+        // TextFlow elementFlow = new TextFlow(element);
         TextFlow tipeFlow = new TextFlow(tipe);
         TextFlow deskripsiFlow = new TextFlow(deskripsi);
 
         namaFlow.setTextAlignment(TextAlignment.LEFT);
-        elementFlow.setTextAlignment(TextAlignment.RIGHT);
+        // elementFlow.setTextAlignment(TextAlignment.RIGHT);
         tipeFlow.setTextAlignment(TextAlignment.RIGHT);
         deskripsiFlow.setTextAlignment(TextAlignment.LEFT);
 
+        Image element_image = new Image(this.card.getElementImagePath());
+        ImageView elementView = new ImageView(element_image);
+        elementView.setFitHeight(5);
+        elementView.setFitWidth(5);
+        BorderPane element = new BorderPane();
+        element.setCenter(elementView);
+
         header.add(namaFlow, 0, 0);
-        header.add(elementFlow, 1, 0);
+        header.add(element, 1, 0);
+        // header.add(elementFlow, 1, 0);
         header.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         header.setAlignment(Pos.CENTER);
@@ -137,7 +145,7 @@ public class CardView extends GridPane {
             
             this.containerCardView.add(info_skill_box,0,6,2,1);
 
-        }
+        }        
 
         Image image = new Image(this.card.getImagePath());
         ImageView imageView = new ImageView(image);
@@ -150,8 +158,6 @@ public class CardView extends GridPane {
         this.containerCardView.add(emptyFlow,0,4,1,1);
 
         deskripsi_box.add(deskripsiFlow,0,0);
-        deskripsi_box.setBorder(new Border(
-                        new BorderStroke(Color.BLACK,BorderStrokeStyle.SOLID, CornerRadii.EMPTY,BorderWidths.DEFAULT)));
         deskripsi_box.setAlignment(Pos.CENTER);
         deskripsi_box.setStyle("-fx-background-color: #fffeb3");
         deskripsi_box.getColumnConstraints().add(new ColumnConstraints(50));
