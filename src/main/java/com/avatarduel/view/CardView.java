@@ -35,38 +35,33 @@ public class CardView extends GridPane {
         this.containerCardView = new GridPane();
         this.isFaceUp = true;
 
-        this.containerCardView.getColumnConstraints().add(new ColumnConstraints(25));
-        this.containerCardView.getColumnConstraints().add(new ColumnConstraints(25));
+        this.containerCardView.getColumnConstraints().add(new ColumnConstraints(27));
+        this.containerCardView.getColumnConstraints().add(new ColumnConstraints(27));
         this.containerCardView.getRowConstraints().add((new RowConstraints(15)));
         this.containerCardView.setStyle("-fx-background-color: #f7da00");
 
         // Setting names
         GridPane header = new GridPane();
         GridPane deskripsi_box = new GridPane();
-        GridPane white_space = new GridPane();
         Text empty = new Text(" ");
         Text nama = new Text(this.card.getName());
-        // Text element = new Text(this.card.getElement().toString());
         Text tipe = new Text("[" + this.card.getClass().getSimpleName() + "]");
         Text deskripsi = new Text(this.card.getDescription());
 
         empty.setStyle("-fx-font: 4 helvetica");
         nama.setStyle("-fx-font: bold 4 helvetica");
         nama.setFill(Color.WHITE);
-        // element.setStyle("-fx-font: 4 helvetica");
-        // element.setFill(Color.WHITE);
         tipe.setStyle("-fx-font: 4 helvetica");
         deskripsi.setStyle("-fx-font: 3 helvetica");
 
         TextFlow emptyFlow = new TextFlow(empty);
         TextFlow namaFlow = new TextFlow(nama);
-        // TextFlow elementFlow = new TextFlow(element);
         TextFlow tipeFlow = new TextFlow(tipe);
         TextFlow deskripsiFlow = new TextFlow(deskripsi);
 
         namaFlow.setTextAlignment(TextAlignment.LEFT);
-        // elementFlow.setTextAlignment(TextAlignment.RIGHT);
         tipeFlow.setTextAlignment(TextAlignment.RIGHT);
+        tipeFlow.setPadding(new Insets(0, 4, 0, 0));
         deskripsiFlow.setTextAlignment(TextAlignment.LEFT);
 
         Image element_image = new Image(this.card.getElementImagePath());
@@ -78,13 +73,12 @@ public class CardView extends GridPane {
 
         header.add(namaFlow, 0, 0);
         header.add(element, 1, 0);
-        // header.add(elementFlow, 1, 0);
         header.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         header.setAlignment(Pos.CENTER);
         header.setStyle("-fx-background-color: #000000");
-        header.getColumnConstraints().add(new ColumnConstraints(35));
-        header.getColumnConstraints().add(new ColumnConstraints(15));
+        header.getColumnConstraints().add(new ColumnConstraints(40));
+        header.getColumnConstraints().add(new ColumnConstraints(12));
         header.getRowConstraints().add(new RowConstraints(1));
         this.containerCardView.add(header, 0, 0, 2, 1);
         if (card instanceof Character || card instanceof Land) {
@@ -115,7 +109,8 @@ public class CardView extends GridPane {
             effect.setStyle("-fx-font: 4 helvetica");
             TextFlow effectFlow = new TextFlow(effect);
             effectFlow.setTextAlignment(TextAlignment.LEFT);
-            this.containerCardView.add(effect, 0, 1);
+            effectFlow.setPadding(new Insets(0, 0, 0, 4));
+            this.containerCardView.add(effectFlow, 0, 1);
             this.containerCardView.add(tipeFlow, 1, 1);
 
             Text info_skill = new Text("+"+Integer.toString(((Skill) this.card).getAttack()) + "ATK +"+Integer.toString(((Skill) this.card).getDefense()) + "DEF");
@@ -162,15 +157,16 @@ public class CardView extends GridPane {
         deskripsi_box.setStyle("-fx-background-color: #fffeb3");
         deskripsi_box.getColumnConstraints().add(new ColumnConstraints(50));
         deskripsi_box.getRowConstraints().add(new RowConstraints(20));
-        this.containerCardView.add(deskripsi_box,0,5,1,1);
+        this.containerCardView.add(deskripsi_box,0,5,2,1);
         
+        this.containerCardView.setPadding(new Insets(3, 4, 3, 4));
+        this.containerCardView.setMinSize(61, 88);
+        this.containerCardView.setMaxSize(61, 88);
         super.add(containerCardView, 0, 0);
         super.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         super.setMinSize(63, 90);
         super.setMaxSize(63, 90);
-        super.setPadding(new Insets(3, 3, 3, 3));
-        super.setHgap(2);
         super.setAlignment(Pos.TOP_CENTER);
 
         backCard.setFitHeight(90);
@@ -183,7 +179,6 @@ public class CardView extends GridPane {
     public void faceDown() {
         if (isFaceUp){
             this.getChildren().remove(containerCardView);
-            super.setPadding(new Insets(0, 0, 0, 0));
             this.getChildren().add(backCard);
             isFaceUp = false;
         }
@@ -195,7 +190,6 @@ public class CardView extends GridPane {
     public void faceUp() {
         if (!isFaceUp){
             this.getChildren().remove(backCard);
-            super.setPadding(new Insets(3, 3, 3, 3));
             this.getChildren().add(containerCardView);
             isFaceUp = true;
         }
