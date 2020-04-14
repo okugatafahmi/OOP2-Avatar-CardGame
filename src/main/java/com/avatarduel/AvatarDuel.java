@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import com.avatarduel.model.player.Player;
 import com.avatarduel.controller.PlayerController;
 import com.avatarduel.gameplay.Gameplay;
+// import com.avatarduel.gui.CardView;
 
 public class AvatarDuel extends Application {
   private static final int WIDTH = 1280;
@@ -25,6 +26,7 @@ public class AvatarDuel extends Application {
   private static final int[] playerTotalDeck = { 60, 60 };
   public static final GridPane hover = new GridPane();
   public static final Text status = new Text();
+  // public static CardView view_card = new CardView();
 
   @Override
   public void start(Stage stage) {
@@ -77,6 +79,8 @@ public class AvatarDuel extends Application {
     hover.setMaxSize(240, 320);
     gridPane.add(hover, 0, 0, 1, 3);
     gridPane.setHgap(20);
+    
+    
   }
 
   public static void main(String[] args) {
