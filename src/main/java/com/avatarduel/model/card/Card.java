@@ -9,14 +9,12 @@ public abstract class Card {
     private String description;
     private Element element;
     private String imagePath;
-    private String elementImagePath;
 
     public Card() {
         this.name = "";
         this.description = "";
         this.element = null;
         this.imagePath = "";
-        this.elementImagePath = "";
     }
 
     public void setName(String name) {
@@ -51,19 +49,18 @@ public abstract class Card {
         return this.imagePath;
     }
 
-    public void setElementImagePath() {
-        if(this.element == Element.AIR){
-            this.elementImagePath = "/com/avatarduel/element/Air.png";
-        } else if(this.element == Element.EARTH){
-            this.elementImagePath = "/com/avatarduel/element/Earth.png";
-        } else if(this.element == Element.FIRE){
-            this.elementImagePath = "/com/avatarduel/element/Fire.png";
-        } else if(this.element == Element.WATER){
-            this.elementImagePath = "/com/avatarduel/element/Water.png";
-        }
-    }
-
     public String getElementImagePath() {
-        return this.elementImagePath;
+        if(this.element == Element.AIR){
+            return "/com/avatarduel/element/Air.png";
+        } else if(this.element == Element.EARTH){
+            return "/com/avatarduel/element/Earth.png";
+        } else if(this.element == Element.FIRE){
+            return "/com/avatarduel/element/Fire.png";
+        } else if(this.element == Element.WATER){
+            return "/com/avatarduel/element/Water.png";
+        }
+        else {
+            return "";
+        }
     }
 }

@@ -60,6 +60,7 @@ public class CardView extends GridPane {
         TextFlow deskripsiFlow = new TextFlow(deskripsi);
 
         namaFlow.setTextAlignment(TextAlignment.LEFT);
+        namaFlow.setPadding(new Insets(0, 0, 0, 2));
         tipeFlow.setTextAlignment(TextAlignment.RIGHT);
         tipeFlow.setPadding(new Insets(0, 4, 0, 0));
         deskripsiFlow.setTextAlignment(TextAlignment.LEFT);
