@@ -1,4 +1,4 @@
-package com.avatarduel.gui;
+package com.avatarduel.view;
 
 import javafx.geometry.Pos;
 import javafx.scene.layout.Border;

@@ -1,7 +1,5 @@
 
-package com.avatarduel.gui;
-
-import com.avatarduel.model.card.*;
+package com.avatarduel.view;
 
 import javafx.geometry.Pos;
 import javafx.scene.layout.Border;
@@ -17,22 +15,22 @@ import javafx.scene.paint.Color;
  * player
  */
 public class FieldView extends GridPane {
-    private Card card;
+    private CardView cardView;
 
     public FieldView() {
-        this.card = null;
+        this.cardView = null;
         super.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-        super.setMinSize(75, 100);
-        super.setMaxSize(75, 100);
+        super.setMinSize(90, 105);
+        super.setMaxSize(90, 105);
         super.setAlignment(Pos.CENTER);
     }
 
-    public FieldView(Card card) {
-        this.card = card;
+    public void setCard(CardView cardView) {
+        this.cardView = cardView;
     }
 
-    public Card getCard() {
-        return this.card;
+    public CardView getCard() {
+        return this.cardView;
     }
 }

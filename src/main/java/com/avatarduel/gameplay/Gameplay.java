@@ -25,6 +25,8 @@ public class Gameplay {
     private static final String CARD_CSV_FOLDER_PATH = "../card/data/";
     private LinkedList<Card> listCard;
     private PlayerController[] playerControllers;
+    private Phase phase;
+    private int turn;
 
     public Gameplay(PlayerController[] playerControllers){
         this.playerControllers = playerControllers;
@@ -51,7 +53,7 @@ public class Gameplay {
                 card.setName(row[1]);
                 card.setElement(Element.valueOf(row[2]));
                 card.setDescription(row[3]);
-                card.setImagePath(getClass().getResource("../"+row[4]).toString());
+                card.setImagePath(getClass().getResource(row[4]).toString());
 
                 if (filename.equals("character")) {
                     ((Character) card).setPower(Integer.parseInt(row[5]));
@@ -101,5 +103,9 @@ public class Gameplay {
     public void run() {
         playerControllers[0].setDeck(this.setDeck(playerControllers[0].getTotalDeckCard()));
         playerControllers[1].setDeck(this.setDeck(playerControllers[1].getTotalDeckCard()));
+        phase = Phase.DRAW;
+        turn = 0;
+        playerControllers[0].firstDrawCard();
+        playerControllers[1].firstDrawCard();
     }
 }

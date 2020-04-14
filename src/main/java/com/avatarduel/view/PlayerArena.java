@@ -1,4 +1,4 @@
-package com.avatarduel.gui;
+package com.avatarduel.view;
 
 /**
  * Class yang bertanggung jawab sebagai 1 arena player
@@ -32,8 +32,8 @@ public class PlayerArena extends GridPane {
             skillFields[i] = new FieldView();
             arena.add(skillFields[i], i, (rowField + 1) % 2);
         }
-        arena.setVgap(20);
-        arena.setHgap(30);
+        arena.setVgap(10);
+        arena.setHgap(10);
         arena.setPadding(new Insets(20, 4, 20, 4));
 
         landStatus = new LandStatus();
@@ -92,7 +92,7 @@ public class PlayerArena extends GridPane {
             throw new Exception("Field position already taken");
         }
 
-        this.characterFields[idx] = new CharacterFieldView(charCard);
+        // this.characterFields[idx] = new CharacterFieldView(charCard);
     }
 
     public void setSkillField(int idx, FieldView skillField) throws Exception {
@@ -116,6 +116,10 @@ public class PlayerArena extends GridPane {
             throw new Exception("Field position already taken");
         }
 
-        this.skillFields[idx] = new FieldView(skillCard);
+        // this.skillFields[idx] = new FieldView(skillCard);
+    }
+
+    public void addInHand(CardView cardView){
+        this.cardInHand.getChildren().add(cardView);
     }
 }
