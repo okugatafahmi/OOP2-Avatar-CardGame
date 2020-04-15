@@ -111,6 +111,12 @@ public class Gameplay implements Subject {
     }
 
     @Override
+    public void update() {
+        this.gameState.next();
+        notifyObserver();
+    }
+
+    @Override
     public void notifyObserver(){
         for (Observer observer : this.playerControllers) {
             observer.update();

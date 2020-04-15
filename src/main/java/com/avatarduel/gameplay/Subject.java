@@ -7,8 +7,13 @@ public interface Subject {
     public void notifyObserver();
 
     /**
-     * Get current gamestate
+     * Get current game state
      * @return game state
      */
     public GameState getUpdate();
+
+    /**
+     * Update game state
+     */
+    public void update();
 }

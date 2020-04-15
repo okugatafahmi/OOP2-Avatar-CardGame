@@ -1,6 +1,6 @@
 package com.avatarduel.model.player;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.EmptyStackException;
@@ -19,7 +19,7 @@ public class Player {
     private int health;
     private String name;
     private Stack<Card> deck;
-    private ArrayList<Card> inHand;
+    private LinkedList<Card> inHand;
     private HashMap<Element, Integer> powerTotal;
     private HashMap<Element, Integer> powerCanUse;
     private Character[] charactersField;
@@ -29,7 +29,7 @@ public class Player {
     public Player(String name, int totalDeckCard) {
         this.health = 80;
         this.name = name;
-        this.inHand = new ArrayList<>();
+        this.inHand = new LinkedList<>();
         this.powerTotal = new HashMap<>();
         this.powerCanUse = new HashMap<>();
         this.charactersField = new Character[8];
@@ -91,11 +91,10 @@ public class Player {
      * @return card yang diambil dari deck
      * @throws EmptyStackException jika deck kosong
      */
-    public Card drawCard() throws EmptyStackException {
+    public void drawCard() throws EmptyStackException {
         Card card = deck.pop();
         inHand.add(card);
         powerCanUse.putAll(powerTotal);
-        return card;
     }
 
     /**
