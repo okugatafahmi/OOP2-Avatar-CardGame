@@ -2,11 +2,11 @@ package com.avatarduel.controller;
 
 import java.util.Stack;
 
-import com.avatarduel.view.CardView;
 import com.avatarduel.view.PlayerArena;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 
 import com.avatarduel.gameplay.GameState;
 import com.avatarduel.gameplay.Observer;
@@ -72,7 +72,7 @@ public class PlayerController implements Observer {
     public void setDeck(Stack<Card> deck){
         this.player.setDeck(deck);
         this.playerArena.setDeck(deck);
-        this.playerArena.setDeckEventHandler(new EventHandler<MouseEvent>(){
+        this.playerArena.setDeckClickHandler(new EventHandler<MouseEvent>(){
         
             @Override
             public void handle(MouseEvent event) {
@@ -84,6 +84,14 @@ public class PlayerController implements Observer {
                 }
             }
         });
+    }
+
+    /**
+     * Set mouse over event on all card in deck. The card will be hover in hoverSpace
+     * @param hoverSpace space for the card hover
+     */
+    public void setDeckCardHover(StackPane hoverSpace) {
+        this.playerArena.setDeckCardHover(hoverSpace);
     }
 
     public int getTotalDeckCard(){

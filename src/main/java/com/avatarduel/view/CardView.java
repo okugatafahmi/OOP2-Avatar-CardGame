@@ -18,12 +18,13 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 
-public class CardView extends GridPane {
+public class CardView extends StackPane {
     private Card card;
     private GridPane containerCardView;
     private final ImageView backCard = new ImageView(
@@ -163,7 +164,7 @@ public class CardView extends GridPane {
         this.containerCardView.setPadding(new Insets(3, 4, 3, 4));
         this.containerCardView.setMinSize(61, 88);
         this.containerCardView.setMaxSize(61, 88);
-        super.add(containerCardView, 0, 0);
+        super.getChildren().add(containerCardView);
         super.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         super.setMinSize(63, 90);
@@ -172,6 +173,20 @@ public class CardView extends GridPane {
 
         backCard.setFitHeight(90);
         backCard.setPreserveRatio(true);
+    }
+
+    /**
+     * @return the card
+     */
+    public Card getCard() {
+        return card;
+    }
+
+    /**
+     * @return true if card is facing up
+     */
+    public boolean getIsFaceUp() {
+        return isFaceUp;
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.avatarduel.view;
 
-import java.beans.EventHandler;
 import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
@@ -8,6 +7,7 @@ import java.util.stream.Collectors;
 import com.avatarduel.model.card.*;
 import com.avatarduel.model.card.Character;
 
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -20,6 +20,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
 /**
  * Class yang bertanggung jawab sebagai 1 arena player
@@ -62,6 +63,9 @@ public class PlayerArena extends GridPane {
         deck = new StackPane();
         deck.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        deck.setAlignment(Pos.CENTER);
+        deck.setMinSize(64, 91);
+        deck.getChildren().add(new Text("Deck"));
         statusPlayer.add(deck, 0, 0);
         super.add(statusPlayer, 1, rowInHand);
         rowInHand += inc;
@@ -145,13 +149,13 @@ public class PlayerArena extends GridPane {
      * @param cardView card view will be added
      */
     public void addInHand(CardView cardView) {
+        this.cardInHand.getChildren().add(cardView);
         if (!inHandFaceUp) {
             cardView.faceDown();
         }
         else {
             cardView.faceUp();
         }
-        this.cardInHand.getChildren().add(cardView);
     }
 
     /**
@@ -185,7 +189,35 @@ public class PlayerArena extends GridPane {
         addInHand((CardView) node);
     }
 
-    public void setDeckEventHandler(javafx.event.EventHandler<MouseEvent> eventHandler) {
+    /**
+     * Set deck click handler
+     * @param eventHandler
+     */
+    public void setDeckClickHandler(EventHandler<MouseEvent> eventHandler) {
         deck.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
+    }
+
+    /**
+     * Set mouse over event on all card in deck
+     * @param hoverHandler hover handler
+     */
+    public void setDeckCardHover(StackPane hoverSpace) {
+        deck.getChildren().stream().forEach(
+            card -> {
+                card.setOnMouseEntered(e -> {
+                    if (((CardView) card).getIsFaceUp()) {
+                        CardView cardHover = new CardView(((CardView) card).getCard());
+                        cardHover.setScaleX(4);
+                        cardHover.setScaleY(4);
+                        hoverSpace.getChildren().add(cardHover);
+                    }
+                });
+                card.setOnMouseExited(e -> {
+                    if (((CardView) card).getIsFaceUp()) {
+                        hoverSpace.getChildren().remove(0);
+                    }
+                });
+            }
+        );
     }
 }

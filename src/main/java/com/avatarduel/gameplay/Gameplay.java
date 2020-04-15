@@ -18,6 +18,9 @@ import com.avatarduel.model.card.CardFactory;
 import com.avatarduel.model.card.Character;
 import com.avatarduel.util.CSVReader;
 
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
+
 /**
  * Kelas Gameplay yang bertanggung jawab dalam permainan
  */
@@ -26,9 +29,13 @@ public class Gameplay implements Subject {
     private LinkedList<Card> listCard;
     private PlayerController[] playerControllers;
     private GameState gameState;
+    private StackPane hoverSpace;
+    private Text status;
 
-    public Gameplay(PlayerController[] playerControllers) {
+    public Gameplay(PlayerController[] playerControllers, StackPane hoverSpace, Text status) {
         this.playerControllers = playerControllers;
+        this.hoverSpace = hoverSpace;
+        this.status = status;
     }
 
     /**
@@ -81,13 +88,13 @@ public class Gameplay implements Subject {
         List<Card> listCard;
         listCard = this.listCard.stream().filter(card -> card instanceof Character).collect(Collectors.toList());
         Collections.shuffle(listCard);
-        listCard.subList(0, nCard * 2 / 5).stream().forEach(card -> deck.push(card));
+        listCard.subList(0, Math.round((float) nCard * 2 / 5)).stream().forEach(card -> deck.push(card));
         listCard = this.listCard.stream().filter(card -> card instanceof Land).collect(Collectors.toList());
         Collections.shuffle(listCard);
-        listCard.subList(0, nCard * 2 / 5).stream().forEach(card -> deck.push(card));
+        listCard.subList(0, Math.round((float) nCard * 2 / 5)).stream().forEach(card -> deck.push(card));
         listCard = this.listCard.stream().filter(card -> card instanceof Skill).collect(Collectors.toList());
         Collections.shuffle(listCard);
-        listCard.subList(0, nCard / 5).stream().forEach(card -> deck.push(card));
+        listCard.subList(0, Math.round((float) nCard / 5)).stream().forEach(card -> deck.push(card));
         Collections.shuffle(deck);
         return deck;
     }
@@ -99,6 +106,7 @@ public class Gameplay implements Subject {
         for (int i = 0; i < 2; ++i) {
             playerControllers[i].setSubject(this);
             playerControllers[i].setDeck(this.setDeck(playerControllers[i].getTotalDeckCard()));
+            playerControllers[i].setDeckCardHover(hoverSpace);
             playerControllers[i].firstDrawCard();
         }
         this.gameState = new GameState();
@@ -118,6 +126,7 @@ public class Gameplay implements Subject {
 
     @Override
     public void notifyObserver(){
+        this.status.setText(this.gameState.toString());
         for (Observer observer : this.playerControllers) {
             observer.update();
         }

@@ -50,4 +50,9 @@ public class GameState {
     public int getTurn() {
         return turn;
     }
+
+    @Override
+    public String toString() {
+        return "Phase: " + phase.toString() + "\n" + "Player: " + (turn + 1);
+    }
 }
