@@ -1,27 +1,41 @@
 package com.avatarduel.view;
 
-/**
- * Class yang bertanggung jawab sebagai 1 arena player
- */
+import java.beans.EventHandler;
+import java.util.List;
+import java.util.Stack;
+import java.util.stream.Collectors;
+
 import com.avatarduel.model.card.*;
 import com.avatarduel.model.card.Character;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 
+/**
+ * Class yang bertanggung jawab sebagai 1 arena player
+ */
 public class PlayerArena extends GridPane {
     private CharacterFieldView[] characterFields;
     private FieldView[] skillFields;
     private LandStatus landStatus;
     private CardInHand cardInHand;
-    private boolean inHandFaceDown;
+    private StackPane deck;
+    private boolean inHandFaceUp;
 
     public PlayerArena(boolean isMirror) {
         characterFields = new CharacterFieldView[8];
         skillFields = new FieldView[8];
-        inHandFaceDown = true;
+        inHandFaceUp = false;
 
         GridPane arena = new GridPane();
         int rowField = ((isMirror) ? 1 : 0);
@@ -44,7 +58,12 @@ public class PlayerArena extends GridPane {
         int rowInHand = ((isMirror) ? 0 : 2);
         int inc = ((isMirror) ? 1 : -1);
         super.add(cardInHand, 0, rowInHand);
-        super.add(new Text("Ini buat gambar deck"), 1, rowInHand);
+        GridPane statusPlayer = new GridPane();
+        deck = new StackPane();
+        deck.setBorder(new Border(
+                new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        statusPlayer.add(deck, 0, 0);
+        super.add(statusPlayer, 1, rowInHand);
         rowInHand += inc;
         super.add(landStatus, 1, rowInHand);
         super.add(arena, 0, rowInHand);
@@ -122,20 +141,51 @@ public class PlayerArena extends GridPane {
 
     /**
      * Procedure that will add card in hand visually
+     * 
      * @param cardView card view will be added
      */
-    public void addInHand(CardView cardView){
-        if (inHandFaceDown) {
+    public void addInHand(CardView cardView) {
+        if (!inHandFaceUp) {
             cardView.faceDown();
+        }
+        else {
+            cardView.faceUp();
         }
         this.cardInHand.getChildren().add(cardView);
     }
 
     /**
      * Set face card in hand
+     * 
      * @param isFaceUp set true if the card in hand should be face up
      */
-    public void setFaceCardInHand(boolean isFaceUp){
+    public void setFaceCardInHand(boolean isFaceUp) {
         this.cardInHand.setFaceCard(isFaceUp);
+        this.inHandFaceUp = isFaceUp;
+    }
+
+    /**
+     * Set deck in view
+     * 
+     * @param cards card deck (stack of card)
+     */
+    public void setDeck(Stack<Card> cards) {
+        List<CardView> cardViews = cards.stream().map(card -> new CardView(card)).collect(Collectors.toList());
+        cardViews.stream().forEach(card -> {
+            card.faceDown();
+            deck.getChildren().add(card);
+        });
+    }
+
+    /**
+     * Draw card
+     */
+    public void drawCard() {
+        Node node = deck.getChildren().get(deck.getChildren().size() - 1);
+        addInHand((CardView) node);
+    }
+
+    public void setDeckEventHandler(javafx.event.EventHandler<MouseEvent> eventHandler) {
+        deck.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
     }
 }

@@ -4,6 +4,10 @@ import java.util.Stack;
 
 import com.avatarduel.view.CardView;
 import com.avatarduel.view.PlayerArena;
+
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
+
 import com.avatarduel.gameplay.GameState;
 import com.avatarduel.gameplay.Observer;
 import com.avatarduel.gameplay.Phase;
@@ -67,6 +71,19 @@ public class PlayerController implements Observer {
      */
     public void setDeck(Stack<Card> deck){
         this.player.setDeck(deck);
+        this.playerArena.setDeck(deck);
+        this.playerArena.setDeckEventHandler(new EventHandler<MouseEvent>(){
+        
+            @Override
+            public void handle(MouseEvent event) {
+                if (gameplay.getUpdate().getTurn() == id) {
+                    if (gameplay.getUpdate().getPhase() == Phase.DRAW) {
+                        drawCard();
+                        gameplay.update();
+                    }
+                }
+            }
+        });
     }
 
     public int getTotalDeckCard(){
@@ -86,7 +103,7 @@ public class PlayerController implements Observer {
      * Procedure that draw a card from deck
      */
     public void drawCard(){
-        Card card = this.player.drawCard();
-        this.playerArena.addInHand(new CardView(card));
+        this.player.drawCard();
+        this.playerArena.drawCard();
     }
 }
