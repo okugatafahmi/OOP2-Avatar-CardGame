@@ -68,6 +68,14 @@ public class Player {
     }
 
     /**
+     * Return total card in deck now
+     * 
+     * @return total card in deck now
+     */
+    public int getTotalCardInDeck() {
+        return this.deck.size();
+    }
+    /**
      * Menambahkan element power player sesuai dengan element-nya
      * 
      * @param element element power to be added
@@ -89,9 +97,8 @@ public class Player {
      * phase player
      * 
      * @return card yang diambil dari deck
-     * @throws EmptyStackException jika deck kosong
      */
-    public void drawCard() throws EmptyStackException {
+    public void drawCard() {
         Card card = deck.pop();
         inHand.add(card);
         powerCanUse.putAll(powerTotal);

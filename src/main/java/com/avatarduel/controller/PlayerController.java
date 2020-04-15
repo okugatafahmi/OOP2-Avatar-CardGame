@@ -76,11 +76,9 @@ public class PlayerController implements Observer {
         
             @Override
             public void handle(MouseEvent event) {
-                if (gameplay.getUpdate().getTurn() == id) {
-                    if (gameplay.getUpdate().getPhase() == Phase.DRAW) {
-                        drawCard();
-                        gameplay.update();
-                    }
+                if (gameplay.getUpdate().equals(Phase.DRAW, id) && player.getTotalCardInDeck() != 0) {
+                    drawCard();
+                    gameplay.update();
                 }
             }
         });

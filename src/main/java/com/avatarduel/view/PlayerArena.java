@@ -31,6 +31,8 @@ public class PlayerArena extends GridPane {
     private LandStatus landStatus;
     private CardInHand cardInHand;
     private StackPane deck;
+    private StackPane throwPlace;
+    private GridPane statusPlayer;
     private boolean inHandFaceUp;
 
     public PlayerArena(boolean isMirror) {
@@ -55,22 +57,46 @@ public class PlayerArena extends GridPane {
 
         landStatus = new LandStatus();
         cardInHand = new CardInHand();
+        statusPlayer = new GridPane();
+        statusPlayer.getChildren().add(new Text("Status Pemain"));
 
-        int rowInHand = ((isMirror) ? 0 : 2);
-        int inc = ((isMirror) ? 1 : -1);
-        super.add(cardInHand, 0, rowInHand);
-        GridPane statusPlayer = new GridPane();
         deck = new StackPane();
         deck.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         deck.setAlignment(Pos.CENTER);
         deck.setMinSize(64, 91);
+        deck.setMaxSize(64, 91);
         deck.getChildren().add(new Text("Deck"));
-        statusPlayer.add(deck, 0, 0);
-        super.add(statusPlayer, 1, rowInHand);
+        
+        throwPlace = new StackPane();
+        throwPlace.setBorder(new Border(
+                new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        throwPlace.setAlignment(Pos.CENTER);
+        throwPlace.setMinSize(64, 91);
+        throwPlace.setMaxSize(64, 91);
+        throwPlace.getChildren().add(new Text("Throw"));
+
+        int rowInHand = ((isMirror) ? 0 : 1);
+        int inc = ((isMirror) ? 1 : -1);
+        
+        GridPane container = new GridPane();
+        
+        int row = ((isMirror) ? 0 : 2);
+        container.add(statusPlayer, 0, row, 2, 1);
+        row += inc;
+        container.add(deck, 0, row);
+        container.add(throwPlace, 1, row);
+        row += inc;
+        container.add(landStatus, 0, row, 2, 1);        
+        container.setAlignment(Pos.CENTER);
+        container.setHgap(40);
+        container.setVgap(20);
+        container.setPadding(new Insets(40, 5, 40, 5));
+
+        super.add(cardInHand, 0, rowInHand);
         rowInHand += inc;
-        super.add(landStatus, 1, rowInHand);
         super.add(arena, 0, rowInHand);
+        super.add(container, 1, 0, 1, 2);
         super.setHgap(20);
         super.setAlignment(Pos.CENTER);
     }
