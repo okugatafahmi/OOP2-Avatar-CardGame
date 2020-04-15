@@ -60,6 +60,8 @@ public abstract class Card {
             this.elementImagePath = "/com/avatarduel/element/Fire.png";
         } else if(this.element == Element.WATER){
             this.elementImagePath = "/com/avatarduel/element/Water.png";
+        } else if(this.element == Element.ENERGY){
+            this.elementImagePath = "/com/avatarduel/element/Energy.png";
         }
     }
 

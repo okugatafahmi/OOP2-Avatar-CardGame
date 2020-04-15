@@ -47,3 +47,6 @@ id	name	element	description	imagepath	power	attack	defense
 62	June	EARTH	Bounty hunter with a shirshu as her pet.	/com/avatarduel/card/image/character/June.png	2	5	8
 63	Suki	EARTH	Leader of Kyoshi Warrior.	/com/avatarduel/card/image/character/Suki.png	3	8	8
 64	Pipsqueak	EARTH	Strongest member of Freedom Fighters.	/com/avatarduel/card/image/character/Pipsqueak.png	2	3	10
+65	Lion Turtle	ENERGY	The lion turtle revealed to Aang the power to bend the energy within oneself, which the Avatar later used to remove Fire Lord Ozai's bending abilities.	/com/avatarduel/card/image/character/Lion Turtle.png	7	9	9
+66	Korra	ENERGY	A 17 years old girl from the Southern Water Tribe and the successor of Avatar Aang from The Last Airbender.	/com/avatarduel/card/image/character/Korra.png	6	13	8
+67	Aang	ENERGY	Avatar Roku's successor. Also learned how to energybending.	/com/avatarduel/card/image/character/Aang.png	5	14	6
