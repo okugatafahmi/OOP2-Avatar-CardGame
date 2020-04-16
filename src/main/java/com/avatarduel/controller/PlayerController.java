@@ -1,15 +1,19 @@
 package com.avatarduel.controller;
 
+import java.util.NoSuchElementException;
 import java.util.Stack;
 
 import com.avatarduel.view.CardView;
 import com.avatarduel.view.CharacterFieldView;
-import com.avatarduel.view.FieldView;
 import com.avatarduel.view.PlayerArena;
+import com.avatarduel.view.SkillFieldView;
 
+import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
@@ -21,6 +25,7 @@ import com.avatarduel.model.card.Card;
 import com.avatarduel.model.card.Character;
 import com.avatarduel.model.card.Land;
 import com.avatarduel.model.card.Skill;
+import com.avatarduel.model.card.Summonedable;
 import com.avatarduel.model.player.Player;
 
 /**
@@ -32,24 +37,47 @@ public class PlayerController implements Observer {
     private Subject gameplay;
     private int id;
     private static CardView cardToBeMove;
+    private final EventHandler<MouseEvent> cardOnClick = this::cardOnClick;
 
     public PlayerController(Player player, int id, boolean isMirror) {
         this.player = player;
         this.id = id;
         this.playerArena = new PlayerArena(isMirror);
         this.playerArena.setFieldClickHandler(e -> {
-            if (this.gameplay.getUpdate().getPhase() == Phase.MAIN) {
+            // TODO Attach skill ke musuh
+            if (this.gameplay.getUpdate().equals(Phase.MAIN, id)) {
+                int fieldColumn = ((CharacterFieldView) e.getSource()).getColumn();
+                // Menaruh kartu di field
                 if (cardToBeMove != null) {
-                    Card card = cardToBeMove.getCard();
-                    if ((card instanceof Character && e.getSource() instanceof CharacterFieldView
-                            && player.getPowerElementCanUse(card.getElement()) >= ((Character) card).getPower())
-                            || (card instanceof Skill && e.getSource() instanceof FieldView
-                                    && player.getPowerElementCanUse(card.getElement()) >= ((Skill) card).getPower())) {
-                        // TODO Mengubah di modelnya juga
-                        cardToBeMove.setBorder(Color.BLACK);
-                        ((FieldView) e.getSource()).getChildren().add(cardToBeMove);
-                        cardToBeMove = null;
+                    if (cardToBeMove.getCard() instanceof Character) {
+                        summonCard(cardToBeMove, fieldColumn);
                     }
+                }
+                else if (e.getButton() == MouseButton.SECONDARY) {
+                    this.player.removeCharacterCardAtField(fieldColumn);
+                    this.playerArena.addThrowPlaceCard(((CharacterFieldView) e.getSource()).getCardView());
+                }
+                else {
+                    this.player.changeStance(fieldColumn);
+                    this.playerArena.changeStance(fieldColumn);
+                }
+            }
+        }, e -> {
+            if (this.gameplay.getUpdate().equals(Phase.MAIN, id)) {
+                int fieldColumn = ((SkillFieldView) e.getSource()).getColumn();
+                // Menaruh kartu di field
+                if (cardToBeMove != null) {
+                    if (cardToBeMove.getCard() instanceof Skill) {
+                        summonCard(cardToBeMove, fieldColumn);
+                    }
+                }
+                else if (e.getButton() == MouseButton.SECONDARY) {
+                    this.player.removeSkillCardAtField(fieldColumn);
+                    this.playerArena.addThrowPlaceCard(((SkillFieldView) e.getSource()).getCardView());
+                }
+                else {
+                    this.player.changeStance(fieldColumn);
+                    this.playerArena.changeStance(fieldColumn);
                 }
             }
         });
@@ -149,38 +177,74 @@ public class PlayerController implements Observer {
      */
     public void drawCard() {
         this.player.drawCard();
-        this.playerArena.drawCard(e -> {
-            if (this.gameplay.getUpdate().equals(Phase.MAIN, id)) {
-                if (e.getClickCount() == 2 && cardToBeMove != null) {
-                    this.player.removeCardInHand(cardToBeMove.getCard());
-                    this.playerArena.addThrowPlaceCard(cardToBeMove);
+        this.playerArena.drawCard(cardOnClick);
+    }
+
+    /**
+     * Card on click handler when card in hand
+     * 
+     * @param e mouse event
+     */
+    private void cardOnClick(MouseEvent e) {
+        if (this.gameplay.getUpdate().equals(Phase.MAIN, id)) {
+            if (e.getButton() == MouseButton.SECONDARY) {
+                CardView cardView = (CardView) e.getSource();
+                this.player.removeCardInHand(cardView.getCard());
+                this.playerArena.addThrowPlaceCard(cardView);
+                cardView.removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick); // hapus click handler nya
+                if (cardView.equals(cardToBeMove)) {
                     cardToBeMove.setBorder(Color.BLACK);
                     cardToBeMove = null;
-                } else {
-                    boolean isNew = true;
-                    if (cardToBeMove != null) {
-                        System.out.println(cardToBeMove.getCard());
-                        cardToBeMove.setBorder(Color.BLACK);
-                        if (e.getSource().equals(cardToBeMove)) {
-                            isNew = false;
-                            if (cardToBeMove.getCard() instanceof Land) {
-                                try {
-                                    this.player.useCard(cardToBeMove.getCard());
-                                    this.playerArena.addThrowPlaceCard(cardToBeMove);
-                                } catch (Exception err) {
-                                    new Alert(AlertType.ERROR, err.getMessage(), ButtonType.OK).showAndWait();
-                                }
+                }
+            } else {
+                boolean isNew = true;
+                if (cardToBeMove != null) {
+                    System.out.println(cardToBeMove.getCard());
+                    cardToBeMove.setBorder(Color.BLACK);
+                    if (e.getSource().equals(cardToBeMove)) {
+                        isNew = false;
+                        // menggunakan kartu land
+                        if (cardToBeMove.getCard() instanceof Land) {
+                            try {
+                                this.player.useCard(cardToBeMove.getCard());
+                                this.playerArena.addThrowPlaceCard(cardToBeMove);
+                                cardToBeMove.removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick); // hapus click handler nya
+                            } catch (Exception err) {
+                                new Alert(AlertType.ERROR, err.getMessage(), ButtonType.OK).showAndWait();
                             }
-                            cardToBeMove = null;
                         }
-                    }
-
-                    if (isNew) {
-                        cardToBeMove = (CardView) e.getSource();
-                        cardToBeMove.setBorder(Color.RED);
+                        cardToBeMove = null;
                     }
                 }
+
+                if (isNew) {
+                    cardToBeMove = (CardView) e.getSource();
+                    cardToBeMove.setBorder(Color.RED);
+                }
             }
-        });
+        }
+    }
+
+    private void summonCard(CardView cardView, int fieldColumn) {
+        Card card = cardView.getCard();
+        // kalau card to be move di in hand
+        try {
+            if (!this.player.isCardInHand(card)) {
+                throw new NoSuchElementException("There is no card " + card.getName());
+            }
+            this.player.setCardAtField((Summonedable) card, fieldColumn);
+            this.player.useCard(card);
+            // TODO Hapus println
+            System.out.println(this.player);
+            this.playerArena.setCardAtField(cardToBeMove, fieldColumn);
+            cardToBeMove.removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick);
+        }
+        catch (Exception err) {
+            new Alert(AlertType.ERROR, err.getMessage(), ButtonType.OK).showAndWait();
+        }
+        finally {
+            cardToBeMove.setBorder(Color.BLACK);
+            cardToBeMove = null;
+        }
     }
 }

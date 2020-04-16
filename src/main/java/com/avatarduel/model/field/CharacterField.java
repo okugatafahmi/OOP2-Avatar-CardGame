@@ -12,6 +12,15 @@ public class CharacterField extends SkillField {
         this.currentStance = Stance.ATTACK;
     }
 
+    public void changeStance() {
+        if (this.currentStance == Stance.ATTACK) {
+            this.currentStance = Stance.DEFEND;
+        }
+        else {
+            this.currentStance = Stance.ATTACK;
+        }
+    }
+
     /**
      * @return the currentStance
      */

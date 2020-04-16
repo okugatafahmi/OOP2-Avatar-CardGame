@@ -5,8 +5,6 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 
 import com.avatarduel.model.card.Card;
-import com.avatarduel.model.card.Character;
-import com.avatarduel.model.card.Skill;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -29,8 +27,7 @@ import javafx.scene.text.Text;
  * Class yang bertanggung jawab sebagai 1 arena player
  */
 public class PlayerArena extends GridPane {
-    private CharacterFieldView[] characterFields;
-    private FieldView[] skillFields;
+    private ColumnFieldView[] columnFieldViews;
     private LandStatus landStatus;
     private CardInHand cardInHand;
     private StackPane deck;
@@ -39,25 +36,24 @@ public class PlayerArena extends GridPane {
     private boolean inHandFaceUp;
     private Button nextButton;
 
+    /**
+     * Constructor of player's arena
+     * 
+     * @param isMirror boolean whether the arena is mirrorred (on above)
+     */
     public PlayerArena(boolean isMirror) {
-        characterFields = new CharacterFieldView[8];
-        skillFields = new FieldView[8];
+        columnFieldViews = new ColumnFieldView[8];
         inHandFaceUp = false;
 
         GridPane arena = new GridPane();
-        int rowField = ((isMirror) ? 1 : 0);
-        for (int i = 0; i < characterFields.length; i++) {
-            characterFields[i] = new CharacterFieldView();
-            arena.add(characterFields[i], i, rowField);
-        }
-
-        for (int i = 0; i < skillFields.length; i++) {
-            skillFields[i] = new FieldView();
-            arena.add(skillFields[i], i, (rowField + 1) % 2);
+        for (int i = 0; i < columnFieldViews.length; i++) {
+            columnFieldViews[i] = new ColumnFieldView(i, isMirror);
+            arena.addColumn(i, columnFieldViews[i]);
         }
         arena.setVgap(10);
         arena.setHgap(10);
         arena.setPadding(new Insets(20, 4, 20, 4));
+        arena.setAlignment(Pos.CENTER);
 
         landStatus = new LandStatus();
         cardInHand = new CardInHand();
@@ -110,78 +106,11 @@ public class PlayerArena extends GridPane {
         this.setAlignment(Pos.CENTER);
     }
 
-    public FieldView getSkillField(int idx) throws Exception {
-        if (idx < 0 || idx >= skillFields.length) {
-            throw new IndexOutOfBoundsException("Requested index not in Field");
-        }
-        if (skillFields[idx] == null) {
-            throw new Exception("No skill card at requested position");
-        }
-        return skillFields[idx];
-    }
-
-    public CharacterFieldView getCharacterField(int idx) throws Exception {
-        if (idx < 0 || idx >= characterFields.length) {
-            throw new IndexOutOfBoundsException("Requested index not in Field");
-        }
-        if (characterFields[idx] == null) {
-            throw new Exception("No character card at requested position");
-        }
-        return characterFields[idx];
-    }
-
-    public void setCharacterField(int idx, CharacterFieldView charField) throws Exception {
-        if (idx < 0 || idx >= characterFields.length) {
-            throw new IndexOutOfBoundsException("Requested index not in Field");
-        }
-
-        if (characterFields[idx] != null) {
-            throw new Exception("Field position already taken");
-        }
-
-        this.characterFields[idx] = charField;
-    }
-
-    public void setCharacterField(int idx, Character charCard) throws Exception {
-        if (idx < 0 || idx >= characterFields.length) {
-            throw new IndexOutOfBoundsException("Requested index not in Field");
-        }
-
-        if (characterFields[idx] != null) {
-            throw new Exception("Field position already taken");
-        }
-
-        // this.characterFields[idx] = new CharacterFieldView(charCard);
-    }
-
-    public void setSkillField(int idx, FieldView skillField) throws Exception {
-        if (idx < 0 || idx >= skillFields.length) {
-            throw new IndexOutOfBoundsException("Requested index not in Field");
-        }
-
-        if (skillFields[idx] != null) {
-            throw new Exception("Field position already taken");
-        }
-
-        this.skillFields[idx] = skillField;
-    }
-
-    public void setSkillField(int idx, Skill skillCard) throws Exception {
-        if (idx < 0 || idx >= skillFields.length) {
-            throw new IndexOutOfBoundsException("Requested index not in Field");
-        }
-
-        if (skillFields[idx] != null) {
-            throw new Exception("Field position already taken");
-        }
-
-        // this.skillFields[idx] = new FieldView(skillCard);
-    }
-
     /**
      * Procedure that will add card in hand visually
      * 
-     * @param cardView card view will be added
+     * @param cardView               card view will be added
+     * @param cardInHandClickHandler click handler when card in hand
      */
     public void addInHand(CardView cardView, EventHandler<MouseEvent> cardInHandClickHandler) {
         this.cardInHand.getChildren().add(cardView);
@@ -227,9 +156,23 @@ public class PlayerArena extends GridPane {
     }
 
     /**
+     * Set card at field
+     * 
+     * @param cardView card view to set
+     * @param column   column of field
+     */
+    public void setCardAtField(CardView cardView, int column) {
+        columnFieldViews[column].setCardView(cardView);
+    }
+
+    public void changeStance(int column) {
+        columnFieldViews[column].changeStance();
+    }
+
+    /**
      * Set deck click handler
      * 
-     * @param eventHandler
+     * @param eventHandler click handler for deck
      */
     public void setDeckClickHandler(EventHandler<MouseEvent> eventHandler) {
         deck.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
@@ -238,7 +181,7 @@ public class PlayerArena extends GridPane {
     /**
      * Set mouse over event on all card in deck
      * 
-     * @param hoverHandler hover handler
+     * @param hoverSpace hover space
      */
     public void setDeckCardHover(StackPane hoverSpace) {
         deck.getChildren().stream().forEach(card -> {
@@ -258,12 +201,16 @@ public class PlayerArena extends GridPane {
         });
     }
 
-    public void setFieldClickHandler(EventHandler<MouseEvent> eventHandler) {
-        for (CharacterFieldView characterFieldView : characterFields) {
-            characterFieldView.setClickHandler(eventHandler);
-        }
-        for (FieldView skillFieldView : skillFields) {
-            skillFieldView.setClickHandler(eventHandler);
+    /**
+     * Set field click hander
+     * 
+     * @param characterFieldEventHandler event handler for character field
+     * @param skillFieldEventHandler     event handler for skill field
+     */
+    public void setFieldClickHandler(EventHandler<MouseEvent> characterFieldEventHandler,
+            EventHandler<MouseEvent> skillFieldEventHandler) {
+        for (ColumnFieldView columnFieldView : columnFieldViews) {
+            columnFieldView.setClickHandler(characterFieldEventHandler, skillFieldEventHandler);
         }
     }
 
@@ -295,6 +242,9 @@ public class PlayerArena extends GridPane {
      * @param card card will be throw
      */
     public void addThrowPlaceCard(CardView card) {
+        if (card.getTransforms().size() == 1) {
+            card.getTransforms().remove(0);
+        }
         throwPlace.getChildren().add(card);
     }
 }

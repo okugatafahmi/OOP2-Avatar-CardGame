@@ -6,10 +6,10 @@ import java.util.NoSuchElementException;
 import java.util.Stack;
 
 import com.avatarduel.model.card.Card;
-import com.avatarduel.model.card.Character;
-import com.avatarduel.model.card.Skill;
+import com.avatarduel.model.card.Summonedable;
 import com.avatarduel.model.field.CardInFieldExist;
 import com.avatarduel.model.field.ColumnField;
+import com.avatarduel.model.field.NoneCharacterCard;
 import com.avatarduel.model.card.Element;
 import com.avatarduel.model.card.Land;
 
@@ -38,7 +38,7 @@ public class Player {
         this.isUsedLand = false;
 
         for (Element element : Element.values()) {
-            powerTotal.put(element, 0);
+            powerTotal.put(element, 99);
             powerCanUse.put(element, 0);
         }
 
@@ -47,6 +47,11 @@ public class Player {
         }
     }
 
+    /**
+     * Set player's deck
+     * 
+     * @param deck card deck
+     */
     public void setDeck(Stack<Card> deck) {
         this.deck = deck;
     }
@@ -120,10 +125,18 @@ public class Player {
     }
 
     /**
+     * Return true if card is in hand
+     * 
+     * @param card card to be search
+     * @return return {@code true} if card in hand
+     */
+    public boolean isCardInHand(Card card) {
+        return this.inHand.contains(card);
+    }
+
+    /**
      * Mengambil 1 kartu dari deck dan di simpan di inHand. Di panggil ketika draw
      * phase player
-     * 
-     * @return card yang diambil dari deck
      */
     public void drawCard() {
         Card card = deck.pop();
@@ -142,14 +155,13 @@ public class Player {
      * Procedure ketika pemain mengeluarkan suatu kartu
      * 
      * @param card Card that be thrown
-     * @throws PowerElementNotEnough  if the player doesn't have enough power to
-     *                                throw that card
+     * @throws PowerElementNotEnough  if the player doesn't have enough power to use
+     *                                that card
      * @throws NoSuchElementException if there isn't card at inHand
      * @throws HasUsedLand            if player has used land card
      */
     public void useCard(Card card) throws PowerElementNotEnough, NoSuchElementException, HasUsedLand {
-        int index = this.inHand.indexOf(card);
-        if (index == -1) {
+        if (!this.inHand.contains(card)) {
             throw new NoSuchElementException("There is no card " + card.getName());
         } else {
             if (card instanceof Land) {
@@ -157,16 +169,15 @@ public class Player {
                     throw new HasUsedLand();
                 }
                 addPower(card.getElement());
-                removeCardInHand(card);
                 isUsedLand = true;
             } else {
                 Integer freq = powerCanUse.get(card.getElement());
-                if (freq > 0) {
-                    powerCanUse.put(card.getElement(), freq - 1);
-                } else {
+                if (freq == 0) {
                     throw new PowerElementNotEnough(card.getElement());
                 }
+                powerCanUse.put(card.getElement(), freq - 1);
             }
+            removeCardInHand(card);
         }
     }
 
@@ -194,22 +205,47 @@ public class Player {
     }
 
     /**
-     * Mengeset kartu character di field
+     * Set card on field
      * 
-     * @param card  Character card to be set
-     * @param index Index of field to be set
+     * @param card   card to set
+     * @param column column of field to set
+     * @throws CardInFieldExist  if there is card on field
+     * @throws NoneCharacterCard if use skill card to none character card on field
      */
-    public void setCharacterFieldAt(Character card, int index) throws CardInFieldExist {
-        this.columnField[index].setCharacterField(card);
+    public void setCardAtField(Summonedable card, int column) throws CardInFieldExist, NoneCharacterCard {
+        this.columnField[column].setCardField(card);
     }
 
     /**
-     * * Mengeset kartu field di field
+     * Remove character card on specified field column
      * 
-     * @param card  Skill card to be set
-     * @param index Index of field to be set
+     * @param column field's column
      */
-    public void setSkillFieldAt(Skill card, int index) throws CardInFieldExist {
-        this.columnField[index].setSkillField(card);
+    public void removeCharacterCardAtField(int column) {
+        this.columnField[column].removeCharacterCard();
+    }
+
+    /**
+     * Remove character card on specified field column
+     * 
+     * @param column field's column
+     */
+    public void removeSkillCardAtField(int column) {
+        this.columnField[column].removeSkillCard();
+    }
+
+    public void changeStance(int column) {
+        this.columnField[column].changeStance();
+    }
+
+    @Override
+    public String toString() {
+        String res = "";
+        int i = 0;
+        for (ColumnField column : columnField) {
+            res += "Kolom " + i + column.toString() + "\n";
+            ++i;
+        }
+        return res + inHand;
     }
 }

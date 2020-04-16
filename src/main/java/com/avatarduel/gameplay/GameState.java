@@ -54,9 +54,10 @@ public class GameState {
     /**
      * Return true if game state equal with phase and turn
      * 
-     * @param phase
-     * @param turn
-     * @return
+     * @param phase the phase
+     * @param turn  the turn
+     * @return return {@code true} if current game state is equal with phase and
+     *         turn
      */
     public boolean equals(Phase phase, int turn) {
         return this.phase == phase && this.turn == turn;
