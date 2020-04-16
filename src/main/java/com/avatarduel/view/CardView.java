@@ -85,27 +85,29 @@ public class CardView extends StackPane {
         this.containerCardView.add(header, 0, 0, 2, 1);
         if (card instanceof Character || card instanceof Land) {
             this.containerCardView.add(tipeFlow, 0, 1, 2, 1);
-            if(card instanceof Character){
-                Text info_char = new Text("ATK/"+Integer.toString(((Character) this.card).getAttack()) + " | DEF/"+Integer.toString(((Character) this.card).getDefense()) + " | POW/"+Integer.toString(((Character) this.card).getPower()));
+            if (card instanceof Character) {
+                Text info_char = new Text("ATK/" + Integer.toString(((Character) this.card).getAttack()) + " | DEF/"
+                        + Integer.toString(((Character) this.card).getDefense()) + " | POW/"
+                        + Integer.toString(((Character) this.card).getPower()));
                 info_char.setStyle("-fx-font: 3 helvetica");
                 info_char.setFill(Color.WHITE);
-    
+
                 TextFlow info_char_flow = new TextFlow(info_char);
                 info_char_flow.setTextAlignment(TextAlignment.RIGHT);
-    
+
                 GridPane info_box = new GridPane();
-                info_box.add(info_char_flow,0,0);
-                info_box.setBorder(new Border(
-                    new BorderStroke(Color.BLACK,BorderStrokeStyle.SOLID, CornerRadii.EMPTY,BorderWidths.DEFAULT)));
+                info_box.add(info_char_flow, 0, 0);
+                info_box.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY,
+                        BorderWidths.DEFAULT)));
                 info_box.setAlignment(Pos.CENTER);
                 info_box.setStyle("-fx-background-color: #000000");
                 info_box.getColumnConstraints().add(new ColumnConstraints(50));
-                
-                this.containerCardView.add(info_box,0,6,2,1);
-    
+
+                this.containerCardView.add(info_box, 0, 6, 2, 1);
+
             }
         }
-        
+
         else {
             Text effect = new Text(((Skill) this.card).getEffect());
             effect.setStyle("-fx-font: 4 helvetica");
@@ -115,11 +117,12 @@ public class CardView extends StackPane {
             this.containerCardView.add(effectFlow, 0, 1);
             this.containerCardView.add(tipeFlow, 1, 1);
 
-            Text info_skill = new Text("+"+Integer.toString(((Skill) this.card).getAttack()) + "ATK +"+Integer.toString(((Skill) this.card).getDefense()) + "DEF");
+            Text info_skill = new Text("+" + Integer.toString(((Skill) this.card).getAttack()) + "ATK +"
+                    + Integer.toString(((Skill) this.card).getDefense()) + "DEF");
             info_skill.setStyle("-fx-font: 3 helvetica");
             info_skill.setFill(Color.LIGHTBLUE);
 
-            Text info_pow = new Text("POW/"+Integer.toString(((Skill) this.card).getPower()));
+            Text info_pow = new Text("POW/" + Integer.toString(((Skill) this.card).getPower()));
             info_pow.setStyle("-fx-font: 3 helvetica");
             info_pow.setFill(Color.YELLOW);
 
@@ -130,19 +133,19 @@ public class CardView extends StackPane {
             info_pow_flow.setTextAlignment(TextAlignment.RIGHT);
 
             GridPane info_skill_box = new GridPane();
-            info_skill_box.add(info_skill_flow,0,0);
-            info_skill_box.add(info_pow_flow,1,0);
-            
+            info_skill_box.add(info_skill_flow, 0, 0);
+            info_skill_box.add(info_pow_flow, 1, 0);
+
             info_skill_box.setBorder(new Border(
-                new BorderStroke(Color.BLACK,BorderStrokeStyle.SOLID, CornerRadii.EMPTY,BorderWidths.DEFAULT)));
+                    new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
             info_skill_box.setAlignment(Pos.CENTER);
             info_skill_box.setStyle("-fx-background-color: #000000");
             info_skill_box.getColumnConstraints().add(new ColumnConstraints(35));
             info_skill_box.getColumnConstraints().add(new ColumnConstraints(15));
-            
-            this.containerCardView.add(info_skill_box,0,6,2,1);
 
-        }        
+            this.containerCardView.add(info_skill_box, 0, 6, 2, 1);
+
+        }
 
         Image image = new Image(this.card.getImagePath());
         ImageView imageView = new ImageView(image);
@@ -152,24 +155,24 @@ public class CardView extends StackPane {
         bPane.setCenter(imageView);
         this.containerCardView.add(bPane, 0, 2, 2, 2);
 
-        this.containerCardView.add(emptyFlow,0,4,1,1);
+        this.containerCardView.add(emptyFlow, 0, 4, 1, 1);
 
-        deskripsi_box.add(deskripsiFlow,0,0);
+        deskripsi_box.add(deskripsiFlow, 0, 0);
         deskripsi_box.setAlignment(Pos.CENTER);
         deskripsi_box.setStyle("-fx-background-color: #fffeb3");
         deskripsi_box.getColumnConstraints().add(new ColumnConstraints(50));
         deskripsi_box.getRowConstraints().add(new RowConstraints(20));
-        this.containerCardView.add(deskripsi_box,0,5,2,1);
-        
+        this.containerCardView.add(deskripsi_box, 0, 5, 2, 1);
+
         this.containerCardView.setPadding(new Insets(3, 4, 3, 4));
         this.containerCardView.setMinSize(61, 88);
         this.containerCardView.setMaxSize(61, 88);
-        super.getChildren().add(containerCardView);
-        super.setBorder(new Border(
+        this.getChildren().add(containerCardView);
+        this.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-        super.setMinSize(63, 90);
-        super.setMaxSize(63, 90);
-        super.setAlignment(Pos.TOP_CENTER);
+        this.setMinSize(63, 90);
+        this.setMaxSize(63, 90);
+        this.setAlignment(Pos.TOP_CENTER);
 
         backCard.setFitHeight(90);
         backCard.setPreserveRatio(true);
@@ -193,7 +196,7 @@ public class CardView extends StackPane {
      * Procedure that make the card in view will be face down
      */
     public void faceDown() {
-        if (isFaceUp){
+        if (isFaceUp) {
             this.getChildren().remove(containerCardView);
             this.getChildren().add(backCard);
             isFaceUp = false;
@@ -204,10 +207,20 @@ public class CardView extends StackPane {
      * Procedure that make the card in view will be face up
      */
     public void faceUp() {
-        if (!isFaceUp){
+        if (!isFaceUp) {
             this.getChildren().remove(backCard);
             this.getChildren().add(containerCardView);
             isFaceUp = true;
         }
+    }
+
+    /**
+     * Set card border color based on color
+     * 
+     * @param color border's color
+     */
+    public void setBorder(Color color) {
+        this.setBorder(
+                new Border(new BorderStroke(color, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
     }
 }

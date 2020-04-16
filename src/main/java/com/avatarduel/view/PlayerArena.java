@@ -4,13 +4,16 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import com.avatarduel.model.card.*;
+import com.avatarduel.model.card.Card;
 import com.avatarduel.model.card.Character;
+import com.avatarduel.model.card.Skill;
 
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
@@ -34,6 +37,7 @@ public class PlayerArena extends GridPane {
     private StackPane throwPlace;
     private GridPane statusPlayer;
     private boolean inHandFaceUp;
+    private Button nextButton;
 
     public PlayerArena(boolean isMirror) {
         characterFields = new CharacterFieldView[8];
@@ -58,8 +62,11 @@ public class PlayerArena extends GridPane {
         landStatus = new LandStatus();
         cardInHand = new CardInHand();
         statusPlayer = new GridPane();
+        nextButton = new Button();
         statusPlayer.getChildren().add(new Text("Status Pemain"));
 
+        nextButton.setVisible(false);
+        nextButton.setAlignment(Pos.CENTER);
         deck = new StackPane();
         deck.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
@@ -67,7 +74,7 @@ public class PlayerArena extends GridPane {
         deck.setMinSize(64, 91);
         deck.setMaxSize(64, 91);
         deck.getChildren().add(new Text("Deck"));
-        
+
         throwPlace = new StackPane();
         throwPlace.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
@@ -78,27 +85,29 @@ public class PlayerArena extends GridPane {
 
         int rowInHand = ((isMirror) ? 0 : 1);
         int inc = ((isMirror) ? 1 : -1);
-        
+
         GridPane container = new GridPane();
-        
-        int row = ((isMirror) ? 0 : 2);
+
+        int row = ((isMirror) ? 0 : 3);
         container.add(statusPlayer, 0, row, 2, 1);
         row += inc;
         container.add(deck, 0, row);
         container.add(throwPlace, 1, row);
         row += inc;
-        container.add(landStatus, 0, row, 2, 1);        
+        container.add(nextButton, 0, row, 2, 1);
+        row += inc;
+        container.add(landStatus, 0, row, 2, 1);
         container.setAlignment(Pos.CENTER);
         container.setHgap(40);
-        container.setVgap(20);
+        container.setVgap(10);
         container.setPadding(new Insets(40, 5, 40, 5));
 
-        super.add(cardInHand, 0, rowInHand);
+        this.add(cardInHand, 0, rowInHand);
         rowInHand += inc;
-        super.add(arena, 0, rowInHand);
-        super.add(container, 1, 0, 1, 2);
-        super.setHgap(20);
-        super.setAlignment(Pos.CENTER);
+        this.add(arena, 0, rowInHand);
+        this.add(container, 1, 0, 1, 2);
+        this.setHgap(20);
+        this.setAlignment(Pos.CENTER);
     }
 
     public FieldView getSkillField(int idx) throws Exception {
@@ -174,14 +183,14 @@ public class PlayerArena extends GridPane {
      * 
      * @param cardView card view will be added
      */
-    public void addInHand(CardView cardView) {
+    public void addInHand(CardView cardView, EventHandler<MouseEvent> cardInHandClickHandler) {
         this.cardInHand.getChildren().add(cardView);
         if (!inHandFaceUp) {
             cardView.faceDown();
-        }
-        else {
+        } else {
             cardView.faceUp();
         }
+        cardView.addEventHandler(MouseEvent.MOUSE_CLICKED, cardInHandClickHandler);
     }
 
     /**
@@ -209,14 +218,17 @@ public class PlayerArena extends GridPane {
 
     /**
      * Draw card
+     * 
+     * @param cardInHandClickHandler handler when click card in hand
      */
-    public void drawCard() {
+    public void drawCard(EventHandler<MouseEvent> cardInHandClickHandler) {
         Node node = deck.getChildren().get(deck.getChildren().size() - 1);
-        addInHand((CardView) node);
+        addInHand((CardView) node, cardInHandClickHandler);
     }
 
     /**
      * Set deck click handler
+     * 
      * @param eventHandler
      */
     public void setDeckClickHandler(EventHandler<MouseEvent> eventHandler) {
@@ -225,25 +237,64 @@ public class PlayerArena extends GridPane {
 
     /**
      * Set mouse over event on all card in deck
+     * 
      * @param hoverHandler hover handler
      */
     public void setDeckCardHover(StackPane hoverSpace) {
-        deck.getChildren().stream().forEach(
-            card -> {
-                card.setOnMouseEntered(e -> {
-                    if (((CardView) card).getIsFaceUp()) {
-                        CardView cardHover = new CardView(((CardView) card).getCard());
-                        cardHover.setScaleX(4);
-                        cardHover.setScaleY(4);
-                        hoverSpace.getChildren().add(cardHover);
-                    }
-                });
-                card.setOnMouseExited(e -> {
-                    if (((CardView) card).getIsFaceUp()) {
-                        hoverSpace.getChildren().remove(0);
-                    }
-                });
-            }
-        );
+        deck.getChildren().stream().forEach(card -> {
+            card.setOnMouseEntered(e -> {
+                if (((CardView) card).getIsFaceUp()) {
+                    CardView cardHover = new CardView(((CardView) card).getCard());
+                    cardHover.setScaleX(4);
+                    cardHover.setScaleY(4);
+                    hoverSpace.getChildren().add(cardHover);
+                }
+            });
+            card.setOnMouseExited(e -> {
+                if (((CardView) card).getIsFaceUp()) {
+                    hoverSpace.getChildren().remove(0);
+                }
+            });
+        });
+    }
+
+    public void setFieldClickHandler(EventHandler<MouseEvent> eventHandler) {
+        for (CharacterFieldView characterFieldView : characterFields) {
+            characterFieldView.setClickHandler(eventHandler);
+        }
+        for (FieldView skillFieldView : skillFields) {
+            skillFieldView.setClickHandler(eventHandler);
+        }
+    }
+
+    /**
+     * Set next button to be visible or not
+     * 
+     * @param isVisible boolean if the button visible or not
+     * @param text      button's text
+     */
+    public void setIsVisibleNextButton(boolean isVisible, String text) {
+        if (isVisible) {
+            nextButton.setText(text);
+        }
+        nextButton.setVisible(isVisible);
+    }
+
+    /**
+     * Set next button handler
+     * 
+     * @param handler handler when next button clicked
+     */
+    public void setNextButtonHandler(EventHandler<ActionEvent> handler) {
+        nextButton.setOnAction(handler);
+    }
+
+    /**
+     * Add card on throw place
+     * 
+     * @param card card will be throw
+     */
+    public void addThrowPlaceCard(CardView card) {
+        throwPlace.getChildren().add(card);
     }
 }

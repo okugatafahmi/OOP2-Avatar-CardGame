@@ -32,7 +32,7 @@ public class GameState {
         } else if (phase.equals(Phase.BATTLE)) {
             phase = Phase.END;
         } else { // Phase.END
-            phase = Phase.MAIN;
+            phase = Phase.DRAW;
             turn = (turn + 1) % 2;
         }
     }
@@ -53,6 +53,7 @@ public class GameState {
 
     /**
      * Return true if game state equal with phase and turn
+     * 
      * @param phase
      * @param turn
      * @return
@@ -60,6 +61,7 @@ public class GameState {
     public boolean equals(Phase phase, int turn) {
         return this.phase == phase && this.turn == turn;
     }
+
     @Override
     public String toString() {
         return "Phase: " + phase.toString() + "\n" + "Player: " + (turn + 1);

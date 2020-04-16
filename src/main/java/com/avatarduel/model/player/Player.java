@@ -3,14 +3,15 @@ package com.avatarduel.model.player;
 import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
-import java.util.EmptyStackException;
 import java.util.Stack;
 
-import com.avatarduel.exceptions.PowerElementNotEnough;
 import com.avatarduel.model.card.Card;
 import com.avatarduel.model.card.Character;
 import com.avatarduel.model.card.Skill;
+import com.avatarduel.model.field.CardInFieldExist;
+import com.avatarduel.model.field.ColumnField;
 import com.avatarduel.model.card.Element;
+import com.avatarduel.model.card.Land;
 
 /**
  * Class yang bertanggung jawab dengan suatu karakter Player
@@ -22,9 +23,9 @@ public class Player {
     private LinkedList<Card> inHand;
     private HashMap<Element, Integer> powerTotal;
     private HashMap<Element, Integer> powerCanUse;
-    private Character[] charactersField;
-    private Skill[] skillField;
+    private ColumnField[] columnField;
     private int totalDeckCard;
+    private boolean isUsedLand;
 
     public Player(String name, int totalDeckCard) {
         this.health = 80;
@@ -32,9 +33,18 @@ public class Player {
         this.inHand = new LinkedList<>();
         this.powerTotal = new HashMap<>();
         this.powerCanUse = new HashMap<>();
-        this.charactersField = new Character[8];
-        this.skillField = new Skill[8];
+        this.columnField = new ColumnField[8];
         this.totalDeckCard = totalDeckCard;
+        this.isUsedLand = false;
+
+        for (Element element : Element.values()) {
+            powerTotal.put(element, 0);
+            powerCanUse.put(element, 0);
+        }
+
+        for (int i = 0; i < 8; ++i) {
+            this.columnField[i] = new ColumnField();
+        }
     }
 
     public void setDeck(Stack<Card> deck) {
@@ -61,9 +71,10 @@ public class Player {
 
     /**
      * Mengembalikan total kartu deck
+     * 
      * @return banyak kartu deck
      */
-    public int getTotalDeckCard(){
+    public int getTotalDeckCard() {
         return this.totalDeckCard;
     }
 
@@ -75,6 +86,27 @@ public class Player {
     public int getTotalCardInDeck() {
         return this.deck.size();
     }
+
+    /**
+     * Get player's power total element
+     * 
+     * @param element element card
+     * @return total power
+     */
+    public int getPowerElementTotal(Element element) {
+        return this.powerTotal.get(element);
+    }
+
+    /**
+     * Get player's power total element can be used
+     * 
+     * @param element element card
+     * @return total power can be used
+     */
+    public int getPowerElementCanUse(Element element) {
+        return this.powerCanUse.get(element);
+    }
+
     /**
      * Menambahkan element power player sesuai dengan element-nya
      * 
@@ -83,13 +115,8 @@ public class Player {
     public void addPower(Element element) {
         Integer freqTotal = this.powerTotal.get(element);
         Integer freqCanUse = this.powerTotal.get(element);
-        if (freqTotal == null) {
-            this.powerTotal.put(element, 1);
-            this.powerCanUse.put(element, 1);
-        } else {
-            this.powerTotal.put(element, freqTotal + 1);
-            this.powerCanUse.put(element, freqCanUse + 1);
-        }
+        this.powerTotal.put(element, freqTotal + 1);
+        this.powerCanUse.put(element, freqCanUse + 1);
     }
 
     /**
@@ -101,27 +128,41 @@ public class Player {
     public void drawCard() {
         Card card = deck.pop();
         inHand.add(card);
+    }
+
+    /**
+     * Reset some attribute when it is player's draw phase
+     */
+    public void setUpDrawPhase() {
         powerCanUse.putAll(powerTotal);
+        isUsedLand = false;
     }
 
     /**
      * Procedure ketika pemain mengeluarkan suatu kartu
      * 
      * @param card Card that be thrown
-     * @throws PowerElementNotEnough if the player doesn't have enough power to throw that card
+     * @throws PowerElementNotEnough  if the player doesn't have enough power to
+     *                                throw that card
      * @throws NoSuchElementException if there isn't card at inHand
+     * @throws HasUsedLand            if player has used land card
      */
-    public void throwCard(Card card) throws PowerElementNotEnough, NoSuchElementException {
+    public void useCard(Card card) throws PowerElementNotEnough, NoSuchElementException, HasUsedLand {
         int index = this.inHand.indexOf(card);
         if (index == -1) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("There is no card " + card.getName());
         } else {
-            if (card.getClass().getName().equals("Land")) {
+            if (card instanceof Land) {
+                if (isUsedLand) {
+                    throw new HasUsedLand();
+                }
                 addPower(card.getElement());
+                removeCardInHand(card);
+                isUsedLand = true;
             } else {
                 Integer freq = powerCanUse.get(card.getElement());
                 if (freq > 0) {
-                    powerCanUse.put(card.getElement(), freq-1);
+                    powerCanUse.put(card.getElement(), freq - 1);
                 } else {
                     throw new PowerElementNotEnough(card.getElement());
                 }
@@ -130,7 +171,20 @@ public class Player {
     }
 
     /**
-     * Mengurangi health player sebanyak damage. Jika health kurang dari 0, health menjadi 0
+     * Remove card in hand
+     * 
+     * @param card card will be remove
+     */
+    public void removeCardInHand(Card card) {
+        // TODO hapus println jika sudah tidak dipakai. Hanya utk debug
+        System.out.println(inHand);
+        this.inHand.remove(card);
+        System.out.println(inHand);
+    }
+
+    /**
+     * Mengurangi health player sebanyak damage. Jika health kurang dari 0, health
+     * menjadi 0
      * 
      * @param damage the amount damage of the player got
      */
@@ -142,20 +196,20 @@ public class Player {
     /**
      * Mengeset kartu character di field
      * 
-     * @param card Skill card to be set
+     * @param card  Character card to be set
      * @param index Index of field to be set
      */
-    public void setCharacterFieldAt(Character card, int index) {
-        this.charactersField[index] = card;
+    public void setCharacterFieldAt(Character card, int index) throws CardInFieldExist {
+        this.columnField[index].setCharacterField(card);
     }
 
     /**
      * * Mengeset kartu field di field
      * 
-     * @param card Character card to be set
+     * @param card  Skill card to be set
      * @param index Index of field to be set
      */
-    public void setSkillFieldAt(Skill card, int index) {
-        this.skillField[index] = card;
+    public void setSkillFieldAt(Skill card, int index) throws CardInFieldExist {
+        this.columnField[index].setSkillField(card);
     }
 }
