@@ -3,11 +3,6 @@ package com.avatarduel.controller;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
-import com.avatarduel.view.CardView;
-import com.avatarduel.view.CharacterFieldView;
-import com.avatarduel.view.PlayerArena;
-import com.avatarduel.view.SkillFieldView;
-
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -24,9 +19,11 @@ import com.avatarduel.gameplay.Subject;
 import com.avatarduel.model.card.Card;
 import com.avatarduel.model.card.Character;
 import com.avatarduel.model.card.Land;
-import com.avatarduel.model.card.Skill;
 import com.avatarduel.model.card.Summonedable;
+import com.avatarduel.model.field.CardInFieldExist;
 import com.avatarduel.model.player.Player;
+import com.avatarduel.view.card.CardView;
+import com.avatarduel.view.player.PlayerArena;
 
 /**
  * Class that responsible as controller of model (player) and view (playerArena)
@@ -43,51 +40,19 @@ public class PlayerController implements Observer {
         this.player = player;
         this.id = id;
         this.playerArena = new PlayerArena(isMirror);
-        this.playerArena.setFieldClickHandler(e -> {
-            // TODO Attach skill ke musuh
-            if (this.gameplay.getUpdate().equals(Phase.MAIN, id)) {
-                int fieldColumn = ((CharacterFieldView) e.getSource()).getColumn();
-                // Menaruh kartu di field
-                if (cardToBeMove != null) {
-                    if (cardToBeMove.getCard() instanceof Character) {
-                        summonCard(cardToBeMove, fieldColumn);
-                    }
-                }
-                else if (e.getButton() == MouseButton.SECONDARY) {
-                    this.player.removeCharacterCardAtField(fieldColumn);
-                    this.playerArena.addThrowPlaceCard(((CharacterFieldView) e.getSource()).getCardView());
-                }
-                else {
-                    this.player.changeStance(fieldColumn);
-                    this.playerArena.changeStance(fieldColumn);
-                }
-            }
-        }, e -> {
-            if (this.gameplay.getUpdate().equals(Phase.MAIN, id)) {
-                int fieldColumn = ((SkillFieldView) e.getSource()).getColumn();
-                // Menaruh kartu di field
-                if (cardToBeMove != null) {
-                    if (cardToBeMove.getCard() instanceof Skill) {
-                        summonCard(cardToBeMove, fieldColumn);
-                    }
-                }
-                else if (e.getButton() == MouseButton.SECONDARY) {
-                    this.player.removeSkillCardAtField(fieldColumn);
-                    this.playerArena.addThrowPlaceCard(((SkillFieldView) e.getSource()).getCardView());
-                }
-                else {
-                    this.player.changeStance(fieldColumn);
-                    this.playerArena.changeStance(fieldColumn);
-                }
-            }
-        });
-
         this.playerArena.setNextButtonHandler(e -> {
             if (this.gameplay.getUpdate().equals(Phase.MAIN, id) || this.gameplay.getUpdate().equals(Phase.BATTLE, id)
                     || this.gameplay.getUpdate().equals(Phase.END, (id + 1) % 2)) {
                 this.gameplay.update();
             }
         });
+    }
+
+    /**
+     * @return the cardToBeMove
+     */
+    public static CardView getCardToBeMove() {
+        return cardToBeMove;
     }
 
     /**
@@ -181,6 +146,16 @@ public class PlayerController implements Observer {
     }
 
     /**
+     * Change stance of character field
+     * 
+     * @param fieldColumn field's column
+     */
+    public void changeStance(int fieldColumn) {
+        this.player.changeStance(fieldColumn);
+        this.playerArena.changeStance(fieldColumn);
+    }
+
+    /**
      * Card on click handler when card in hand
      * 
      * @param e mouse event
@@ -208,7 +183,8 @@ public class PlayerController implements Observer {
                             try {
                                 this.player.useCard(cardToBeMove.getCard());
                                 this.playerArena.addThrowPlaceCard(cardToBeMove);
-                                cardToBeMove.removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick); // hapus click handler nya
+                                // hapus click handler nya
+                                cardToBeMove.removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick);
                             } catch (Exception err) {
                                 new Alert(AlertType.ERROR, err.getMessage(), ButtonType.OK).showAndWait();
                             }
@@ -225,24 +201,55 @@ public class PlayerController implements Observer {
         }
     }
 
-    private void summonCard(CardView cardView, int fieldColumn) {
-        Card card = cardView.getCard();
+    public void setFieldClickHandler(EventHandler<MouseEvent> characterFieldEventHandler,
+            EventHandler<MouseEvent> skillFieldEventHandler) {
+        this.playerArena.setFieldClickHandler(characterFieldEventHandler, skillFieldEventHandler);
+    }
+
+    public Summonedable getCardOnField(Summonedable.Type type, int column) {
+        if (type == Summonedable.Type.CHARACTER) {
+            return this.player.getCharacterCardAtField(column);
+        } else if (type == Summonedable.Type.SKILL) {
+            return this.player.getSkillCardAtField(column);
+        } else {
+            return null;
+        }
+    }
+
+    public void removeCardAtField(Summonedable.Type type, int column) {
+        if (type == Summonedable.Type.CHARACTER) {
+            if (this.player.removeCharacterCardAtField(column) != null) {
+                this.playerArena.removeCardAtField(type, column);
+            }
+        } else if (type == Summonedable.Type.SKILL) {
+            this.player.removeSkillCardAtField(column);
+        }
+    }
+
+    public void summonCharacterCard(CardView cardView, int fieldColumn) {
+        if (cardView == null)
+            return;
+        if (!(cardView.getCard() instanceof Character))
+            return;
+        Character card = (Character) cardView.getCard();
+        int index = -1;
         // kalau card to be move di in hand
         try {
             if (!this.player.isCardInHand(card)) {
                 throw new NoSuchElementException("There is no card " + card.getName());
             }
-            this.player.setCardAtField((Summonedable) card, fieldColumn);
-            this.player.useCard(card);
+            index = this.player.useCard(card);
+            this.player.setCharacterCardAtField(card, fieldColumn);
             // TODO Hapus println
             System.out.println(this.player);
-            this.playerArena.setCardAtField(cardToBeMove, fieldColumn);
-            cardToBeMove.removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick);
-        }
-        catch (Exception err) {
+            this.playerArena.setCharacterCardAtField(cardView, fieldColumn);
+            cardView.removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick);
+        } catch (CardInFieldExist err) {
+            this.player.insertCardInHand(index, card);
             new Alert(AlertType.ERROR, err.getMessage(), ButtonType.OK).showAndWait();
-        }
-        finally {
+        } catch (Exception err) {
+            new Alert(AlertType.ERROR, err.getMessage(), ButtonType.OK).showAndWait();
+        } finally {
             cardToBeMove.setBorder(Color.BLACK);
             cardToBeMove = null;
         }

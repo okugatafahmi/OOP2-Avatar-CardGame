@@ -1,5 +1,7 @@
 
-package com.avatarduel.view;
+package com.avatarduel.view.field;
+
+import com.avatarduel.view.card.CardView;
 
 import javafx.geometry.Pos;
 import javafx.scene.layout.Border;

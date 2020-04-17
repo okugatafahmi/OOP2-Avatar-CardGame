@@ -1,10 +1,15 @@
-package com.avatarduel.view;
+package com.avatarduel.view.player;
 
 import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
 import com.avatarduel.model.card.Card;
+import com.avatarduel.model.card.Summonedable.Type;
+import static com.avatarduel.model.player.Player.N_COLUMN;
+import com.avatarduel.view.card.CardView;
+import com.avatarduel.view.field.CharacterFieldView;
+import com.avatarduel.view.field.SkillFieldView;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -19,6 +24,7 @@ import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -27,7 +33,8 @@ import javafx.scene.text.Text;
  * Class yang bertanggung jawab sebagai 1 arena player
  */
 public class PlayerArena extends GridPane {
-    private ColumnFieldView[] columnFieldViews;
+    private CharacterFieldView[] characterFieldViews;
+    private SkillFieldView[] skillFieldViews;
     private LandStatus landStatus;
     private CardInHand cardInHand;
     private StackPane deck;
@@ -42,13 +49,16 @@ public class PlayerArena extends GridPane {
      * @param isMirror boolean whether the arena is mirrorred (on above)
      */
     public PlayerArena(boolean isMirror) {
-        columnFieldViews = new ColumnFieldView[8];
+        characterFieldViews = new CharacterFieldView[8];
+        skillFieldViews = new SkillFieldView[8];
         inHandFaceUp = false;
 
         GridPane arena = new GridPane();
-        for (int i = 0; i < columnFieldViews.length; i++) {
-            columnFieldViews[i] = new ColumnFieldView(i, isMirror);
-            arena.addColumn(i, columnFieldViews[i]);
+        for (int i = 0; i < N_COLUMN; i++) {
+            characterFieldViews[i] = new CharacterFieldView(i);
+            skillFieldViews[i] = new SkillFieldView(i);
+            arena.add(characterFieldViews[i], i, ((isMirror) ? 1 : 0));
+            arena.add(skillFieldViews[i], i, ((isMirror) ? 0 : 1));
         }
         arena.setVgap(10);
         arena.setHgap(10);
@@ -103,7 +113,16 @@ public class PlayerArena extends GridPane {
         this.add(arena, 0, rowInHand);
         this.add(container, 1, 0, 1, 2);
         this.setHgap(20);
-        this.setAlignment(Pos.CENTER);
+        this.setVgap(10);
+        if (isMirror) {
+            this.getRowConstraints().addAll(new RowConstraints(100), new RowConstraints(200));
+            this.setAlignment(Pos.BOTTOM_CENTER);
+            this.setPadding(new Insets(0, 3, 15, 3));
+        } else {
+            this.getRowConstraints().addAll(new RowConstraints(200), new RowConstraints(100));
+            this.setAlignment(Pos.TOP_CENTER);
+            this.setPadding(new Insets(15, 3, 0, 3));
+        }
     }
 
     /**
@@ -157,16 +176,46 @@ public class PlayerArena extends GridPane {
 
     /**
      * Set card at field
+     *
+     * @param cardView card view to set
+     * @param column   column of field
+     */
+    public void setCharacterCardAtField(CardView cardView, int column) {
+        characterFieldViews[column].setCardView(cardView);
+    }
+
+    /**
+     * Set skill card at field
      * 
      * @param cardView card view to set
      * @param column   column of field
      */
-    public void setCardAtField(CardView cardView, int column) {
-        columnFieldViews[column].setCardView(cardView);
+    public void setSkillCardAtField(CardView cardView, int column) {
+        skillFieldViews[column].setCardView(cardView);
+    }
+
+    /**
+     * Remove card at field
+     * 
+     * @param type   field type
+     * @param column column of field
+     */
+    public void removeCardAtField(Type type, int column) {
+        if (type == null)
+            return;
+        CardView cardView;
+        if (type == Type.CHARACTER) {
+            cardView = characterFieldViews[column].getCardView();
+        } else {
+            cardView = skillFieldViews[column].getCardView();
+        }
+        if (cardView != null) {
+            addThrowPlaceCard(cardView);
+        }
     }
 
     public void changeStance(int column) {
-        columnFieldViews[column].changeStance();
+        characterFieldViews[column].changeStance();
     }
 
     /**
@@ -209,8 +258,11 @@ public class PlayerArena extends GridPane {
      */
     public void setFieldClickHandler(EventHandler<MouseEvent> characterFieldEventHandler,
             EventHandler<MouseEvent> skillFieldEventHandler) {
-        for (ColumnFieldView columnFieldView : columnFieldViews) {
-            columnFieldView.setClickHandler(characterFieldEventHandler, skillFieldEventHandler);
+        for (CharacterFieldView characterFieldView : characterFieldViews) {
+            characterFieldView.addEventHandler(MouseEvent.MOUSE_CLICKED, characterFieldEventHandler);
+        }
+        for (SkillFieldView skillFieldView : skillFieldViews) {
+            skillFieldView.addEventHandler(MouseEvent.MOUSE_CLICKED, skillFieldEventHandler);
         }
     }
 

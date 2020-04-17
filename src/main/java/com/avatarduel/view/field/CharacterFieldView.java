@@ -1,7 +1,8 @@
 
-package com.avatarduel.view;
+package com.avatarduel.view.field;
 
 import com.avatarduel.model.field.Stance;
+import com.avatarduel.view.card.CardView;
 
 import javafx.scene.transform.Rotate;
 

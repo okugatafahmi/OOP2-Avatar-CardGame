@@ -12,19 +12,23 @@ import java.util.stream.Collectors;
 import com.avatarduel.model.card.Element;
 import com.avatarduel.model.card.Land;
 import com.avatarduel.model.card.Skill;
+import com.avatarduel.model.card.Summonedable;
+import com.avatarduel.model.card.Summonedable.Type;
 import com.avatarduel.controller.PlayerController;
 import com.avatarduel.model.card.Card;
 import com.avatarduel.model.card.CardFactory;
 import com.avatarduel.model.card.Character;
 import com.avatarduel.util.CSVReader;
+import com.avatarduel.view.field.CharacterFieldView;
 
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 
 /**
  * Kelas Gameplay yang bertanggung jawab dalam permainan
  */
-public class Gameplay implements Subject {
+public class Gameplay implements Subject, GlobalField {
     private static final String CARD_CSV_FOLDER_PATH = "../card/data/";
     private LinkedList<Card> listCard;
     private PlayerController[] playerControllers;
@@ -107,10 +111,32 @@ public class Gameplay implements Subject {
             playerControllers[i].setSubject(this);
             playerControllers[i].setDeck(this.setDeck(playerControllers[i].getTotalDeckCard()));
             playerControllers[i].setDeckCardHover(hoverSpace);
+            // TODO bikin click event
+            final int id = i;
+            playerControllers[i].setFieldClickHandler(e -> {
+                if (this.gameState.equals(Phase.MAIN, id)) {
+                    int fieldColumn = ((CharacterFieldView) e.getSource()).getColumn();
+                    // Menaruh kartu di field
+                    if (PlayerController.getCardToBeMove() != null) {
+                        if (PlayerController.getCardToBeMove().getCard() instanceof Character) {
+                            playerControllers[id].summonCharacterCard(PlayerController.getCardToBeMove(), fieldColumn);
+                        }
+                    }
+                    else if (e.getButton() == MouseButton.SECONDARY) {
+                        playerControllers[id].removeCardAtField(Type.CHARACTER, fieldColumn);
+                    }
+                    else {
+                        playerControllers[id].changeStance(fieldColumn);
+                    }
+                }
+            }, e -> {
+
+            });
             playerControllers[i].firstDrawCard();
         }
-        this.gameState = new GameState();
+        this.gameState = new GameState(Phase.END, 1);
         notifyObserver();
+        this.status.setText("Avatar Duel!!");
     }
 
     @Override
@@ -125,10 +151,20 @@ public class Gameplay implements Subject {
     }
 
     @Override
-    public void notifyObserver(){
+    public void notifyObserver() {
         this.status.setText(this.gameState.toString());
         for (Observer observer : this.playerControllers) {
             observer.update();
         }
+    }
+
+    @Override
+    public Summonedable getCardOnField(int player, Type type, int column) {
+        return playerControllers[player].getCardOnField(type, column);
+    }
+
+    @Override
+    public void removeCardOnField(int player, Type type, int column) {
+        playerControllers[player].removeCardAtField(type, column);
     }
 }

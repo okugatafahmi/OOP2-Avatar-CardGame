@@ -21,5 +21,4 @@ dependencies {
 
 task avatarDocs(type: Javadoc) {
   source = sourceSets.main.allJava
-  destinationDir = file("docs")
 }

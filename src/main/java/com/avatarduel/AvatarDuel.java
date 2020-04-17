@@ -17,16 +17,17 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import com.avatarduel.model.player.Player;
+
 import com.avatarduel.controller.PlayerController;
 import com.avatarduel.gameplay.Gameplay;
 
 public class AvatarDuel extends Application {
   private static final int WIDTH = 1280;
   private static final int HEIGHT = 720;
-  private static final String[] playerNames = { "Qihla", "Hojun" };
-  private static final int[] playerTotalDeck = { 40, 40 };
-  public static final StackPane hoverSpace = new StackPane();
-  public static final Text status = new Text();
+  private final String[] playerNames = { "Qihla", "Hojun" };
+  private final int[] playerTotalDeck = { 40, 40 };
+  public final StackPane hoverSpace = new StackPane();
+  public final Text status = new Text();
 
   @Override
   public void start(Stage stage) {
