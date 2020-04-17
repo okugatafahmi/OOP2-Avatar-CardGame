@@ -1,5 +1,4 @@
 id	name	element	description	imagepath	power	attack	defense
-17	Katara	WATER	Waterbending master from Southern Water Tribe, sister of Sokka, and friend of Aang.	/com/avatarduel/card/image/character/Katara.png	5	13	7
 18	Sokka	WATER	Water Tribe warrior of the Southern Water Tribe.	/com/avatarduel/card/image/character/Sokka.png	3	6	10
 19	Yue	WATER	Princess of the Northern Water Tribe.	/com/avatarduel/card/image/character/Yue.png	2	4	9
 20	Hakoda	WATER	Father of Sokka and Katara, leading the Invasion of the Fire Nation.	/com/avatarduel/card/image/character/Hakoda.png	4	7	11
@@ -50,3 +49,4 @@ id	name	element	description	imagepath	power	attack	defense
 65	Lion Turtle	ENERGY	The lion turtle revealed to Aang the power to bend the energy within oneself, which the Avatar later used to remove Fire Lord Ozai's bending abilities.	/com/avatarduel/card/image/character/Lion Turtle.png	7	9	9
 66	Korra	ENERGY	A 17 years old girl from the Southern Water Tribe and the successor of Avatar Aang from The Last Airbender.	/com/avatarduel/card/image/character/Korra.png	6	13	8
 67	Aang	ENERGY	Avatar Roku's successor. Also learned how to energybending.	/com/avatarduel/card/image/character/Aang.png	5	14	6
+68	Katara	WATER	Waterbending master from Southern Water Tribe, sister of Sokka, and friend of Aang.	/com/avatarduel/card/image/character/Katara.png	5	13	7
