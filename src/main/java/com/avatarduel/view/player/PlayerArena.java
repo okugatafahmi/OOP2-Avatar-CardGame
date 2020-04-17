@@ -216,6 +216,11 @@ public class PlayerArena extends GridPane {
         }
     }
 
+    /**
+     * Change stance of character field with specified column
+     * 
+     * @param column character field's column
+     */
     public void changeStance(int column) {
         characterFieldViews[column].changeStance();
     }

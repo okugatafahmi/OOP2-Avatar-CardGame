@@ -36,6 +36,13 @@ public abstract class Field {
         this.globalField = globalField;
     }
 
+    /**
+     * @return the fieldPos
+     */
+    public FieldPos getFieldPos() {
+        return fieldPos;
+    }
+
     public enum Type {
         CHARACTER, SKILL
     }

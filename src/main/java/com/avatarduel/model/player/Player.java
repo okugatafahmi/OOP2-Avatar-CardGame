@@ -23,7 +23,7 @@ import com.avatarduel.model.card.Skill;
  */
 public class Player {
     private int id;
-    private int health;
+    private int hp;
     private String name;
     private Stack<Card> deck;
     private LinkedList<Card> inHand;
@@ -39,16 +39,21 @@ public class Player {
     private static final int TOTAL_SKILL_IN_FIELD = 6;
     public static final int N_COLUMN = 8;
 
-    public Player(int id, String name, int totalDeckCard) {
+    /**
+     * Constructor. The name player will be set "XXXX" and total card deck is 40
+     * 
+     * @param id
+     */
+    public Player(int id) {
         this.id = id;
-        this.health = 80;
-        this.name = name;
+        this.hp = 80;
+        this.name = "XXX";
         this.inHand = new LinkedList<>();
         this.powerTotal = new HashMap<>();
         this.powerCanUse = new HashMap<>();
         this.characterFields = new CharacterField[N_COLUMN];
         this.skillFields = new SkillField[N_COLUMN];
-        this.totalDeckCard = totalDeckCard;
+        this.totalDeckCard = 40;
         this.isUsedLand = false;
         this.totalCharacterInField = 0;
         this.totalSkillInField = 0;
@@ -63,6 +68,20 @@ public class Player {
             this.characterFields[i] = new CharacterField(id, i);
             this.skillFields[i] = new SkillField(id, i);
         }
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @param totalDeckCard the totalDeckCard to set
+     */
+    public void setTotalDeckCard(int totalDeckCard) {
+        this.totalDeckCard = totalDeckCard;
     }
 
     /**
@@ -82,10 +101,10 @@ public class Player {
     }
 
     /**
-     * @return the health
+     * @return the hp
      */
     public int getHealth() {
-        return health;
+        return hp;
     }
 
     /**
@@ -132,6 +151,13 @@ public class Player {
     }
 
     /**
+     * @return the totalCharacterInField
+     */
+    public int getTotalCharacterInField() {
+        return totalCharacterInField;
+    }
+
+    /**
      * Menambahkan element power player sesuai dengan element-nya
      * 
      * @param element element power to be added
@@ -167,6 +193,9 @@ public class Player {
      */
     public void setupDrawPhase() {
         powerCanUse.putAll(powerTotal);
+        for (CharacterField characterField : characterFields) {
+            characterField.setHasAttacked(false);
+        }
         isUsedLand = false;
     }
 
@@ -226,14 +255,14 @@ public class Player {
     }
 
     /**
-     * Mengurangi health player sebanyak damage. Jika health kurang dari 0, health
-     * menjadi 0
+     * Reduce player's hp based the amount of damage. If
+     * {@code damage > hp}, hp will be 0
      * 
      * @param damage the amount damage of the player got
      */
     public void getDamage(int damage) {
-        int res = this.health - damage;
-        this.health = ((res > 0) ? res : 0);
+        int res = this.hp - damage;
+        this.hp = ((res > 0) ? res : 0);
     }
 
     /**
@@ -248,6 +277,16 @@ public class Player {
         for (SkillField skillField : skillFields) {
             skillField.setGlobalField(globalField);
         }
+    }
+
+    /**
+     * Get character field at spesifed column
+     * 
+     * @param column character field's column
+     * @return the field
+     */
+    public CharacterField getCharacterField(int column) {
+        return this.characterFields[column];
     }
 
     /**
@@ -364,10 +403,21 @@ public class Player {
         this.characterFields[column].removeSkill(skillPos);
     }
 
+    /**
+     * Change character field's stance at spesified column
+     * 
+     * @param column field's column
+     */
     public void changeStance(int column) {
         this.characterFields[column].changeStance();
     }
 
+    /**
+     * Attach skill to spesfied character field's column
+     * 
+     * @param skillPos skill position
+     * @param column   character field's column
+     */
     public void attachSkill(FieldPos skillPos, int column) {
         this.characterFields[column].attachSkill(skillPos);
     }
@@ -380,7 +430,7 @@ public class Player {
                     + skillFields[i].toString() + "\n";
         }
         res += inHand + "\n" + powerCanUse + "/ " + powerTotal + "\n" + totalCharacterInField + " " + totalSkillInField
-                + "\n" + health;
+                + "\n" + name + " " + hp;
         return res;
     }
 }

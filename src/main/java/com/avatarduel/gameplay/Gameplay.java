@@ -13,7 +13,9 @@ import com.avatarduel.model.card.Element;
 import com.avatarduel.model.card.Land;
 import com.avatarduel.model.card.Skill;
 import com.avatarduel.model.card.Summonedable;
+import com.avatarduel.model.field.CharacterField;
 import com.avatarduel.model.field.FieldPos;
+import com.avatarduel.model.field.Stance;
 import com.avatarduel.model.field.Field.Type;
 import com.avatarduel.controller.PlayerController;
 import com.avatarduel.model.card.Card;
@@ -23,8 +25,17 @@ import com.avatarduel.util.CSVReader;
 import com.avatarduel.view.field.CharacterFieldView;
 import com.avatarduel.view.field.SkillFieldView;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 /**
@@ -37,11 +48,32 @@ public class Gameplay implements Subject, GlobalField {
     private GameState gameState;
     private StackPane hoverSpace;
     private Text status;
+    private static CharacterFieldView fieldViewSrc;
 
-    public Gameplay(PlayerController[] playerControllers, StackPane hoverSpace, Text status) {
+    public Gameplay(PlayerController[] playerControllers) {
         this.playerControllers = playerControllers;
-        this.hoverSpace = hoverSpace;
-        this.status = status;
+        this.hoverSpace = new StackPane();
+        this.hoverSpace.setBorder(new Border(
+                new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        this.hoverSpace.setMinSize(250, 360);
+        this.hoverSpace.setMaxSize(250, 360);
+
+        this.status = new Text();
+        this.status.setText("Loading...");
+    }
+
+    /**
+     * @return the status
+     */
+    public Text getStatus() {
+        return status;
+    }
+
+    /**
+     * @return the hoverSpace
+     */
+    public StackPane getHoverSpace() {
+        return hoverSpace;
     }
 
     /**
@@ -123,31 +155,70 @@ public class Gameplay implements Subject, GlobalField {
                     if (PlayerController.getCardToBeMove() != null) {
                         if (this.gameState.getTurn() == id) {
                             if (PlayerController.getCardToBeMove().getCard() instanceof Character) {
-                                playerControllers[id].summonCharacterCard(PlayerController.getCardToBeMove(), fieldColumn);
-                            }
-                            else if (PlayerController.getCardToBeMove().getCard() instanceof Skill) {
+                                playerControllers[id].summonCharacterCard(PlayerController.getCardToBeMove(),
+                                        fieldColumn);
+                            } else if (PlayerController.getCardToBeMove().getCard() instanceof Skill) {
                                 // Attach skill ke character sendiri)
-                                playerControllers[id].summonSkillCard(PlayerController.getCardToBeMove(), new FieldPos(id, fieldColumn));
+                                playerControllers[id].summonSkillCard(PlayerController.getCardToBeMove(),
+                                        new FieldPos(id, fieldColumn));
                             }
-                        }
-                        else {
+                        } else {
                             if (PlayerController.getCardToBeMove().getCard() instanceof Skill) {
                                 // Attach skill (ini skill ke character musuh)
-                                playerControllers[(id+1)%2].summonSkillCard(PlayerController.getCardToBeMove(), new FieldPos(id, fieldColumn));
+                                playerControllers[(id + 1) % 2].summonSkillCard(PlayerController.getCardToBeMove(),
+                                        new FieldPos(id, fieldColumn));
                             }
                         }
-                    }
-                    else if (this.gameState.getTurn() == id) {
+                    } else if (this.gameState.getTurn() == id) {
                         if (e.getButton() == MouseButton.SECONDARY) {
                             playerControllers[id].removeCardAtField(Type.CHARACTER, fieldColumn);
-                        }
-                        else {
+                        } else {
                             playerControllers[id].changeStance(fieldColumn);
                         }
                     }
-                }
-                else if (this.gameState.getPhase() == Phase.BATTLE) {
+                } else if (this.gameState.getPhase() == Phase.BATTLE) {
                     // TODO Battle Phase
+                    FieldPos fieldPos = new FieldPos(id, ((CharacterFieldView) e.getSource()).getColumn());
+                    // kalau belum ada kartu asal
+                    if (fieldViewSrc == null) {
+                        if (this.gameState.getTurn() == id) {
+                            CharacterField field = this.playerControllers[id].getCharacterField(fieldPos.getColumn());
+                            if (field.getCard() != null && field.getCurrentStance() == Stance.ATTACK) {
+                                if (field.getHasAttacked()) {
+                                    new Alert(AlertType.ERROR, "Selected character has attacked!", ButtonType.OK).showAndWait();
+                                } else {
+                                    fieldViewSrc = ((CharacterFieldView) e.getSource());
+                                    fieldViewSrc.setBorder(Color.RED);
+                                }
+                            }
+                        }
+                    }
+                    // kalau pencet field sendiri
+                    else if (this.gameState.getTurn() == id) {
+                        // cancel menyerang
+                        if (fieldViewSrc == ((CharacterFieldView) e.getSource())) {
+                            fieldViewSrc.setBorder(Color.BLACK);
+                            fieldViewSrc = null;
+                        }
+                        // ganti kartu
+                        else {
+                            CharacterField field = this.playerControllers[id].getCharacterField(fieldPos.getColumn());
+                            if (field.getCard() != null && field.getCurrentStance() == Stance.ATTACK) {
+                                if (field.getHasAttacked()) {
+                                    new Alert(AlertType.ERROR, "Selected character has attacked!", ButtonType.OK).showAndWait();
+                                } else {
+                                    fieldViewSrc.setBorder(Color.BLACK);
+                                    fieldViewSrc = ((CharacterFieldView) e.getSource());
+                                    fieldViewSrc.setBorder(Color.RED);
+                                }
+                            }
+                        }
+                    }
+                    // kalau pencet field musuh
+                    else {
+                        battle(fieldViewSrc, ((CharacterFieldView) e.getSource()));
+                    }
+
                 }
             }, e -> {
                 if (this.gameState.equals(Phase.MAIN, id)) {
@@ -162,6 +233,48 @@ public class Gameplay implements Subject, GlobalField {
         }
         this.gameState = new GameState();
         notifyObserver();
+    }
+
+    public void battle(CharacterFieldView cFieldViewSrc, CharacterFieldView cFieldViewDest) {
+        int idSrc = gameState.getTurn();
+        int idDest = (gameState.getTurn() + 1) % 2;
+        CharacterField fieldSrc = this.playerControllers[idSrc]
+                .getCharacterField(cFieldViewSrc.getColumn());
+        CharacterField fieldDest = this.playerControllers[idDest]
+                .getCharacterField(cFieldViewDest.getColumn());
+        // kondisi yang mungkin tidak terjadi
+        if (fieldSrc.getCard() == null || fieldSrc.getHasAttacked() || fieldSrc.getCurrentStance() != Stance.ATTACK) {
+            return;
+        }
+
+        boolean canAttack = false;
+        if (fieldDest.getCard() == null) {
+            if (this.playerControllers[idDest].getTotalCharacterInField() == 0) {
+                this.playerControllers[idDest].getDamage(fieldSrc.getTotalAttack());
+                canAttack = true;
+            }
+            else {
+                new Alert(AlertType.ERROR, "Can't attack enemy directly because enemy still has card(s)", ButtonType.OK).showAndWait();
+            }
+        } else {
+            int srcAttack = fieldSrc.getTotalAttack();
+            int destStancValue = fieldDest.getStanceValue();
+            if (srcAttack > destStancValue) {
+                if (fieldDest.getCurrentStance() == Stance.ATTACK) {
+                    this.playerControllers[idDest].getDamage(srcAttack-destStancValue);
+                }
+                this.playerControllers[idDest].removeCardAtField(Type.CHARACTER, fieldDest.getFieldPos().getColumn());
+                canAttack = true;
+            }
+        }
+        if (canAttack) {
+            fieldSrc.setHasAttacked(true);
+            // TODO hapus. hanya utk debug
+            // System.out.println(this.playerControllers[idSrc].player);
+            // System.out.println(this.playerControllers[idDest].player);
+            fieldViewSrc.setBorder(Color.BLACK);
+            fieldViewSrc = null;
+        }
     }
 
     @Override

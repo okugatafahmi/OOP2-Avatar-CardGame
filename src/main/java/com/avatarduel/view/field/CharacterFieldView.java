@@ -4,6 +4,12 @@ package com.avatarduel.view.field;
 import com.avatarduel.model.field.Stance;
 import com.avatarduel.view.card.CardView;
 
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 
 
@@ -39,5 +45,9 @@ public class CharacterFieldView extends SkillFieldView {
                 cardView.getTransforms().add(new Rotate(90, cardView.getMinWidth()/2, cardView.getHeight()/2));
             }
         }
+    }
+
+    public void setBorder(Color color) {
+        this.setBorder(new Border(new BorderStroke(color, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
     }
 }

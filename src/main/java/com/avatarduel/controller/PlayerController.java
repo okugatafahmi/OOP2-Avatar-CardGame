@@ -21,6 +21,7 @@ import com.avatarduel.model.card.Character;
 import com.avatarduel.model.card.Land;
 import com.avatarduel.model.card.Skill;
 import com.avatarduel.model.card.Summonedable;
+import com.avatarduel.model.field.CharacterField;
 import com.avatarduel.model.field.FieldPos;
 import com.avatarduel.model.field.PlaceCardException;
 import com.avatarduel.model.field.Field.Type;
@@ -143,8 +144,31 @@ public class PlayerController implements Observer {
         this.playerArena.setDeckCardHover(hoverSpace);
     }
 
+    /**
+     * Get player total deck card when start game
+     * 
+     * @return total deck card when start game
+     */
     public int getTotalDeckCard() {
         return this.player.getTotalDeckCard();
+    }
+
+    /**
+     * Get total character in field
+     * @return total character in field
+     */
+    public int getTotalCharacterInField() {
+        return this.player.getTotalCharacterInField();
+    }
+
+    /**
+     * Reduce player's hp based the amount of damage. If
+     * {@code damage > hp}, hp will be 0
+     * 
+     * @param damage the amount damage of the player got
+     */
+    public void getDamage(int damage) {
+        this.player.getDamage(damage);
     }
 
     /**
@@ -220,9 +244,25 @@ public class PlayerController implements Observer {
         }
     }
 
+    /**
+     * Set field click handler
+     * 
+     * @param characterFieldEventHandler handler for character field
+     * @param skillFieldEventHandler     handler for skill field
+     */
     public void setFieldClickHandler(EventHandler<MouseEvent> characterFieldEventHandler,
             EventHandler<MouseEvent> skillFieldEventHandler) {
         this.playerArena.setFieldClickHandler(characterFieldEventHandler, skillFieldEventHandler);
+    }
+
+    /**
+     * Get character field at spesifed column
+     * 
+     * @param column character field's column
+     * @return the field
+     */
+    public CharacterField getCharacterField(int column) {
+        return this.player.getCharacterField(column);
     }
 
     public Summonedable getCardAtField(Type type, int column) {

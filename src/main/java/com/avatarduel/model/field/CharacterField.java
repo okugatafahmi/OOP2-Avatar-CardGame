@@ -3,6 +3,7 @@ package com.avatarduel.model.field;
 import java.util.LinkedList;
 
 import com.avatarduel.model.card.Character;
+import com.avatarduel.model.card.Skill;
 import com.avatarduel.model.card.Summonedable;
 
 /**
@@ -11,11 +12,28 @@ import com.avatarduel.model.card.Summonedable;
 public class CharacterField extends Field {
     private Stance currentStance;
     private LinkedList<FieldPos> skillsPos;
+    private boolean hasAttacked;
 
     public CharacterField(int player, int column) {
         super(player, column);
         this.currentStance = Stance.ATTACK;
         this.skillsPos = new LinkedList<>();
+    }
+
+    /**
+     * @param hasAttacked the hasAttacked to set
+     */
+    public void setHasAttacked(boolean hasAttacked) {
+        this.hasAttacked = hasAttacked;
+    }
+
+    /**
+     * Return true if this field has attacked
+     * 
+     * @return {@code true} if this field has attacked
+     */
+    public boolean getHasAttacked() {
+        return hasAttacked;
     }
 
     /**
@@ -68,9 +86,17 @@ public class CharacterField extends Field {
      */
     public int getStanceValue() {
         if (this.currentStance == Stance.ATTACK) {
-            return ((Character) this.card).getAttack();
+            int res = ((Character) this.card).getAttack();
+            for (FieldPos skillPos : skillsPos) {
+                res += ((Skill) this.globalField.getCardAtField(Type.SKILL, skillPos)).getAttack();
+            }
+            return res;
         } else {
-            return ((Character) this.card).getDefense();
+            int res = ((Character) this.card).getDefense();
+            for (FieldPos skillPos : skillsPos) {
+                res += ((Skill) this.globalField.getCardAtField(Type.SKILL, skillPos)).getDefense();
+            }
+            return res;
         }
     }
 
@@ -92,9 +118,22 @@ public class CharacterField extends Field {
         skillsPos.remove(skillPos);
     }
 
+    /**
+     * Get the total attack value of this field
+     * 
+     * @return total attack value
+     */
+    public int getTotalAttack() {
+        int res = ((Character) this.card).getAttack();
+        for (FieldPos skillPos : skillsPos) {
+            res += ((Skill) this.globalField.getCardAtField(Type.SKILL, skillPos)).getAttack();
+        }
+        return res;
+    }
+
     @Override
     public String toString() {
-        return card + " (" + currentStance + ") " + skillsPos;
+        return card + " (" + currentStance + ", " + hasAttacked + ") " + skillsPos;
     }
 
 }
