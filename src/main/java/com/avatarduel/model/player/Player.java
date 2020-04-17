@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
+import com.avatarduel.gameplay.GlobalField;
 import com.avatarduel.model.card.Card;
 import com.avatarduel.model.card.Character;
 import com.avatarduel.model.card.Summonedable;
 import com.avatarduel.model.field.CardInFieldExist;
-import com.avatarduel.model.field.CardPos;
+import com.avatarduel.model.field.FieldPos;
+import com.avatarduel.model.field.NoneCharacterCard;
 import com.avatarduel.model.field.CharacterField;
 import com.avatarduel.model.field.SkillField;
 import com.avatarduel.model.card.Element;
@@ -20,6 +22,7 @@ import com.avatarduel.model.card.Skill;
  * Class yang bertanggung jawab dengan suatu karakter Player
  */
 public class Player {
+    private int id;
     private int health;
     private String name;
     private Stack<Card> deck;
@@ -36,7 +39,8 @@ public class Player {
     private static final int TOTAL_SKILL_IN_FIELD = 6;
     public static final int N_COLUMN = 8;
 
-    public Player(String name, int totalDeckCard) {
+    public Player(int id, String name, int totalDeckCard) {
+        this.id = id;
         this.health = 80;
         this.name = name;
         this.inHand = new LinkedList<>();
@@ -56,8 +60,8 @@ public class Player {
         }
 
         for (int i = 0; i < N_COLUMN; ++i) {
-            this.characterFields[i] = new CharacterField();
-            this.skillFields[i] = new SkillField();
+            this.characterFields[i] = new CharacterField(id, i);
+            this.skillFields[i] = new SkillField(id, i);
         }
     }
 
@@ -71,30 +75,31 @@ public class Player {
     }
 
     /**
-     * Mengembalikan health player
-     * 
-     * @return health
+     * @return the id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * @return the health
      */
     public int getHealth() {
-        return this.health;
+        return health;
     }
 
     /**
-     * Mengembalikan nama player
-     * 
-     * @return player name
+     * @return the name
      */
     public String getName() {
-        return this.name;
+        return name;
     }
 
     /**
-     * Mengembalikan total kartu deck
-     * 
-     * @return banyak kartu deck
+     * @return the totalDeckCard
      */
     public int getTotalDeckCard() {
-        return this.totalDeckCard;
+        return totalDeckCard;
     }
 
     /**
@@ -160,7 +165,7 @@ public class Player {
     /**
      * Reset some attribute when it is player's draw phase
      */
-    public void setUpDrawPhase() {
+    public void setupDrawPhase() {
         powerCanUse.putAll(powerTotal);
         isUsedLand = false;
     }
@@ -174,11 +179,8 @@ public class Player {
      *                                that card
      * @throws NoSuchElementException if there isn't card at inHand
      * @throws HasUsedLand            if player has used land card
-     * @throws MaximumCardInField     if cards summoned in field have reached
-     *                                maximum number
      */
-    public int useCard(Card card)
-            throws PowerElementNotEnough, NoSuchElementException, HasUsedLand, MaximumCardInField {
+    public int useCard(Card card) throws PowerElementNotEnough, NoSuchElementException, HasUsedLand {
         int index = this.inHand.indexOf(card);
         if (index == -1) {
             throw new NoSuchElementException("There is no card " + card.getName());
@@ -191,21 +193,10 @@ public class Player {
                 isUsedLand = true;
             } else {
                 Integer freq = powerCanUse.get(card.getElement());
-                if (freq == 0) {
+                if (freq < ((Summonedable) card).getPower()) {
                     throw new PowerElementNotEnough(card.getElement());
                 }
-                if (card instanceof Character) {
-                    if (totalCharacterInField == TOTAL_CHARACTER_IN_FIELD) {
-                        throw new MaximumCardInField("Character", TOTAL_CHARACTER_IN_FIELD);
-                    }
-                    ++totalCharacterInField;
-                } else if (card instanceof Skill) {
-                    if (totalSkillInField == TOTAL_SKILL_IN_FIELD) {
-                        throw new MaximumCardInField("Skill", TOTAL_CHARACTER_IN_FIELD);
-                    }
-                    ++totalSkillInField;
-                }
-                powerCanUse.put(card.getElement(), freq - 1);
+                powerCanUse.put(card.getElement(), freq - ((Summonedable) card).getPower());
             }
             removeCardInHand(card);
         }
@@ -246,14 +237,34 @@ public class Player {
     }
 
     /**
+     * Set global field
+     * 
+     * @param globalField global field
+     */
+    public void setGlobalField(GlobalField globalField) {
+        for (CharacterField characterField : characterFields) {
+            characterField.setGlobalField(globalField);
+        }
+        for (SkillField skillField : skillFields) {
+            skillField.setGlobalField(globalField);
+        }
+    }
+
+    /**
      * Set character card on field
      * 
      * @param card   card to set
      * @param column column of field to set
-     * @throws CardInFieldExist if there is card on field
+     * @throws CardInFieldExist   if there is card on field
+     * @throws MaximumCardInField if cards summoned in field have reached maximum
+     *                            number
      */
-    public void setCharacterCardAtField(Character card, int column) throws CardInFieldExist {
+    public void setCharacterCardAtField(Character card, int column) throws CardInFieldExist, MaximumCardInField {
+        if (totalCharacterInField == TOTAL_CHARACTER_IN_FIELD) {
+            throw new MaximumCardInField("Character", TOTAL_CHARACTER_IN_FIELD);
+        }
         this.characterFields[column].setCard(card);
+        ++totalCharacterInField;
     }
 
     /**
@@ -273,19 +284,30 @@ public class Player {
      * @return card in this field. 'null' if there is none card in field
      */
     public Summonedable removeCharacterCardAtField(int column) {
-        return this.characterFields[column].removeCard();
+        Summonedable ret = this.characterFields[column].removeCard();
+        if (ret != null) {
+            --totalCharacterInField;
+        }
+        return ret;
     }
 
     /**
      * * Set skill card on field
      * 
      * @param card     card to set
-     * @param column   column of field to set
      * @param attachTo card position where skill card attach to
      * @return column where the card set
-     * @throws CardInFieldExist if there is card on field
+     * @throws CardInFieldExist   if there is card on field
+     * @throws MaximumCardInField if cards summoned in field have reached maximum
+     *                            number
+     * @throws NoneCharacterCard  if the selected character field card is empty
      */
-    public int setSkillCardAtField(Skill card, int column, CardPos attachTo) throws CardInFieldExist {
+    public int setSkillCardAtField(Skill card, FieldPos attachTo)
+            throws CardInFieldExist, MaximumCardInField, NoneCharacterCard {
+        if (totalSkillInField == TOTAL_SKILL_IN_FIELD) {
+            throw new MaximumCardInField("Skill", TOTAL_CHARACTER_IN_FIELD);
+        }
+        int column = attachTo.getColumn();
         try {
             this.skillFields[column].setCard(card, attachTo);
         } catch (CardInFieldExist e) {
@@ -299,11 +321,12 @@ public class Player {
                 } catch (CardInFieldExist err) {
                     column = (column + 1) % N_COLUMN;
                     if (column == columnOld) {
-                        throw err;
+                        throw new MaximumCardInField("Skill", column);
                     }
                 }
             }
         }
+        ++totalSkillInField;
         return column;
     }
 
@@ -324,11 +347,29 @@ public class Player {
      * @return card in this field. 'null' if there is none card in field
      */
     public Summonedable removeSkillCardAtField(int column) {
-        return this.skillFields[column].removeCard();
+        Summonedable ret = this.skillFields[column].removeCard();
+        if (ret != null) {
+            --this.totalSkillInField;
+        }
+        return ret;
+    }
+
+    /**
+     * Remove character's skill
+     * 
+     * @param skillPos skill pos
+     * @param column   column of character
+     */
+    public void removeSkillOfCharacterAtField(FieldPos skillPos, int column) {
+        this.characterFields[column].removeSkill(skillPos);
     }
 
     public void changeStance(int column) {
         this.characterFields[column].changeStance();
+    }
+
+    public void attachSkill(FieldPos skillPos, int column) {
+        this.characterFields[column].attachSkill(skillPos);
     }
 
     @Override
@@ -338,6 +379,8 @@ public class Player {
             res += "Character " + i + " = " + characterFields[i].toString() + "\n" + "Skill " + i + " = "
                     + skillFields[i].toString() + "\n";
         }
-        return res + inHand;
+        res += inHand + "\n" + powerCanUse + "/ " + powerTotal + "\n" + totalCharacterInField + " " + totalSkillInField
+                + "\n" + health;
+        return res;
     }
 }

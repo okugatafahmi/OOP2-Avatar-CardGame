@@ -1,5 +1,6 @@
 package com.avatarduel.model.field;
 
+import com.avatarduel.gameplay.GlobalField;
 import com.avatarduel.model.card.Summonedable;
 
 /**
@@ -7,6 +8,12 @@ import com.avatarduel.model.card.Summonedable;
  */
 public abstract class Field {
     protected Summonedable card;
+    protected GlobalField globalField;
+    protected FieldPos fieldPos;
+
+    public Field(int player, int column) {
+        this.fieldPos = new FieldPos(player, column);
+    }
 
     /**
      * @return the card
@@ -20,9 +27,16 @@ public abstract class Field {
      * 
      * @return card in this field
      */
-    public Summonedable removeCard() {
-        Summonedable card = this.card;
-        this.card = null;
-        return card;
+    public abstract Summonedable removeCard();
+
+    /**
+     * @param globalField the globalField to set
+     */
+    public void setGlobalField(GlobalField globalField) {
+        this.globalField = globalField;
+    }
+
+    public enum Type {
+        CHARACTER, SKILL
     }
 }

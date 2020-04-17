@@ -3,17 +3,19 @@ package com.avatarduel.model.field;
 import java.util.LinkedList;
 
 import com.avatarduel.model.card.Character;
+import com.avatarduel.model.card.Summonedable;
 
 /**
  * Class that responsible for one character field
  */
 public class CharacterField extends Field {
     private Stance currentStance;
-    private LinkedList<SkillAttached> skills;
+    private LinkedList<FieldPos> skillsPos;
 
-    public CharacterField() {
+    public CharacterField(int player, int column) {
+        super(player, column);
         this.currentStance = Stance.ATTACK;
-        this.skills = new LinkedList<>();
+        this.skillsPos = new LinkedList<>();
     }
 
     /**
@@ -27,6 +29,18 @@ public class CharacterField extends Field {
             throw new CardInFieldExist();
         }
         this.card = card;
+    }
+
+    @Override
+    public Summonedable removeCard() {
+        if (this.card == null) return null;
+        Summonedable card = this.card;
+        this.card = null;
+        for (FieldPos skillPos : skillsPos) {
+            globalField.removeCardAtField(Type.SKILL, skillPos);
+        }
+        skillsPos.clear();
+        return card;
     }
 
     /**
@@ -61,17 +75,26 @@ public class CharacterField extends Field {
     }
 
     /**
-     * Attach skill to this character on field
+     * Save posision attaching skill to this character on field
      * 
-     * @param skill skill will be attached
+     * @param skillPos skill position will be attached
      */
-    public void attachSkill(SkillAttached skill) {
-        skills.add(skill);
+    public void attachSkill(FieldPos skillPos) {
+        skillsPos.add(skillPos);
+    }
+
+    /**
+     * Remove skill
+     * 
+     * @param skillPos skill's position
+     */
+    public void removeSkill(FieldPos skillPos) {
+        skillsPos.remove(skillPos);
     }
 
     @Override
     public String toString() {
-        return card + " (" + currentStance + ") " + skills;
+        return card + " (" + currentStance + ") " + skillsPos;
     }
 
 }

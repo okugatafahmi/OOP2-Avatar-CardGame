@@ -12,24 +12,22 @@ public class GameState {
      * 0
      */
     public GameState() {
-        this.phase = Phase.DRAW;
+        this.phase = Phase.READY;
         this.turn = 0;
-    }
-
-    public GameState(Phase phase, int turn) {
-        this.phase = phase;
-        this.turn = turn;
     }
 
     /**
      * Next game state
      */
     public void next() {
-        if (phase.equals(Phase.DRAW)) {
+        if (phase == Phase.READY) {
+            phase = Phase.DRAW;
+        }
+        else if (phase == Phase.DRAW) {
             phase = Phase.MAIN;
-        } else if (phase.equals(Phase.MAIN)) {
+        } else if (phase == Phase.MAIN) {
             phase = Phase.BATTLE;
-        } else if (phase.equals(Phase.BATTLE)) {
+        } else if (phase == Phase.BATTLE) {
             phase = Phase.END;
         } else { // Phase.END
             phase = Phase.DRAW;
@@ -65,6 +63,9 @@ public class GameState {
 
     @Override
     public String toString() {
+        if (phase == Phase.READY) {
+            return "Avatar Duel!!";
+        }
         return "Phase: " + phase.toString() + "\n" + "Player: " + (turn + 1);
     }
 }

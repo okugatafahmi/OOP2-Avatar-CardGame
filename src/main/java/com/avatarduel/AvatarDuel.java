@@ -53,8 +53,8 @@ public class AvatarDuel extends Application {
     Player[] players = new Player[2];
     PlayerController[] playerControllers = new PlayerController[2];
     for (int i = 0; i < 2; ++i) {
-      players[i] = new Player(playerNames[i], playerTotalDeck[i]);
-      playerControllers[i] = new PlayerController(players[i], i, ((i == 0) ? false : true));
+      players[i] = new Player(i, playerNames[i], playerTotalDeck[i]);
+      playerControllers[i] = new PlayerController(players[i], ((i == 0) ? false : true));
     }
     Gameplay gameplay = new Gameplay(playerControllers, hoverSpace, status);
 

@@ -13,13 +13,15 @@ import com.avatarduel.model.card.Element;
 import com.avatarduel.model.card.Land;
 import com.avatarduel.model.card.Skill;
 import com.avatarduel.model.card.Summonedable;
-import com.avatarduel.model.card.Summonedable.Type;
+import com.avatarduel.model.field.FieldPos;
+import com.avatarduel.model.field.Field.Type;
 import com.avatarduel.controller.PlayerController;
 import com.avatarduel.model.card.Card;
 import com.avatarduel.model.card.CardFactory;
 import com.avatarduel.model.card.Character;
 import com.avatarduel.util.CSVReader;
 import com.avatarduel.view.field.CharacterFieldView;
+import com.avatarduel.view.field.SkillFieldView;
 
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
@@ -109,34 +111,57 @@ public class Gameplay implements Subject, GlobalField {
     public void run() {
         for (int i = 0; i < 2; ++i) {
             playerControllers[i].setSubject(this);
+            playerControllers[i].setGlobalField(this);
             playerControllers[i].setDeck(this.setDeck(playerControllers[i].getTotalDeckCard()));
             playerControllers[i].setDeckCardHover(hoverSpace);
             // TODO bikin click event
             final int id = i;
             playerControllers[i].setFieldClickHandler(e -> {
-                if (this.gameState.equals(Phase.MAIN, id)) {
+                if (this.gameState.getPhase() == Phase.MAIN) {
                     int fieldColumn = ((CharacterFieldView) e.getSource()).getColumn();
                     // Menaruh kartu di field
                     if (PlayerController.getCardToBeMove() != null) {
-                        if (PlayerController.getCardToBeMove().getCard() instanceof Character) {
-                            playerControllers[id].summonCharacterCard(PlayerController.getCardToBeMove(), fieldColumn);
+                        if (this.gameState.getTurn() == id) {
+                            if (PlayerController.getCardToBeMove().getCard() instanceof Character) {
+                                playerControllers[id].summonCharacterCard(PlayerController.getCardToBeMove(), fieldColumn);
+                            }
+                            else if (PlayerController.getCardToBeMove().getCard() instanceof Skill) {
+                                // Attach skill ke character sendiri)
+                                playerControllers[id].summonSkillCard(PlayerController.getCardToBeMove(), new FieldPos(id, fieldColumn));
+                            }
+                        }
+                        else {
+                            if (PlayerController.getCardToBeMove().getCard() instanceof Skill) {
+                                // Attach skill (ini skill ke character musuh)
+                                playerControllers[(id+1)%2].summonSkillCard(PlayerController.getCardToBeMove(), new FieldPos(id, fieldColumn));
+                            }
                         }
                     }
-                    else if (e.getButton() == MouseButton.SECONDARY) {
-                        playerControllers[id].removeCardAtField(Type.CHARACTER, fieldColumn);
-                    }
-                    else {
-                        playerControllers[id].changeStance(fieldColumn);
+                    else if (this.gameState.getTurn() == id) {
+                        if (e.getButton() == MouseButton.SECONDARY) {
+                            playerControllers[id].removeCardAtField(Type.CHARACTER, fieldColumn);
+                        }
+                        else {
+                            playerControllers[id].changeStance(fieldColumn);
+                        }
                     }
                 }
+                else if (this.gameState.getPhase() == Phase.BATTLE) {
+                    // TODO Battle Phase
+                }
             }, e -> {
+                if (this.gameState.equals(Phase.MAIN, id)) {
+                    int fieldColumn = ((SkillFieldView) e.getSource()).getColumn();
+                    if (e.getButton() == MouseButton.SECONDARY) {
+                        playerControllers[id].removeCardAtField(Type.SKILL, fieldColumn);
+                    }
 
+                }
             });
             playerControllers[i].firstDrawCard();
         }
-        this.gameState = new GameState(Phase.END, 1);
+        this.gameState = new GameState();
         notifyObserver();
-        this.status.setText("Avatar Duel!!");
     }
 
     @Override
@@ -159,12 +184,22 @@ public class Gameplay implements Subject, GlobalField {
     }
 
     @Override
-    public Summonedable getCardOnField(int player, Type type, int column) {
-        return playerControllers[player].getCardOnField(type, column);
+    public Summonedable getCardAtField(Type type, FieldPos fieldPos) {
+        return playerControllers[fieldPos.getPlayer()].getCardAtField(type, fieldPos.getColumn());
     }
 
     @Override
-    public void removeCardOnField(int player, Type type, int column) {
-        playerControllers[player].removeCardAtField(type, column);
+    public void removeCardAtField(Type type, FieldPos fieldPos) {
+        playerControllers[fieldPos.getPlayer()].removeCardAtField(type, fieldPos.getColumn());
+    }
+
+    @Override
+    public void attachSkill(FieldPos skillPos, FieldPos fieldPos) {
+        playerControllers[fieldPos.getPlayer()].attachSkill(skillPos, fieldPos.getColumn());
+    }
+
+    @Override
+    public void removeSkillOfCharacterAtField(FieldPos skillPos, FieldPos fieldPos) {
+        playerControllers[fieldPos.getPlayer()].removeSkillOfCharacterAtField(skillPos, fieldPos.getColumn());
     }
 }

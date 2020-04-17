@@ -5,7 +5,8 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 
 import com.avatarduel.model.card.Card;
-import com.avatarduel.model.card.Summonedable.Type;
+import com.avatarduel.model.field.Field.Type;
+
 import static com.avatarduel.model.player.Player.N_COLUMN;
 import com.avatarduel.view.card.CardView;
 import com.avatarduel.view.field.CharacterFieldView;
@@ -201,8 +202,9 @@ public class PlayerArena extends GridPane {
      * @param column column of field
      */
     public void removeCardAtField(Type type, int column) {
-        if (type == null)
+        if (type == null) {
             return;
+        }
         CardView cardView;
         if (type == Type.CHARACTER) {
             cardView = characterFieldViews[column].getCardView();

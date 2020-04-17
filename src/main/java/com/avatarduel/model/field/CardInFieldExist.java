@@ -1,6 +1,6 @@
 package com.avatarduel.model.field;
 
-public class CardInFieldExist extends Exception {
+public class CardInFieldExist extends PlaceCardException {
 
     public CardInFieldExist() {
         super("The selected field has had card");

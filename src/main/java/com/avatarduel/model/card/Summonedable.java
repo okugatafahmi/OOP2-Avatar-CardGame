@@ -12,8 +12,4 @@ public interface Summonedable {
      * @return the power
      */
     public int getPower();
-
-    public enum Type {
-        CHARACTER, SKILL
-    }   
 }

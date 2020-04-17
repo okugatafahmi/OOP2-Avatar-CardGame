@@ -1,9 +1,10 @@
 package com.avatarduel.model.player;
 
-public class MaximumCardInField extends Exception {
+import com.avatarduel.model.field.PlaceCardException;
+
+public class MaximumCardInField extends PlaceCardException {
     public MaximumCardInField(String type, int maximum) {
-        super("Can't summon " + type + " card because it has reached maximum (" + Integer.toString(maximum)
-                + " cards)");
+        super(type + " card has reached maximum (" + Integer.toString(maximum) + " cards)");
     }
 
     /**

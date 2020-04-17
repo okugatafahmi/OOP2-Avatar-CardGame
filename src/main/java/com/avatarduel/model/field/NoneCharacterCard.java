@@ -1,6 +1,6 @@
 package com.avatarduel.model.field;
 
-public class NoneCharacterCard extends Exception {
+public class NoneCharacterCard extends PlaceCardException {
     public NoneCharacterCard() {
         super("Can't use skill card to none character card");
     }

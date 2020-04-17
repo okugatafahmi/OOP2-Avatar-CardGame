@@ -4,7 +4,7 @@ package com.avatarduel.model.field;
 /**
  * Class for knowing card position
  */
-public class CardPos {
+public class FieldPos {
     private int player;
     private int column;
 
@@ -13,7 +13,7 @@ public class CardPos {
      * @param player player (whose field)
      * @param column column field
      */
-    public CardPos (int player, int column) {
+    public FieldPos (int player, int column) {
         this.player = player;
         this.column = column;
     }

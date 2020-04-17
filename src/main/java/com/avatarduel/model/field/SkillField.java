@@ -7,35 +7,48 @@ import com.avatarduel.model.card.Summonedable;
  * Class that responsible for one skill field
  */
 public class SkillField extends Field {
-    private CardPos attachTo;
+    private FieldPos attachTo;
+
+    public SkillField(int player, int column) {
+        super(player, column);
+    }
 
     /**
      * Set card on field
      * 
      * @param card     card to be set
      * @param attachTo card position where skill card attach to
-     * @throws CardInFieldExist if there has been card on field
+     * @throws CardInFieldExist  if there has been card on field
+     * @throws NoneCharacterCard if the selected character field is empty
      */
-    public void setCard(Skill card, CardPos attachTo) throws CardInFieldExist {
+    public void setCard(Skill card, FieldPos attachTo) throws CardInFieldExist, NoneCharacterCard {
         if (this.card != null) {
             throw new CardInFieldExist();
         }
-        // TODO apakah perlu mengecek attachTo isi kartu atau tidak??
+        if (this.globalField.getCardAtField(Type.CHARACTER, attachTo) == null) {
+            throw new NoneCharacterCard();
+        }
         this.card = card;
         this.attachTo = attachTo;
+        this.globalField.attachSkill(fieldPos, attachTo);
     }
 
-    /**
-     * Remove card
-     * 
-     * @return card in this field
-     */
     @Override
     public Summonedable removeCard() {
+        if (this.card == null) return null;
         Summonedable card = this.card;
         this.card = null;
+        // cek apakah character yang dihapus. Jika tidak, hapus skill character
+        if (this.globalField.getCardAtField(Type.CHARACTER, attachTo) != null) {
+            this.globalField.removeSkillOfCharacterAtField(fieldPos, attachTo);
+        }
         this.attachTo = null;
         return card;
+    }
+
+    public void removeCardFromCharacter() {
+        this.card = null;
+        this.attachTo = null;
     }
 
     /**
@@ -47,10 +60,11 @@ public class SkillField extends Field {
         return this.card;
     }
 
+    //TODO Sepertinya tidak kepakai
     /**
      * @return the attachTo
      */
-    public CardPos getAttachTo() {
+    public FieldPos getAttachTo() {
         return attachTo;
     }
 
