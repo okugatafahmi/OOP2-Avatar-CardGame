@@ -52,7 +52,6 @@ gradle-app.setting
 bin/
 .classpath
 .project
-.settings/org.eclipse.buildship.core.prefs
-.settings/org.eclipse.jdt.core.prefs
-.vscode/*
+.settings/
+.vscode/
 src/.vscode/*

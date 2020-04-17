@@ -3,7 +3,7 @@ package com.avatarduel.model.card;
 /**
  * Class turunan Card yang bertanggungjawab dengan kartu Skill.
  */
-public class Skill extends Card {
+public class Skill extends Card implements Summonedable {
     private int attack;
     private int defense;
     private int power;
@@ -32,10 +32,12 @@ public class Skill extends Card {
         return this.defense;
     }
 
+    @Override
     public void setPower(int power) {
         this.power = power;
     }
 
+    @Override
     public int getPower() {
         return this.power;
     }

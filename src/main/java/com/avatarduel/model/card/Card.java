@@ -50,18 +50,23 @@ public abstract class Card {
     }
 
     public String getElementImagePath() {
-        if(this.element == Element.AIR){
+        if (this.element == Element.AIR) {
             return "/com/avatarduel/element/Air.png";
-        } else if(this.element == Element.EARTH){
+        } else if (this.element == Element.EARTH) {
             return "/com/avatarduel/element/Earth.png";
-        } else if(this.element == Element.FIRE){
+        } else if (this.element == Element.FIRE) {
             return "/com/avatarduel/element/Fire.png";
-        } else if(this.element == Element.WATER){
+        } else if (this.element == Element.WATER) {
             return "/com/avatarduel/element/Water.png";
-        } else if(this.element == Element.ENERGY){
+        } else if (this.element == Element.ENERGY) {
             return "/com/avatarduel/element/Energy.png";
         } else {
             return "";
         }
+    }
+
+    @Override
+    public String toString() {
+        return getName() + " " + getElement();
     }
 }

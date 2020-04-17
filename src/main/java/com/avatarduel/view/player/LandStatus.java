@@ -1,4 +1,4 @@
-package com.avatarduel.view;
+package com.avatarduel.view.player;
 
 import javafx.geometry.Pos;
 import javafx.scene.layout.Border;
@@ -13,8 +13,8 @@ import javafx.scene.text.Text;
 public class LandStatus extends GridPane {
 
     public LandStatus() {
-        super.setMinSize(150, 100);
-        super.setMaxSize(150, 100);
+        super.setMinSize(170, 100);
+        super.setMaxSize(170, 100);
         super.setAlignment(Pos.CENTER);
         super.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));

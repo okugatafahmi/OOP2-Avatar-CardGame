@@ -1,23 +1,28 @@
 package com.avatarduel.model.field;
 
-import com.avatarduel.model.card.Card;
+import com.avatarduel.model.card.Summonedable;
 
 /**
- * Class yang bertanggung jawab sebagai satu kotak field tempat menaruh kartu
- * player
+ * Class for the field
  */
-public class Field {
-    protected Card card;
+public abstract class Field {
+    protected Summonedable card;
 
-    public Field(){
+    /**
+     * @return the card
+     */
+    public Summonedable getCard() {
+        return card;
+    }
+
+    /**
+     * Remove card
+     * 
+     * @return card in this field
+     */
+    public Summonedable removeCard() {
+        Summonedable card = this.card;
         this.card = null;
-    }
-
-    public void setCard(Card card){
-        this.card = card;
-    }
-
-    public Card getCard(){
-        return this.card;
+        return card;
     }
 }

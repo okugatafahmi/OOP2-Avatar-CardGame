@@ -10,24 +10,24 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import com.avatarduel.model.player.Player;
+
 import com.avatarduel.controller.PlayerController;
 import com.avatarduel.gameplay.Gameplay;
-// import com.avatarduel.gui.CardView;
 
 public class AvatarDuel extends Application {
   private static final int WIDTH = 1280;
   private static final int HEIGHT = 720;
-  private static final String[] playerNames = { "Qihla", "Hojun" };
-  private static final int[] playerTotalDeck = { 40, 40 };
-  public static final GridPane hover = new GridPane();
-  public static final Text status = new Text();
-  // public static CardView view_card = new CardView();
+  private final String[] playerNames = { "Qihla", "Hojun" };
+  private final int[] playerTotalDeck = { 40, 40 };
+  public final StackPane hoverSpace = new StackPane();
+  public final Text status = new Text();
 
   @Override
   public void start(Stage stage) {
@@ -56,7 +56,7 @@ public class AvatarDuel extends Application {
       players[i] = new Player(playerNames[i], playerTotalDeck[i]);
       playerControllers[i] = new PlayerController(players[i], i, ((i == 0) ? false : true));
     }
-    Gameplay gameplay = new Gameplay(playerControllers);
+    Gameplay gameplay = new Gameplay(playerControllers, hoverSpace, status);
 
     try {
       gameplay.loadCards();
@@ -72,12 +72,12 @@ public class AvatarDuel extends Application {
     gridPane.add(line, 1, 1);
     gridPane.add(status, 2, 1);
 
-    hover.setBorder(
+    hoverSpace.setBorder(
         new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-    hover.getChildren().add(new Text("Ini buat hover"));
-    hover.setMinSize(240, 320);
-    hover.setMaxSize(240, 320);
-    gridPane.add(hover, 0, 0, 1, 3);
+    hoverSpace.setMinSize(250, 360);
+    hoverSpace.setMaxSize(250, 360);
+
+    gridPane.add(hoverSpace, 0, 0, 1, 3);
     gridPane.setHgap(20);
     gridPane.getRowConstraints().add(new RowConstraints());
     gridPane.getRowConstraints().add(new RowConstraints(1));
