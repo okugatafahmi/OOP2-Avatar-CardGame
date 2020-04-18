@@ -19,8 +19,6 @@ public class CardFactory {
             return new Character();
         } else if (type.toLowerCase().equals("land")) {
             return new Land();
-        // } else if (type.toLowerCase().equals("skill")) {
-        //     return new Skill();
         } else if (type.toLowerCase().equals("aura")) {
             return new Aura();
         } else if (type.toLowerCase().equals("powerup")) {

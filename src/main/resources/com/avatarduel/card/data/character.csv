@@ -1,11 +1,4 @@
 id	name	element	description	imagepath	power	attack	defense
-18	Sokka	WATER	Water Tribe warrior of the Southern Water Tribe.	/com/avatarduel/card/image/character/Sokka.png	3	6	10
-19	Yue	WATER	Princess of the Northern Water Tribe.	/com/avatarduel/card/image/character/Yue.png	2	4	9
-20	Hakoda	WATER	Father of Sokka and Katara, leading the Invasion of the Fire Nation.	/com/avatarduel/card/image/character/Hakoda.png	4	7	11
-21	Huu	WATER	Waterbending master from Foggy Swamp Tribe.	/com/avatarduel/card/image/character/Huu.png	2	8	5
-22	Hama	WATER	Developer of bloodbending.	/com/avatarduel/card/image/character/Hama.png	4	12	6
-23	Pakku	WATER	Aang's teacher for waterbending at Northern Water Tribe.	/com/avatarduel/card/image/character/Pakku.png	3	10	6
-24	Arnook	WATER	Chief of the Northern Water Tribe.	/com/avatarduel/card/image/character/Arnook.png	1	4	7
 25	Kuruk	WATER	Water Tribe Avatar, predecessor of Avatar Kyoshi.	/com/avatarduel/card/image/character/Kuruk.png	5	6	14
 26	Bato	WATER	Friend of Hakoda since childhood.	/com/avatarduel/card/image/character/Bato.png	3	7	9
 27	Due	WATER	Waterbending master from Foggy Swamp Tribe.	/com/avatarduel/card/image/character/Due.png	2	5	8
@@ -50,3 +43,10 @@ id	name	element	description	imagepath	power	attack	defense
 66	Korra	ENERGY	A 17 years old girl from the Southern Water Tribe and the successor of Avatar Aang from The Last Airbender.	/com/avatarduel/card/image/character/Korra.png	6	13	8
 67	Aang	ENERGY	Avatar Roku's successor. Also learned how to energybending.	/com/avatarduel/card/image/character/Aang.png	5	14	6
 68	Katara	WATER	Waterbending master from Southern Water Tribe, sister of Sokka, and friend of Aang.	/com/avatarduel/card/image/character/Katara.png	5	13	7
+69	Sokka	WATER	Water Tribe warrior of the Southern Water Tribe.	/com/avatarduel/card/image/character/Sokka.png	3	6	10
+70	Yue	WATER	Princess of the Northern Water Tribe.	/com/avatarduel/card/image/character/Yue.png	2	4	9
+71	Hakoda	WATER	Father of Sokka and Katara, leading the Invasion of the Fire Nation.	/com/avatarduel/card/image/character/Hakoda.png	4	7	11
+72	Huu	WATER	Waterbending master from Foggy Swamp Tribe.	/com/avatarduel/card/image/character/Huu.png	2	8	5
+73	Hama	WATER	Developer of bloodbending.	/com/avatarduel/card/image/character/Hama.png	4	12	6
+74	Pakku	WATER	Aang's teacher for waterbending at Northern Water Tribe.	/com/avatarduel/card/image/character/Pakku.png	3	10	6
+75	Arnook	WATER	Chief of the Northern Water Tribe.	/com/avatarduel/card/image/character/Arnook.png	1	4	7
