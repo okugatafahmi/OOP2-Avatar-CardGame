@@ -4,6 +4,9 @@ import com.avatarduel.model.card.Card;
 import com.avatarduel.model.card.Character;
 import com.avatarduel.model.card.Land;
 import com.avatarduel.model.card.Skill;
+import com.avatarduel.model.card.Aura;
+import com.avatarduel.model.card.PowerUp;
+import com.avatarduel.model.card.Destroy;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -42,11 +45,18 @@ public class CardView extends StackPane {
         this.containerCardView.setStyle("-fx-background-color: #f7da00");
 
         // Setting names
+        String string_tipe = "";
+        if(this.card.getClass().getSimpleName().equals("Aura") || this.card.getClass().getSimpleName().equals("Power Up") || this.card.getClass().getSimpleName().equals("Destroy")){
+            string_tipe += ("[Skill]");
+        } else {
+            string_tipe += ("[" + this.card.getClass().getSimpleName() + "]");
+        }
+
         GridPane header = new GridPane();
         GridPane deskripsi_box = new GridPane();
         Text empty = new Text(" ");
         Text nama = new Text(this.card.getName());
-        Text tipe = new Text("[" + this.card.getClass().getSimpleName() + "]");
+        Text tipe = new Text(string_tipe);
         Text deskripsi = new Text(this.card.getDescription());
 
         empty.setStyle("-fx-font: 4 helvetica");
@@ -68,8 +78,8 @@ public class CardView extends StackPane {
 
         Image element_image = new Image(this.card.getElementImagePath());
         ImageView elementView = new ImageView(element_image);
-        elementView.setFitHeight(5);
-        elementView.setFitWidth(5);
+        elementView.setFitHeight(10);
+        elementView.setFitWidth(10);
         BorderPane element = new BorderPane();
         element.setCenter(elementView);
 
@@ -109,7 +119,7 @@ public class CardView extends StackPane {
         }
 
         else {
-            Text effect = new Text(((Skill) this.card).getEffect());
+            Text effect = new Text("★"+(this.card.getClass().getSimpleName()));
             effect.setStyle("-fx-font: 4 helvetica");
             TextFlow effectFlow = new TextFlow(effect);
             effectFlow.setTextAlignment(TextAlignment.LEFT);
@@ -117,8 +127,19 @@ public class CardView extends StackPane {
             this.containerCardView.add(effectFlow, 0, 1);
             this.containerCardView.add(tipeFlow, 1, 1);
 
-            Text info_skill = new Text("+" + Integer.toString(((Skill) this.card).getAttack()) + "ATK +"
-                    + Integer.toString(((Skill) this.card).getDefense()) + "DEF");
+            String info="";
+            if (this.card.getClass().getSimpleName().equals("Aura")){
+                if(((Aura) this.card).getAttack() >= 0){
+                    info += "+";
+                }
+                info += (Integer.toString(((Aura) this.card).getAttack()) + " ATK   ");
+                if(((Aura) this.card).getDefense() >= 0){
+                    info += "+";
+                }
+                info += (Integer.toString(((Aura) this.card).getDefense()) + " DEF");
+            }
+
+            Text info_skill = new Text(info);
             info_skill.setStyle("-fx-font: 3 helvetica");
             info_skill.setFill(Color.LIGHTBLUE);
 

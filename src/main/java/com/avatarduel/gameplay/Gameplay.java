@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 import com.avatarduel.model.card.Element;
 import com.avatarduel.model.card.Land;
 import com.avatarduel.model.card.Skill;
+import com.avatarduel.model.card.Aura;
+import com.avatarduel.model.card.PowerUp;
+import com.avatarduel.model.card.Destroy;
 import com.avatarduel.model.card.Summonedable;
 import com.avatarduel.model.field.CharacterField;
 import com.avatarduel.model.field.FieldPos;
@@ -103,11 +106,14 @@ public class Gameplay implements Subject, GlobalField {
                     ((Character) card).setPower(Integer.parseInt(row[5]));
                     ((Character) card).setAttack(Integer.parseInt(row[6]));
                     ((Character) card).setDefense(Integer.parseInt(row[7]));
-                } else if (filename.equals("skill")) {
-                    ((Skill) card).setPower(Integer.parseInt(row[5]));
-                    ((Skill) card).setAttack(Integer.parseInt(row[6]));
-                    ((Skill) card).setDefense(Integer.parseInt(row[7]));
-                    ((Skill) card).setEffect(row[8]);
+                }else if (filename.equals("aura")) {
+                    ((Aura) card).setPower(Integer.parseInt(row[5]));
+                    ((Aura) card).setAttack(Integer.parseInt(row[6]));
+                    ((Aura) card).setDefense(Integer.parseInt(row[7]));
+                }else if (filename.equals("destroy")) {
+                    ((Destroy) card).setPower(Integer.parseInt(row[5]));
+                }else if (filename.equals("powerup")) {
+                    ((PowerUp) card).setPower(Integer.parseInt(row[5]));
                 }
                 loaded.add(card);
             }

@@ -1,0 +1,5 @@
+id	name	element	description	imagepath	power	attack	defense	effect
+105	Lightning Redirection	FIRE	Allows a firebender to absorb lightning into their body as energy and release it in a more desirable direction.	/com/avatarduel/card/image/skill/Lightning Redirection.png	3
+106	Air Swipe	AIR	A crescent-shaped wave of compressed air capable of deflecting colossal projectiles, such as the catapulted flaming rocks often used by the Fire Navy, or redirecting them back to the attacker	/com/avatarduel/card/image/skill/Air Swipe.png	2
+107	Wave	WATER	Make wave from water both to attack and defense from enemy's attack	/com/avatarduel/card/image/skill/Wave.png	2
+108	Earth Smash	EARTH	Allows the earthbender to destroy any earthen projectiles sent at them and break out of imprisoning techniques.	/com/avatarduel/card/image/skill/Earth Smash.png	2

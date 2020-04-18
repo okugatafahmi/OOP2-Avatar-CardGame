@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import com.avatarduel.model.card.Character;
 import com.avatarduel.model.card.Skill;
+import com.avatarduel.model.card.Aura;
 import com.avatarduel.model.card.Summonedable;
 
 /**
@@ -88,13 +89,13 @@ public class CharacterField extends Field {
         if (this.currentStance == Stance.ATTACK) {
             int res = ((Character) this.card).getAttack();
             for (FieldPos skillPos : skillsPos) {
-                res += ((Skill) this.globalField.getCardAtField(Type.SKILL, skillPos)).getAttack();
+                res += ((Aura) this.globalField.getCardAtField(Type.SKILL, skillPos)).getAttack();
             }
             return res;
         } else {
             int res = ((Character) this.card).getDefense();
             for (FieldPos skillPos : skillsPos) {
-                res += ((Skill) this.globalField.getCardAtField(Type.SKILL, skillPos)).getDefense();
+                res += ((Aura) this.globalField.getCardAtField(Type.SKILL, skillPos)).getDefense();
             }
             return res;
         }
@@ -126,7 +127,7 @@ public class CharacterField extends Field {
     public int getTotalAttack() {
         int res = ((Character) this.card).getAttack();
         for (FieldPos skillPos : skillsPos) {
-            res += ((Skill) this.globalField.getCardAtField(Type.SKILL, skillPos)).getAttack();
+            res += ((Aura) this.globalField.getCardAtField(Type.SKILL, skillPos)).getAttack();
         }
         return res;
     }
