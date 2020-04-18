@@ -18,6 +18,7 @@ import com.avatarduel.gameplay.Phase;
 import com.avatarduel.gameplay.Subject;
 import com.avatarduel.model.card.Card;
 import com.avatarduel.model.card.Character;
+import com.avatarduel.model.card.Destroy;
 import com.avatarduel.model.card.Land;
 import com.avatarduel.model.card.Skill;
 import com.avatarduel.model.card.Summonedable;
@@ -25,6 +26,7 @@ import com.avatarduel.model.field.CharacterField;
 import com.avatarduel.model.field.FieldPos;
 import com.avatarduel.model.field.PlaceCardException;
 import com.avatarduel.model.field.Field.Type;
+import com.avatarduel.model.player.DeckCardEmpty;
 import com.avatarduel.model.player.Player;
 import com.avatarduel.view.card.CardView;
 import com.avatarduel.view.player.PlayerArena;
@@ -72,18 +74,25 @@ public class PlayerController implements Observer {
      * Update method when there is update from gameplay
      */
     @Override
-    public void update() {
+    public void update() throws DeckCardEmpty {
         GameState gameState = this.gameplay.getUpdate();
         if (gameState.getTurn() == this.id) { // turn pemain
             if (gameState.getPhase() == Phase.READY) {
                 this.playerArena.setFaceCardInHand(false);
                 this.playerArena.setIsVisibleNextButton(true, "Ready");
+            } else if (gameState.getPhase() == Phase.FINISHED) {
+                this.playerArena.setFaceCardInHand(true);
+                this.playerArena.setIsVisibleNextButton(false, null);
             } else if (gameState.getPhase() == Phase.DRAW) {
                 this.player.setupDrawPhase();
                 this.playerArena.setFaceCardInHand(true);
                 this.playerArena.setIsVisibleNextButton(false, null);
             } else if (gameState.getPhase() != Phase.END) {
-                this.playerArena.setIsVisibleNextButton(true, "Done phase " + gameState.getPhase());
+                if (gameState.getPhase()==Phase.BATTLE && cardToBeMove!=null) {
+                    cardToBeMove.setBorder(Color.BLACK);
+                    cardToBeMove = null;
+                }
+                this.playerArena.setIsVisibleNextButton(true, "Done " + gameState.getPhase() + " phase");
             } else if (gameState.getPhase() == Phase.END) {
                 this.playerArena.setFaceCardInHand(false);
                 this.playerArena.setIsVisibleNextButton(false, null);
@@ -91,6 +100,9 @@ public class PlayerController implements Observer {
         } else {
             if (gameState.getPhase() == Phase.READY) {
                 this.playerArena.setFaceCardInHand(false);
+                this.playerArena.setIsVisibleNextButton(false, null);
+            } else if (gameState.getPhase() == Phase.FINISHED) {
+                this.playerArena.setFaceCardInHand(true);
                 this.playerArena.setIsVisibleNextButton(false, null);
             } else if (gameState.getPhase() == Phase.DRAW) {
                 this.playerArena.setFaceCardInHand(false);
@@ -116,6 +128,14 @@ public class PlayerController implements Observer {
      */
     public PlayerArena getPlayerArena() {
         return playerArena;
+    }
+
+    /**
+     * 
+     * @return player's hp
+     */
+    public int getHp() {
+        return this.player.getHp();
     }
 
     /**
@@ -155,6 +175,7 @@ public class PlayerController implements Observer {
 
     /**
      * Get total character in field
+     * 
      * @return total character in field
      */
     public int getTotalCharacterInField() {
@@ -162,8 +183,8 @@ public class PlayerController implements Observer {
     }
 
     /**
-     * Reduce player's hp based the amount of damage. If
-     * {@code damage > hp}, hp will be 0
+     * Reduce player's hp based the amount of damage. If {@code damage > hp}, hp
+     * will be 0
      * 
      * @param damage the amount damage of the player got
      */
@@ -337,8 +358,12 @@ public class PlayerController implements Observer {
             int column = this.player.setSkillCardAtField(card, fieldPos);
             // TODO Hapus println
             System.out.println(this.player);
-            this.playerArena.setSkillCardAtField(cardView, column);
-            cardView.removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick);
+            if (card instanceof Destroy) {
+                this.playerArena.addThrowPlaceCard(cardView);
+            } else {
+                this.playerArena.setSkillCardAtField(cardView, column);
+                cardView.removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick);
+            }
         } catch (PlaceCardException err) {
             this.player.insertCardInHand(index, card);
             new Alert(AlertType.ERROR, err.getMessage(), ButtonType.OK).showAndWait();

@@ -5,8 +5,6 @@ import com.avatarduel.model.card.Character;
 import com.avatarduel.model.card.Land;
 import com.avatarduel.model.card.Skill;
 import com.avatarduel.model.card.Aura;
-import com.avatarduel.model.card.PowerUp;
-import com.avatarduel.model.card.Destroy;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -46,7 +44,7 @@ public class CardView extends StackPane {
 
         // Setting names
         String string_tipe = "";
-        if(this.card.getClass().getSimpleName().equals("Aura") || this.card.getClass().getSimpleName().equals("Power Up") || this.card.getClass().getSimpleName().equals("Destroy")){
+        if (this.card instanceof Skill) {
             string_tipe += ("[Skill]");
         } else {
             string_tipe += ("[" + this.card.getClass().getSimpleName() + "]");
@@ -119,7 +117,7 @@ public class CardView extends StackPane {
         }
 
         else {
-            Text effect = new Text("★"+(this.card.getClass().getSimpleName()));
+            Text effect = new Text("★" + (this.card.getClass().getSimpleName()));
             effect.setStyle("-fx-font: 4 helvetica");
             TextFlow effectFlow = new TextFlow(effect);
             effectFlow.setTextAlignment(TextAlignment.LEFT);
@@ -127,13 +125,13 @@ public class CardView extends StackPane {
             this.containerCardView.add(effectFlow, 0, 1);
             this.containerCardView.add(tipeFlow, 1, 1);
 
-            String info="";
-            if (this.card.getClass().getSimpleName().equals("Aura")){
-                if(((Aura) this.card).getAttack() >= 0){
+            String info = "";
+            if (this.card.getClass().getSimpleName().equals("Aura")) {
+                if (((Aura) this.card).getAttack() >= 0) {
                     info += "+";
                 }
                 info += (Integer.toString(((Aura) this.card).getAttack()) + " ATK   ");
-                if(((Aura) this.card).getDefense() >= 0){
+                if (((Aura) this.card).getDefense() >= 0) {
                     info += "+";
                 }
                 info += (Integer.toString(((Aura) this.card).getDefense()) + " DEF");

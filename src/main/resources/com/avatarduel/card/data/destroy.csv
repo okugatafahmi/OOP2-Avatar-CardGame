@@ -1,3 +1,3 @@
-id	name	element	description	imagepath	power	attack	defense	effect
+id	name	element	description	imagepath	power
 109	Remove Bending	ENERGY	Remove other person's bending ability	/com/avatarduel/card/image/skill/Remove Bending.png	6
 110	Shozin Comet	FIRE	Formerly known as the Great Comet. A celestial object that passes close to the Earth every one hundred years, just skimming the surface of the upper atmosphere.	/com/avatarduel/card/image/skill/Shozin Comet.png	6

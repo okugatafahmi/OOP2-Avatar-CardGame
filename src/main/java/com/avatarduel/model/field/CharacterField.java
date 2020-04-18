@@ -3,6 +3,7 @@ package com.avatarduel.model.field;
 import java.util.LinkedList;
 
 import com.avatarduel.model.card.Character;
+import com.avatarduel.model.card.PowerUp;
 import com.avatarduel.model.card.Skill;
 import com.avatarduel.model.card.Aura;
 import com.avatarduel.model.card.Summonedable;
@@ -13,7 +14,9 @@ import com.avatarduel.model.card.Summonedable;
 public class CharacterField extends Field {
     private Stance currentStance;
     private LinkedList<FieldPos> skillsPos;
+    private boolean firstSummon;
     private boolean hasAttacked;
+    private boolean hasPowerUp;
 
     public CharacterField(int player, int column) {
         super(player, column);
@@ -38,6 +41,31 @@ public class CharacterField extends Field {
     }
 
     /**
+     * Return true if this field has power up skill
+     * 
+     * @return {@code true} if this field has power up skill
+     */
+    public boolean getHasPowerUp() {
+        return hasPowerUp;
+    }
+
+    /**
+     * @param firstSummon the firstSummon to set
+     */
+    public void setFirstSummon(boolean firstSummon) {
+        this.firstSummon = firstSummon;
+    }
+
+    /**
+     * Return true if the card have just been summoned
+     * 
+     * @return {@code true} if this card have just been summoned
+     */
+    public boolean getFirstSummon() {
+        return firstSummon;
+    }
+
+    /**
      * Set card
      * 
      * @param card card to set
@@ -48,11 +76,13 @@ public class CharacterField extends Field {
             throw new CardInFieldExist();
         }
         this.card = card;
+        this.firstSummon = true;
     }
 
     @Override
     public Summonedable removeCard() {
-        if (this.card == null) return null;
+        if (this.card == null)
+            return null;
         Summonedable card = this.card;
         this.card = null;
         for (FieldPos skillPos : skillsPos) {
@@ -86,19 +116,30 @@ public class CharacterField extends Field {
      *         DEFENSE)
      */
     public int getStanceValue() {
+        int res;
+        hasPowerUp = false;
         if (this.currentStance == Stance.ATTACK) {
-            int res = ((Character) this.card).getAttack();
+            res = ((Character) this.card).getAttack();
             for (FieldPos skillPos : skillsPos) {
-                res += ((Aura) this.globalField.getCardAtField(Type.SKILL, skillPos)).getAttack();
+                Skill card = (Skill) this.globalField.getCardAtField(Type.SKILL, skillPos);
+                if (card instanceof Aura) {
+                    res += ((Aura) card).getAttack();
+                } else if (card instanceof PowerUp) {
+                    hasPowerUp = true;
+                }
             }
-            return res;
         } else {
-            int res = ((Character) this.card).getDefense();
+            res = ((Character) this.card).getDefense();
             for (FieldPos skillPos : skillsPos) {
-                res += ((Aura) this.globalField.getCardAtField(Type.SKILL, skillPos)).getDefense();
+                Skill card = (Skill) this.globalField.getCardAtField(Type.SKILL, skillPos);
+                if (card instanceof Aura) {
+                    res += ((Aura) card).getDefense();
+                } else if (card instanceof PowerUp) {
+                    hasPowerUp = true;
+                }
             }
-            return res;
         }
+        return res;
     }
 
     /**
@@ -117,19 +158,6 @@ public class CharacterField extends Field {
      */
     public void removeSkill(FieldPos skillPos) {
         skillsPos.remove(skillPos);
-    }
-
-    /**
-     * Get the total attack value of this field
-     * 
-     * @return total attack value
-     */
-    public int getTotalAttack() {
-        int res = ((Character) this.card).getAttack();
-        for (FieldPos skillPos : skillsPos) {
-            res += ((Aura) this.globalField.getCardAtField(Type.SKILL, skillPos)).getAttack();
-        }
-        return res;
     }
 
     @Override

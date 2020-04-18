@@ -1,5 +1,6 @@
 package com.avatarduel.model.field;
 
+import com.avatarduel.model.card.Destroy;
 import com.avatarduel.model.card.Skill;
 import com.avatarduel.model.card.Summonedable;
 
@@ -28,9 +29,14 @@ public class SkillField extends Field {
         if (this.globalField.getCardAtField(Type.CHARACTER, attachTo) == null) {
             throw new NoneCharacterCard();
         }
-        this.card = card;
-        this.attachTo = attachTo;
-        this.globalField.attachSkill(fieldPos, attachTo);
+        if (card instanceof Destroy) {
+            this.globalField.removeCardAtField(Type.CHARACTER, attachTo);
+        }
+        else {
+            this.card = card;
+            this.attachTo = attachTo;
+            this.globalField.attachSkill(fieldPos, attachTo);
+        }
     }
 
     @Override

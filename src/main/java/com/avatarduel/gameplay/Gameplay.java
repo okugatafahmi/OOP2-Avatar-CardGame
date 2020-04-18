@@ -20,6 +20,7 @@ import com.avatarduel.model.field.CharacterField;
 import com.avatarduel.model.field.FieldPos;
 import com.avatarduel.model.field.Stance;
 import com.avatarduel.model.field.Field.Type;
+import com.avatarduel.model.player.DeckCardEmpty;
 import com.avatarduel.controller.PlayerController;
 import com.avatarduel.model.card.Card;
 import com.avatarduel.model.card.CardFactory;
@@ -37,6 +38,7 @@ import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -106,13 +108,13 @@ public class Gameplay implements Subject, GlobalField {
                     ((Character) card).setPower(Integer.parseInt(row[5]));
                     ((Character) card).setAttack(Integer.parseInt(row[6]));
                     ((Character) card).setDefense(Integer.parseInt(row[7]));
-                }else if (filename.equals("aura")) {
+                } else if (filename.equals("aura")) {
                     ((Aura) card).setPower(Integer.parseInt(row[5]));
                     ((Aura) card).setAttack(Integer.parseInt(row[6]));
                     ((Aura) card).setDefense(Integer.parseInt(row[7]));
-                }else if (filename.equals("destroy")) {
+                } else if (filename.equals("destroy")) {
                     ((Destroy) card).setPower(Integer.parseInt(row[5]));
-                }else if (filename.equals("powerup")) {
+                } else if (filename.equals("powerup")) {
                     ((PowerUp) card).setPower(Integer.parseInt(row[5]));
                 }
                 loaded.add(card);
@@ -191,7 +193,9 @@ public class Gameplay implements Subject, GlobalField {
                             CharacterField field = this.playerControllers[id].getCharacterField(fieldPos.getColumn());
                             if (field.getCard() != null && field.getCurrentStance() == Stance.ATTACK) {
                                 if (field.getHasAttacked()) {
-                                    new Alert(AlertType.ERROR, "Selected character has attacked!", ButtonType.OK).showAndWait();
+                                    showErrorAlert("Selected character has attacked!");
+                                } else if (field.getFirstSummon()) {
+                                    showErrorAlert("Can't attack with just summoned character card!");
                                 } else {
                                     fieldViewSrc = ((CharacterFieldView) e.getSource());
                                     fieldViewSrc.setBorder(Color.RED);
@@ -211,7 +215,7 @@ public class Gameplay implements Subject, GlobalField {
                             CharacterField field = this.playerControllers[id].getCharacterField(fieldPos.getColumn());
                             if (field.getCard() != null && field.getCurrentStance() == Stance.ATTACK) {
                                 if (field.getHasAttacked()) {
-                                    new Alert(AlertType.ERROR, "Selected character has attacked!", ButtonType.OK).showAndWait();
+                                    showErrorAlert("Selected character card has attacked!");
                                 } else {
                                     fieldViewSrc.setBorder(Color.BLACK);
                                     fieldViewSrc = ((CharacterFieldView) e.getSource());
@@ -244,10 +248,8 @@ public class Gameplay implements Subject, GlobalField {
     public void battle(CharacterFieldView cFieldViewSrc, CharacterFieldView cFieldViewDest) {
         int idSrc = gameState.getTurn();
         int idDest = (gameState.getTurn() + 1) % 2;
-        CharacterField fieldSrc = this.playerControllers[idSrc]
-                .getCharacterField(cFieldViewSrc.getColumn());
-        CharacterField fieldDest = this.playerControllers[idDest]
-                .getCharacterField(cFieldViewDest.getColumn());
+        CharacterField fieldSrc = this.playerControllers[idSrc].getCharacterField(cFieldViewSrc.getColumn());
+        CharacterField fieldDest = this.playerControllers[idDest].getCharacterField(cFieldViewDest.getColumn());
         // kondisi yang mungkin tidak terjadi
         if (fieldSrc.getCard() == null || fieldSrc.getHasAttacked() || fieldSrc.getCurrentStance() != Stance.ATTACK) {
             return;
@@ -256,21 +258,23 @@ public class Gameplay implements Subject, GlobalField {
         boolean canAttack = false;
         if (fieldDest.getCard() == null) {
             if (this.playerControllers[idDest].getTotalCharacterInField() == 0) {
-                this.playerControllers[idDest].getDamage(fieldSrc.getTotalAttack());
+                this.playerControllers[idDest].getDamage(fieldSrc.getStanceValue());
                 canAttack = true;
-            }
-            else {
-                new Alert(AlertType.ERROR, "Can't attack enemy directly because enemy still has card(s)", ButtonType.OK).showAndWait();
+            } else {
+                showErrorAlert("Can't attack enemy directly because enemy still has card(s)");
             }
         } else {
-            int srcAttack = fieldSrc.getTotalAttack();
+            int srcAttack = fieldSrc.getStanceValue();
             int destStancValue = fieldDest.getStanceValue();
             if (srcAttack > destStancValue) {
-                if (fieldDest.getCurrentStance() == Stance.ATTACK) {
-                    this.playerControllers[idDest].getDamage(srcAttack-destStancValue);
+                if (fieldDest.getCurrentStance() == Stance.ATTACK || fieldDest.getHasPowerUp()) {
+                    this.playerControllers[idDest].getDamage(srcAttack - destStancValue);
                 }
                 this.playerControllers[idDest].removeCardAtField(Type.CHARACTER, fieldDest.getFieldPos().getColumn());
                 canAttack = true;
+            } else {
+                showErrorAlert("Can't attack character card which has " + fieldDest.getCurrentStance()
+                        + " attribute higher or equal with selected character card's attack!");
             }
         }
         if (canAttack) {
@@ -280,6 +284,32 @@ public class Gameplay implements Subject, GlobalField {
             // System.out.println(this.playerControllers[idDest].player);
             fieldViewSrc.setBorder(Color.BLACK);
             fieldViewSrc = null;
+            checkWinner();
+        }
+    }
+
+    private void showErrorAlert(String msg) {
+        Alert alert = new Alert(AlertType.ERROR, msg, ButtonType.OK);
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        alert.showAndWait();
+    }
+
+    private void showWinnerAlert(int player) {
+        this.gameState.setFinish(player);
+
+        Alert alert = new Alert(AlertType.INFORMATION, "Congratulation, player " + (player+1) + " win the game!!!", ButtonType.OK);
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        alert.showAndWait();
+    }
+
+    public void checkWinner() {
+        if (this.playerControllers[0].getHp()==0 ) {
+            this.gameState.setFinish(1);
+            notifyObserver();
+        }
+        else if (this.playerControllers[1].getHp()==0) {
+            this.gameState.setFinish(0);
+            notifyObserver();
         }
     }
 
@@ -290,6 +320,10 @@ public class Gameplay implements Subject, GlobalField {
 
     @Override
     public void update() {
+        if (fieldViewSrc != null) {
+            fieldViewSrc.setBorder(Color.BLACK);
+            fieldViewSrc = null;
+        }
         this.gameState.next();
         notifyObserver();
     }
@@ -297,8 +331,17 @@ public class Gameplay implements Subject, GlobalField {
     @Override
     public void notifyObserver() {
         this.status.setText(this.gameState.toString());
-        for (Observer observer : this.playerControllers) {
-            observer.update();
+        try {
+            for (Observer observer : this.playerControllers) {
+                observer.update();
+            }
+            if (this.gameState.getPhase() == Phase.FINISHED) {
+                showWinnerAlert(this.gameState.getTurn());
+            }
+        }
+        catch (DeckCardEmpty err) {
+            this.gameState.setFinish((err.getId()+1)%2);
+            notifyObserver();
         }
     }
 

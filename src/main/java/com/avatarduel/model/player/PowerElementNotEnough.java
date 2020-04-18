@@ -5,7 +5,7 @@ import com.avatarduel.model.card.Element;
 public class PowerElementNotEnough extends Exception {
 
     public PowerElementNotEnough(Element element) {
-        super("Element " + element.toString() + " power not enough");
+        super(element + " element power not enough");
     }
 
     /**
