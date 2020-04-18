@@ -17,6 +17,16 @@ public class GameState {
     }
 
     /**
+     * Finish the game
+     * 
+     * @param winner winner id
+     */
+    public void setFinish(int winner) {
+        this.phase = Phase.FINISHED;
+        this.turn = winner;
+    }
+
+    /**
      * Next game state
      */
     public void next() {
@@ -65,6 +75,8 @@ public class GameState {
     public String toString() {
         if (phase == Phase.READY) {
             return "Avatar Duel!!";
+        } else if (phase == Phase.FINISHED) {
+            return "Finished!!";
         }
         return "Phase: " + phase.toString() + "\n" + "Player: " + (turn + 1);
     }

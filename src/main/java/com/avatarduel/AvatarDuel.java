@@ -1,8 +1,22 @@
 package com.avatarduel;
 
 import javafx.application.Application;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
@@ -17,8 +31,7 @@ import com.avatarduel.gameplay.Gameplay;
 public class AvatarDuel extends Application {
   private static final int WIDTH = 1280;
   private static final int HEIGHT = 720;
-  private final String[] playerNames = { "Qihla", "Hojun" };
-  private final int[] playerTotalDeck = { 40, 40 };
+  private static final String LOGO_PATH = "Logo.png";
 
   @Override
   public void start(Stage stage) {
@@ -40,7 +53,7 @@ public class AvatarDuel extends Application {
     gridPane.setAlignment(Pos.CENTER);
     gridPane.getChildren().add(gameplay.getStatus());
 
-    Scene scene = new Scene(gridPane, WIDTH, HEIGHT, Color.WHITESMOKE);
+    Scene scene = new Scene(gridPane, WIDTH, HEIGHT);
 
     stage.setTitle("Avatar Duel");
     stage.setScene(scene);
@@ -56,26 +69,57 @@ public class AvatarDuel extends Application {
     }
 
     gridPane.getChildren().remove(gameplay.getStatus());
-    
-    // TODO bikin tampilan awal untuk memasukkan nama dan total deck
-    for (int i=0; i<2; ++i) {
-      players[i].setName(playerNames[i]);
-      players[i].setTotalDeckCard(playerTotalDeck[i]);
+    gridPane.setBackground(new Background(new BackgroundFill(Color.DARKGREY, CornerRadii.EMPTY, Insets.EMPTY)));
+
+    Image logo = new Image(getClass().getResource(LOGO_PATH).toString());
+    ImageView logoView = new ImageView(logo);
+    GridPane inputPane = new GridPane();
+    TextField[] playerNames = new TextField[2];
+    Spinner<?>[] playerTotalDeck = new Spinner<?>[2];
+    Button playButton = new Button("Play!");
+    gridPane.add(logoView, 0, 0);
+    for (int i = 0; i < 2; ++i) {
+      playerNames[i] = new TextField();
+      playerTotalDeck[i] = new Spinner<Integer>(40, 60, 40, 5);
+      playerNames[i].setPromptText("Player " + (i+1) + " name");
+      inputPane.add(new Label("Player " + (i + 1)), 0, i);
+      inputPane.add(playerNames[i], 1, i);
+      inputPane.add(new Label("Total Deck " + (i + 1)), 2, i);
+      inputPane.add(playerTotalDeck[i], 3, i);
     }
-    
-    gridPane.add(playerControllers[0].getPlayerArena(), 1, 2, 2, 1); // bawah
-    gridPane.add(playerControllers[1].getPlayerArena(), 1, 0, 2, 1); // atas
-    gridPane.add(line, 1, 1);
-    gridPane.add(gameplay.getStatus(), 2, 1);
+    inputPane.setHgap(20);
+    inputPane.setVgap(10);
+    gridPane.add(inputPane, 0, 1);
+    playButton.setPadding(new Insets(10, 20, 10, 20));
+    gridPane.add(playButton, 0, 2);
+    GridPane.setHalignment(playButton, HPos.CENTER);
+    gridPane.setVgap(40);
+    gridPane.requestFocus();
+    playButton.setOnAction(e -> {
+      if (playerNames[0].getText().isEmpty() || playerNames[1].getText().isEmpty()) {
+        new Alert(AlertType.ERROR, "Player names can't be empty", ButtonType.OK).showAndWait();
+      }
+      else {
+        gridPane.getChildren().clear();
+        gridPane.setVgap(0);
+      // TODO bikin tampilan awal untuk memasukkan nama dan total deck
+      for (int i = 0; i < 2; ++i) {
+        players[i].setName(playerNames[i].getText());
+        players[i].setTotalDeckCard((Integer) playerTotalDeck[i].getValue());
+      }
 
-    
-
-    gridPane.add(gameplay.getHoverSpace(), 0, 0, 1, 3);
-    gridPane.setHgap(20);
-    gridPane.getRowConstraints().add(new RowConstraints());
-    gridPane.getRowConstraints().add(new RowConstraints(1));
-    gridPane.getRowConstraints().add(new RowConstraints());
-    gameplay.run();
+      gridPane.add(playerControllers[0].getPlayerArena(), 1, 2, 2, 1); // bawah
+      gridPane.add(playerControllers[1].getPlayerArena(), 1, 0, 2, 1); // atas
+      gridPane.add(line, 1, 1);
+      gridPane.add(gameplay.getStatus(), 2, 1);
+      gridPane.add(gameplay.getHoverSpace(), 0, 0, 1, 3);
+      gridPane.setHgap(20);
+      gridPane.getRowConstraints().add(new RowConstraints());
+      gridPane.getRowConstraints().add(new RowConstraints(1));
+      gridPane.getRowConstraints().add(new RowConstraints());
+      gameplay.run();
+      }
+    });
   }
 
   public static void main(String[] args) {

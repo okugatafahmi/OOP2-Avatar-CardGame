@@ -74,13 +74,13 @@ public class PlayerArena extends GridPane {
 
         nextButton.setVisible(false);
         nextButton.setAlignment(Pos.CENTER);
+        nextButton.setPadding(new Insets(5, 10, 5, 10));
         deck = new StackPane();
         deck.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         deck.setAlignment(Pos.CENTER);
         deck.setMinSize(64, 91);
         deck.setMaxSize(64, 91);
-        deck.getChildren().add(new Text("Deck"));
 
         throwPlace = new StackPane();
         throwPlace.setBorder(new Border(

@@ -5,5 +5,6 @@ public enum Phase {
     DRAW,
     MAIN,
     BATTLE,
-    END
+    END,
+    FINISHED
 }

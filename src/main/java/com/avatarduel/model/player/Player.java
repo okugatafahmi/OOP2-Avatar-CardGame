@@ -8,6 +8,7 @@ import java.util.Stack;
 import com.avatarduel.gameplay.GlobalField;
 import com.avatarduel.model.card.Card;
 import com.avatarduel.model.card.Character;
+import com.avatarduel.model.card.Destroy;
 import com.avatarduel.model.card.Summonedable;
 import com.avatarduel.model.field.CardInFieldExist;
 import com.avatarduel.model.field.FieldPos;
@@ -42,7 +43,7 @@ public class Player {
     /**
      * Constructor. The name player will be set "XXXX" and total card deck is 40
      * 
-     * @param id
+     * @param id player id
      */
     public Player(int id) {
         this.id = id;
@@ -60,7 +61,7 @@ public class Player {
 
         for (Element element : Element.values()) {
             // TODO kembaliin 0
-            powerTotal.put(element, 99);
+            powerTotal.put(element, 10);
             powerCanUse.put(element, 0);
         }
 
@@ -103,7 +104,7 @@ public class Player {
     /**
      * @return the hp
      */
-    public int getHealth() {
+    public int getHp() {
         return hp;
     }
 
@@ -190,13 +191,19 @@ public class Player {
 
     /**
      * Reset some attribute when it is player's draw phase
+     * 
+     * @throws DeckCardEmpty if the deck is empty
      */
-    public void setupDrawPhase() {
+    public void setupDrawPhase() throws DeckCardEmpty {
         powerCanUse.putAll(powerTotal);
         for (CharacterField characterField : characterFields) {
             characterField.setHasAttacked(false);
+            characterField.setFirstSummon(false);
         }
         isUsedLand = false;
+        if (this.getTotalCardInDeck() == 0) {
+            throw new DeckCardEmpty(id);
+        }
     }
 
     /**
@@ -365,7 +372,9 @@ public class Player {
                 }
             }
         }
-        ++totalSkillInField;
+        if (!(card instanceof Destroy)) {
+            ++totalSkillInField;
+        }
         return column;
     }
 
@@ -430,7 +439,7 @@ public class Player {
                     + skillFields[i].toString() + "\n";
         }
         res += inHand + "\n" + powerCanUse + "/ " + powerTotal + "\n" + totalCharacterInField + " " + totalSkillInField
-                + "\n" + name + " " + hp;
+                + "\n" + name + " " + hp + " " + getTotalCardInDeck();
         return res;
     }
 }
