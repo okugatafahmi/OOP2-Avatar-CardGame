@@ -192,7 +192,7 @@ public class PlayerArena extends GridPane {
      * @param cards card deck (stack of card)
      */
     public void setDeck(Stack<Card> cards) {
-        List<CardView> cardViews = cards.stream().map(card -> new CardView(card)).collect(Collectors.toList());
+        List<CardView> cardViews = cards.stream().map(card -> new CardView(card,1)).collect(Collectors.toList());
         cardViews.stream().forEach(card -> {
             card.faceDown();
             deck.getChildren().add(card);
@@ -311,9 +311,7 @@ public class PlayerArena extends GridPane {
         deck.getChildren().stream().forEach(card -> {
             card.setOnMouseEntered(e -> {
                 if (((CardView) card).getIsFaceUp()) {
-                    CardView cardHover = new CardView(((CardView) card).getCard());
-                    cardHover.setScaleX(4);
-                    cardHover.setScaleY(4);
+                    CardView cardHover = new CardView(((CardView) card).getCard(), 4);
                     hoverSpace.getChildren().add(cardHover);
                 }
             });

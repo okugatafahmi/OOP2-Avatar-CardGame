@@ -21,6 +21,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
@@ -32,14 +33,14 @@ public class CardView extends StackPane {
             new Image(getClass().getResource("/com/avatarduel/card/image/Back.jpg").toString()));
     private boolean isFaceUp;
 
-    public CardView(Card card) {
+    public CardView(Card card, int scale) {
         this.card = card;
         this.containerCardView = new GridPane();
         this.isFaceUp = true;
 
-        this.containerCardView.getColumnConstraints().add(new ColumnConstraints(27));
-        this.containerCardView.getColumnConstraints().add(new ColumnConstraints(27));
-        this.containerCardView.getRowConstraints().add((new RowConstraints(15)));
+        this.containerCardView.getColumnConstraints().add(new ColumnConstraints(27 * scale));
+        this.containerCardView.getColumnConstraints().add(new ColumnConstraints(27 * scale));
+        this.containerCardView.getRowConstraints().add((new RowConstraints(15 * scale)));
         this.containerCardView.setStyle("-fx-background-color: #f7da00");
 
         // Setting names
@@ -51,17 +52,18 @@ public class CardView extends StackPane {
         }
 
         GridPane header = new GridPane();
-        GridPane deskripsi_box = new GridPane();
+        GridPane deskripsiBox = new GridPane();
         Text empty = new Text(" ");
         Text nama = new Text(this.card.getName());
         Text tipe = new Text(string_tipe);
         Text deskripsi = new Text(this.card.getDescription());
 
-        empty.setStyle("-fx-font: 4 helvetica");
-        nama.setStyle("-fx-font: bold 4 helvetica");
         nama.setFill(Color.WHITE);
-        tipe.setStyle("-fx-font: 4 helvetica");
-        deskripsi.setStyle("-fx-font: 3 helvetica");
+        empty.setFont(new Font("Helvetica", 4 * scale));
+        nama.setFont(new Font("Helvetica", 4 * scale));
+        nama.setFont(new Font("Helvetica", 4 * scale));
+        tipe.setFont(new Font("Helvetica", 4 * scale));
+        deskripsi.setFont(new Font("Helvetica", 3 * scale));
 
         TextFlow emptyFlow = new TextFlow(empty);
         TextFlow namaFlow = new TextFlow(nama);
@@ -69,15 +71,15 @@ public class CardView extends StackPane {
         TextFlow deskripsiFlow = new TextFlow(deskripsi);
 
         namaFlow.setTextAlignment(TextAlignment.LEFT);
-        namaFlow.setPadding(new Insets(0, 0, 0, 2));
+        namaFlow.setPadding(new Insets(0 * scale, 0 * scale, 0 * scale, 2 * scale));
         tipeFlow.setTextAlignment(TextAlignment.RIGHT);
-        tipeFlow.setPadding(new Insets(0, 4, 0, 0));
+        tipeFlow.setPadding(new Insets(0 * scale, 4 * scale, 0 * scale, 0 * scale));
         deskripsiFlow.setTextAlignment(TextAlignment.LEFT);
 
         Image element_image = new Image(this.card.getElementImagePath());
         ImageView elementView = new ImageView(element_image);
-        elementView.setFitHeight(10);
-        elementView.setFitWidth(10);
+        elementView.setFitHeight(10 * scale);
+        elementView.setFitWidth(10 * scale);
         BorderPane element = new BorderPane();
         element.setCenter(elementView);
 
@@ -87,38 +89,39 @@ public class CardView extends StackPane {
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         header.setAlignment(Pos.CENTER);
         header.setStyle("-fx-background-color: #000000");
-        header.getColumnConstraints().add(new ColumnConstraints(40));
-        header.getColumnConstraints().add(new ColumnConstraints(12));
+        header.getColumnConstraints().add(new ColumnConstraints(40 * scale));
+        header.getColumnConstraints().add(new ColumnConstraints(12 * scale));
         header.getRowConstraints().add(new RowConstraints(1));
         this.containerCardView.add(header, 0, 0, 2, 1);
         if (card instanceof Character || card instanceof Land) {
             this.containerCardView.add(tipeFlow, 0, 1, 2, 1);
             if (card instanceof Character) {
-                Text info_char = new Text("ATK/" + Integer.toString(((Character) this.card).getAttack()) + " | DEF/"
+                Text infoChar = new Text("ATK/" + Integer.toString(((Character) this.card).getAttack()) + " | DEF/"
                         + Integer.toString(((Character) this.card).getDefense()) + " | POW/"
                         + Integer.toString(((Character) this.card).getPower()));
-                info_char.setStyle("-fx-font: 3 helvetica");
-                info_char.setFill(Color.WHITE);
+                infoChar.setFont(new Font("Helvetica", 3 * scale));
+                ;
+                infoChar.setFill(Color.WHITE);
 
-                TextFlow info_char_flow = new TextFlow(info_char);
-                info_char_flow.setTextAlignment(TextAlignment.RIGHT);
+                TextFlow infoCharFlow = new TextFlow(infoChar);
+                infoCharFlow.setTextAlignment(TextAlignment.RIGHT);
 
-                GridPane info_box = new GridPane();
-                info_box.add(info_char_flow, 0, 0);
-                info_box.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY,
+                GridPane infoBbox = new GridPane();
+                infoBbox.add(infoCharFlow, 0, 0);
+                infoBbox.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY,
                         BorderWidths.DEFAULT)));
-                info_box.setAlignment(Pos.CENTER);
-                info_box.setStyle("-fx-background-color: #000000");
-                info_box.getColumnConstraints().add(new ColumnConstraints(50));
+                infoBbox.setAlignment(Pos.CENTER);
+                infoBbox.setStyle("-fx-background-color: #000000");
+                infoBbox.getColumnConstraints().add(new ColumnConstraints(50 *scale));
 
-                this.containerCardView.add(info_box, 0, 6, 2, 1);
+                this.containerCardView.add(infoBbox, 0, 6, 2, 1);
 
             }
         }
 
         else {
             Text effect = new Text("★" + (this.card.getClass().getSimpleName()));
-            effect.setStyle("-fx-font: 4 helvetica");
+            effect.setFont((new Font("Helvetica", 4 * scale)));
             TextFlow effectFlow = new TextFlow(effect);
             effectFlow.setTextAlignment(TextAlignment.LEFT);
             effectFlow.setPadding(new Insets(0, 0, 0, 4));
@@ -137,63 +140,63 @@ public class CardView extends StackPane {
                 info += (Integer.toString(((Aura) this.card).getDefense()) + " DEF");
             }
 
-            Text info_skill = new Text(info);
-            info_skill.setStyle("-fx-font: 3 helvetica");
-            info_skill.setFill(Color.LIGHTBLUE);
+            Text infoSkill = new Text(info);
+            infoSkill.setFont(new Font("Helvetica", 3 * scale));
+            infoSkill.setFill(Color.LIGHTBLUE);
 
-            Text info_pow = new Text("POW/" + Integer.toString(((Skill) this.card).getPower()));
-            info_pow.setStyle("-fx-font: 3 helvetica");
-            info_pow.setFill(Color.YELLOW);
+            Text infoPow = new Text("POW/" + Integer.toString(((Skill) this.card).getPower()));
+            infoPow.setFont(new Font("Helvetica", 3 * scale));
+            infoPow.setFill(Color.YELLOW);
 
-            TextFlow info_skill_flow = new TextFlow(info_skill);
-            info_skill_flow.setTextAlignment(TextAlignment.LEFT);
+            TextFlow infoSkillFlow = new TextFlow(infoSkill);
+            infoSkillFlow.setTextAlignment(TextAlignment.LEFT);
 
-            TextFlow info_pow_flow = new TextFlow(info_pow);
-            info_pow_flow.setTextAlignment(TextAlignment.RIGHT);
+            TextFlow infoPowFlow = new TextFlow(infoPow);
+            infoPowFlow.setTextAlignment(TextAlignment.RIGHT);
 
-            GridPane info_skill_box = new GridPane();
-            info_skill_box.add(info_skill_flow, 0, 0);
-            info_skill_box.add(info_pow_flow, 1, 0);
+            GridPane infoSkillBox = new GridPane();
+            infoSkillBox.add(infoSkillFlow, 0, 0);
+            infoSkillBox.add(infoPowFlow, 1, 0);
 
-            info_skill_box.setBorder(new Border(
+            infoSkillBox.setBorder(new Border(
                     new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-            info_skill_box.setAlignment(Pos.CENTER);
-            info_skill_box.setStyle("-fx-background-color: #000000");
-            info_skill_box.getColumnConstraints().add(new ColumnConstraints(35));
-            info_skill_box.getColumnConstraints().add(new ColumnConstraints(15));
+            infoSkillBox.setAlignment(Pos.CENTER);
+            infoSkillBox.setStyle("-fx-background-color: #000000");
+            infoSkillBox.getColumnConstraints().add(new ColumnConstraints(35 * scale));
+            infoSkillBox.getColumnConstraints().add(new ColumnConstraints(15 * scale));
 
-            this.containerCardView.add(info_skill_box, 0, 6, 2, 1);
+            this.containerCardView.add(infoSkillBox, 0, 6, 2, 1);
 
         }
 
         Image image = new Image(this.card.getImagePath());
         ImageView imageView = new ImageView(image);
-        imageView.setFitHeight(30);
-        imageView.setFitWidth(30);
+        imageView.setFitHeight(30 * scale);
+        imageView.setFitWidth(30 * scale);
         BorderPane bPane = new BorderPane();
         bPane.setCenter(imageView);
         this.containerCardView.add(bPane, 0, 2, 2, 2);
 
         this.containerCardView.add(emptyFlow, 0, 4, 1, 1);
 
-        deskripsi_box.add(deskripsiFlow, 0, 0);
-        deskripsi_box.setAlignment(Pos.CENTER);
-        deskripsi_box.setStyle("-fx-background-color: #fffeb3");
-        deskripsi_box.getColumnConstraints().add(new ColumnConstraints(50));
-        deskripsi_box.getRowConstraints().add(new RowConstraints(20));
-        this.containerCardView.add(deskripsi_box, 0, 5, 2, 1);
+        deskripsiBox.add(deskripsiFlow, 0, 0);
+        deskripsiBox.setAlignment(Pos.CENTER);
+        deskripsiBox.setStyle("-fx-background-color: #fffeb3");
+        deskripsiBox.getColumnConstraints().add(new ColumnConstraints(50 * scale));
+        deskripsiBox.getRowConstraints().add(new RowConstraints(20 * scale));
+        this.containerCardView.add(deskripsiBox, 0, 5, 2, 1);
 
-        this.containerCardView.setPadding(new Insets(3, 4, 3, 4));
-        this.containerCardView.setMinSize(61, 88);
-        this.containerCardView.setMaxSize(61, 88);
+        this.containerCardView.setPadding(new Insets(3 * scale, 4 * scale, 3 * scale, 4 * scale));
+        this.containerCardView.setMinSize(61 * scale, 88 * scale);
+        this.containerCardView.setMaxSize(61 * scale, 88 * scale);
         this.getChildren().add(containerCardView);
         this.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-        this.setMinSize(63, 90);
-        this.setMaxSize(63, 90);
+        this.setMinSize(63 * scale, 90 * scale);
+        this.setMaxSize(63 * scale, 90 * scale);
         this.setAlignment(Pos.TOP_CENTER);
 
-        backCard.setFitHeight(90);
+        backCard.setFitHeight(90 * scale);
         backCard.setPreserveRatio(true);
     }
 
