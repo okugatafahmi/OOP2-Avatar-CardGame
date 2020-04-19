@@ -5,6 +5,7 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 
 import com.avatarduel.model.card.Card;
+import com.avatarduel.model.card.Element;
 import com.avatarduel.model.field.Field.Type;
 
 import static com.avatarduel.model.player.Player.N_COLUMN;
@@ -202,6 +203,24 @@ public class PlayerArena extends GridPane {
     public void drawCard(EventHandler<MouseEvent> cardInHandClickHandler) {
         Node node = deck.getChildren().get(deck.getChildren().size() - 1);
         addInHand((CardView) node, cardInHandClickHandler);
+    }
+
+    /**
+     * Update power can use status
+     * @param element   card's element
+     * @param powerCanUse number power can use
+     */
+    public void updatePowerCanUse(Element element, int powerCanUse) {
+        this.landStatus.updatePowerCanUse(element, powerCanUse);
+    }
+
+    /**
+     * Update power total status
+     * @param element   card's element
+     * @param powerTotal number power total
+     */
+    public void updatePowerTotal(Element element, int powerTotal) {
+        this.landStatus.updatePowerTotal(element, powerTotal);
     }
 
     /**

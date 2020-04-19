@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import com.avatarduel.controller.PlayerController;
 import com.avatarduel.controller.TestPlayerController;
 import com.avatarduel.util.CSVReader;
 
@@ -15,8 +14,11 @@ import org.junit.Test;
 
 
 public class TestGameplay {
-    private Gameplay gameplay;
     private static final String CARD_CSV_FOLDER_PATH = "/com/avatarduel/card/data/";
+
+    public static Gameplay makeGameplay() {
+        return new Gameplay(TestPlayerController.makeControllers());
+    }
 
     public int getTotalCard() throws IOException, URISyntaxException {
         int totalCard = 0;
@@ -31,10 +33,18 @@ public class TestGameplay {
     }
 
     @Test
-    public void testGameplay() throws IOException, URISyntaxException {
-        PlayerController[] playerControllers = TestPlayerController.makeControllers();
-        Gameplay gameplay = new Gameplay(playerControllers);
+    public void testLoadCard() throws IOException, URISyntaxException {
+        Gameplay gameplay = TestGameplay.makeGameplay();
         gameplay.loadCards();
         assertEquals(gameplay.listCard.size(), getTotalCard());
+    }
+
+    @Test
+    public void testSetDeck() throws IOException, URISyntaxException {
+        Gameplay gameplay = TestGameplay.makeGameplay();
+        gameplay.loadCards();
+        for (int i=40; i<=60; ++i) {
+            assertEquals(gameplay.setDeck(i).size(), i);
+        }
     }
 }
