@@ -162,7 +162,7 @@ public class Gameplay implements Subject, GlobalField {
             playerControllers[i].setGlobalField(this);
             playerControllers[i].setDeck(this.setDeck(playerControllers[i].getTotalDeckCard()));
             playerControllers[i].setDeckCardHover(hoverSpace);
-            // TODO bikin click event
+            // click event
             final int id = i;
             playerControllers[i].setFieldClickHandler(e -> {
                 if (this.gameState.getPhase() == Phase.MAIN) {
@@ -188,7 +188,7 @@ public class Gameplay implements Subject, GlobalField {
                         }
                     }
                 } else if (this.gameState.getPhase() == Phase.BATTLE) {
-                    // TODO Battle Phase
+                    // Battle Phase
                     FieldPos fieldPos = new FieldPos(id, ((CharacterFieldView) e.getSource()).getColumn());
                     // kalau belum ada kartu asal
                     if (fieldViewSrc == null) {
@@ -248,6 +248,7 @@ public class Gameplay implements Subject, GlobalField {
         notifyObserver();
     }
 
+    // untuk battle
     public void battle(CharacterFieldView cFieldViewSrc, CharacterFieldView cFieldViewDest) {
         int idSrc = gameState.getTurn();
         int idDest = (gameState.getTurn() + 1) % 2;
@@ -282,15 +283,13 @@ public class Gameplay implements Subject, GlobalField {
         }
         if (canAttack) {
             fieldSrc.setHasAttacked(true);
-            // TODO hapus. hanya utk debug
-            // System.out.println(this.playerControllers[idSrc].player);
-            // System.out.println(this.playerControllers[idDest].player);
             fieldViewSrc.setBorder(Color.BLACK);
             fieldViewSrc = null;
             checkWinner();
         }
     }
 
+    // error alert
     private void showErrorAlert(String msg) {
         if (this.alertShower != null) {
             this.alertShower.showAlert(AlertType.ERROR, msg);
@@ -299,6 +298,7 @@ public class Gameplay implements Subject, GlobalField {
         }
     }
 
+    // winner alert
     private void showWinnerAlert(int player) {
         this.gameState.setFinish(player);
         String msg = "Congratulation, player " + (player + 1) + " win the game!!!";
@@ -309,6 +309,7 @@ public class Gameplay implements Subject, GlobalField {
         }
     }
 
+    // untuk mengecek apakah salah satu pemain menjadi pemenang game
     public void checkWinner() {
         if (this.playerControllers[0].getHp() == 0) {
             this.gameState.setFinish(1);
