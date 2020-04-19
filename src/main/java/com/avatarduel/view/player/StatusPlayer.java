@@ -18,6 +18,10 @@ public class StatusPlayer extends GridPane {
     private String hp;
     private String name;
     private Player player;
+    private Text nameText;
+    private Text hpText;
+    private TextFlow nameFlow;
+    private TextFlow hpFlow;
 
     public StatusPlayer() {
         this.setMinSize(180, 50);
@@ -25,25 +29,33 @@ public class StatusPlayer extends GridPane {
         this.setAlignment(Pos.CENTER);
         this.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-        try{
-            updatePlayer(player);
-        } catch (Exception e){
-            name = "xxx";
-            hp = ("80");    
-        }
-        Text nameText = new Text(name);
-        Text hpText = new Text("HP : " + hp + " / 80");
+        name = "xxx";
+        hp = ("80");
 
-        TextFlow nameFlow = new TextFlow(nameText);
-        TextFlow hpFlow = new TextFlow(hpText);
-
-        this.add(nameFlow,1,0);
-        this.add(hpFlow,1,1);
+        nameText = new Text(name);
+        hpText = new Text("HP : " + hp + " / 80");
+        nameFlow = new TextFlow(nameText);
+        hpFlow = new TextFlow(hpText);
     }
 
     public void updatePlayer(Player player){
         this.player = player;
         this.name = player.getName();
         this.hp = Integer.toString(player.getHp());
+
+        nameFlow.getChildren().clear();
+        hpFlow.getChildren().clear();
+
+        nameText = new Text(name);
+        hpText = new Text("HP : " + hp + " / 80");
+        System.out.println("updated5!");
+
+        nameFlow = new TextFlow(nameText);
+        hpFlow = new TextFlow(hpText);
+
+        this.add(nameFlow,1,0);
+        this.add(hpFlow,1,1);
+
+        System.out.println("updated!");
     }
 }
