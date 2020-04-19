@@ -111,7 +111,7 @@ public class AvatarDuel extends Application implements AlertShower {
       else {
         gridPane.getChildren().clear();
         gridPane.setVgap(0);
-      // TODO bikin tampilan awal untuk memasukkan nama dan total deck
+      
       for (int i = 0; i < 2; ++i) {
         playerControllers[i].setName(playerNames[i].getText());
         playerControllers[i].setTotalDeckCard((Integer) playerTotalDeck[i].getValue());

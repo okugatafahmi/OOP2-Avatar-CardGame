@@ -82,6 +82,7 @@ public class PlayerController implements Observer {
      */
     @Override
     public void update() throws DeckCardEmpty {
+        this.playerArena.updatePlayer(this.player);
         GameState gameState = this.gameplay.getUpdate();
         if (gameState.equals(Phase.DRAW, this.id)) {
             this.player.setupDrawPhase();
@@ -95,6 +96,7 @@ public class PlayerController implements Observer {
         if (this.playerArena == null)
             return;
         if (gameState.getTurn() == this.id) { // turn pemain
+            // this.playerArena.updatePlayer(this.player);
             if (gameState.getPhase() == Phase.READY) {
                 this.updateAllPower();
                 this.playerArena.setFaceCardInHand(false);
@@ -113,6 +115,7 @@ public class PlayerController implements Observer {
                 this.playerArena.setIsVisibleNextButton(false, null);
             }
         } else {
+            // this.playerArena.updatePlayer(this.player);
             if (gameState.getPhase() == Phase.READY) {
                 this.updateAllPower();
                 this.playerArena.setFaceCardInHand(false);
@@ -127,6 +130,7 @@ public class PlayerController implements Observer {
             }
         }
     }
+
 
     /**
      * Set global field
