@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.avatarduel.model.card.Card;
 import com.avatarduel.model.card.Element;
+import com.avatarduel.model.player.Player;
 import com.avatarduel.model.field.Field.Type;
 
 import static com.avatarduel.model.player.Player.N_COLUMN;
@@ -45,7 +46,8 @@ public class PlayerArena extends GridPane {
     private CardInHand cardInHand;
     private StackPane deck;
     private StackPane throwPlace;
-    private GridPane statusPlayer;
+    // private GridPane statusPlayer;
+    private StatusPlayer statusPlayer;
     private boolean inHandFaceUp;
     private Button nextButton;
     private CardView cardToBeMove;
@@ -74,9 +76,9 @@ public class PlayerArena extends GridPane {
 
         landStatus = new LandStatus();
         cardInHand = new CardInHand();
-        statusPlayer = new GridPane();
+        statusPlayer = new StatusPlayer();
         nextButton = new Button();
-        statusPlayer.getChildren().add(new Text("Status Pemain"));
+        // statusPlayer.getChildren().add(new Text("Status Pemain"));
 
         nextButton.setVisible(false);
         nextButton.setAlignment(Pos.CENTER);
@@ -221,6 +223,10 @@ public class PlayerArena extends GridPane {
      */
     public void updatePowerTotal(Element element, int powerTotal) {
         this.landStatus.updatePowerTotal(element, powerTotal);
+    }
+
+    public void updatePlayer(Player player){
+        this.statusPlayer.updatePlayer(player);
     }
 
     /**
