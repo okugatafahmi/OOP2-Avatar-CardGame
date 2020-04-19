@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import com.avatarduel.model.card.Card;
 import com.avatarduel.model.card.Element;
-import com.avatarduel.model.player.Player;
 import com.avatarduel.model.field.Field.Type;
 
 import static com.avatarduel.model.player.Player.N_COLUMN;
@@ -16,6 +15,7 @@ import com.avatarduel.view.field.SkillFieldView;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -97,6 +97,7 @@ public class PlayerArena extends GridPane {
         throwPlace.setMinSize(64, 91);
         throwPlace.setMaxSize(64, 91);
         throwPlace.getChildren().add(new Text("Throw"));
+        GridPane.setHalignment(throwPlace, HPos.RIGHT);
 
         int rowInHand = ((isMirror) ? 0 : 1);
         int inc = ((isMirror) ? 1 : -1);
@@ -110,11 +111,12 @@ public class PlayerArena extends GridPane {
         container.add(throwPlace, 1, row);
         row += inc;
         container.add(nextButton, 0, row, 2, 1);
+        GridPane.setHalignment(nextButton, HPos.CENTER);
         row += inc;
         container.add(landStatus, 0, row, 2, 1);
         container.setAlignment(Pos.CENTER);
         container.setHgap(40);
-        container.setVgap(10);
+        container.setVgap(5);
         container.setPadding(new Insets(40, 5, 40, 5));
 
         this.add(cardInHand, 0, rowInHand);
@@ -225,8 +227,20 @@ public class PlayerArena extends GridPane {
         this.landStatus.updatePowerTotal(element, powerTotal);
     }
 
-    public void updatePlayer(Player player){
-        this.statusPlayer.updatePlayer(player);
+    /**
+     * Update player's name in player status
+     * @param name player's name
+     */
+    public void updatePlayerName(String name){
+        this.statusPlayer.updatePlayerName(name);
+    }
+
+    /**
+     * Update player's hp in player status
+     * @param hp player's hp
+     */
+    public void updatePlayerHp(int hp) {
+        this.statusPlayer.updatePlayerHp(hp);
     }
 
     /**

@@ -278,7 +278,7 @@ public class Gameplay implements Subject, GlobalField {
                 canAttack = true;
             } else {
                 showErrorAlert("Can't attack character card which has " + fieldDest.getCurrentStance()
-                        + " attribute higher or equal with selected character card's attack!");
+                        + " attribute higher or equal with selected character card's ATTACK!");
             }
         }
         if (canAttack) {

@@ -24,8 +24,8 @@ public class LandStatus extends GridPane {
     private Text[] powerCanUse;
 
     public LandStatus() {
-        this.setMinSize(180, 120);
-        this.setMaxSize(180, 120);
+        this.setMinSize(180, 110);
+        this.setMaxSize(180, 110);
         this.setAlignment(Pos.CENTER);
         this.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));

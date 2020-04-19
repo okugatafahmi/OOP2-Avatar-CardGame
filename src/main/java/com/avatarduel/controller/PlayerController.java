@@ -51,6 +51,9 @@ public class PlayerController implements Observer {
      */
     public void setName(String name) {
         this.player.setName(name);
+        if (this.playerArena != null) {
+            this.playerArena.updatePlayerName(name);
+        }
     }
 
     /**
@@ -82,7 +85,6 @@ public class PlayerController implements Observer {
      */
     @Override
     public void update() throws DeckCardEmpty {
-        this.playerArena.updatePlayer(this.player);
         GameState gameState = this.gameplay.getUpdate();
         if (gameState.equals(Phase.DRAW, this.id)) {
             this.player.setupDrawPhase();
@@ -96,9 +98,9 @@ public class PlayerController implements Observer {
         if (this.playerArena == null)
             return;
         if (gameState.getTurn() == this.id) { // turn pemain
-            // this.playerArena.updatePlayer(this.player);
             if (gameState.getPhase() == Phase.READY) {
                 this.updateAllPower();
+                this.playerArena.updatePlayerHp(this.player.getHp());
                 this.playerArena.setFaceCardInHand(false);
                 this.playerArena.setIsVisibleNextButton(true, "Ready");
             } else if (gameState.getPhase() == Phase.FINISHED) {
@@ -115,9 +117,9 @@ public class PlayerController implements Observer {
                 this.playerArena.setIsVisibleNextButton(false, null);
             }
         } else {
-            // this.playerArena.updatePlayer(this.player);
             if (gameState.getPhase() == Phase.READY) {
                 this.updateAllPower();
+                this.playerArena.updatePlayerHp(this.player.getHp());
                 this.playerArena.setFaceCardInHand(false);
                 this.playerArena.setIsVisibleNextButton(false, null);
             } else if (gameState.getPhase() == Phase.FINISHED) {
@@ -153,6 +155,8 @@ public class PlayerController implements Observer {
                 this.gameplay.update();
             }
         });
+        this.playerArena.updatePlayerName(this.player.getName());
+        this.playerArena.updatePlayerHp(this.player.getHp());
     }
 
     /**
@@ -219,6 +223,9 @@ public class PlayerController implements Observer {
      */
     public void getDamage(int damage) {
         this.player.getDamage(damage);
+        if (this.playerArena != null) {
+            this.playerArena.updatePlayerHp(this.player.getHp());
+        }
     }
 
     /**

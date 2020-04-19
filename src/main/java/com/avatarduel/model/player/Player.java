@@ -61,8 +61,7 @@ public class Player {
         this.totalSkillInField = 0;
 
         for (Element element : Element.values()) {
-            // TODO kembaliin 0
-            powerTotal.put(element, 10);
+            powerTotal.put(element, 0);
             powerCanUse.put(element, 0);
         }
 

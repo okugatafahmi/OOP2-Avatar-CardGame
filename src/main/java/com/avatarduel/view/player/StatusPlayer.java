@@ -1,8 +1,5 @@
 package com.avatarduel.view.player;
 
-import com.avatarduel.model.player.Player;
-import java.util.HashMap;
-
 import javafx.geometry.Pos;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
@@ -15,13 +12,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 public class StatusPlayer extends GridPane {
-    private String hp;
-    private String name;
-    private Player player;
     private Text nameText;
     private Text hpText;
-    private TextFlow nameFlow;
-    private TextFlow hpFlow;
 
     public StatusPlayer() {
         this.setMinSize(180, 50);
@@ -29,33 +21,30 @@ public class StatusPlayer extends GridPane {
         this.setAlignment(Pos.CENTER);
         this.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-        name = "xxx";
-        hp = ("80");
 
-        nameText = new Text(name);
-        hpText = new Text("HP : " + hp + " / 80");
-        nameFlow = new TextFlow(nameText);
-        hpFlow = new TextFlow(hpText);
+        nameText = new Text("XXX");
+        hpText = new Text("HP : " + 80 + " / 80");
+        TextFlow nameFlow = new TextFlow(nameText);
+        TextFlow hpFlow = new TextFlow(hpText);
+        this.add(nameFlow, 0, 0);
+        this.add(hpFlow, 0, 1);
     }
 
-    public void updatePlayer(Player player){
-        this.player = player;
-        this.name = player.getName();
-        this.hp = Integer.toString(player.getHp());
+    /**
+     * Update player's name
+     * 
+     * @param name player's name
+     */
+    public void updatePlayerName(String name) {
+        nameText.setText(name.toUpperCase());
+    }
 
-        nameFlow.getChildren().clear();
-        hpFlow.getChildren().clear();
-
-        nameText = new Text(name);
-        hpText = new Text("HP : " + hp + " / 80");
-        System.out.println("updated5!");
-
-        nameFlow = new TextFlow(nameText);
-        hpFlow = new TextFlow(hpText);
-
-        this.add(nameFlow,1,0);
-        this.add(hpFlow,1,1);
-
-        System.out.println("updated!");
+    /**
+     * Update player's hp
+     * 
+     * @param hp player's hp
+     */
+    public void updatePlayerHp(int hp) {
+        hpText.setText("HP : " + hp + " / 80");
     }
 }

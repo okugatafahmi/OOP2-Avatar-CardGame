@@ -66,14 +66,6 @@ public class SkillField extends Field {
         return this.card;
     }
 
-    //TODO Sepertinya tidak kepakai
-    /**
-     * @return the attachTo
-     */
-    public FieldPos getAttachTo() {
-        return attachTo;
-    }
-
     @Override
     public String toString() {
         return card + " " + attachTo;
