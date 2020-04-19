@@ -10,6 +10,7 @@ import com.avatarduel.gameplay.Subject;
 import com.avatarduel.model.card.Card;
 import com.avatarduel.model.card.Character;
 import com.avatarduel.model.card.Destroy;
+import com.avatarduel.model.card.Element;
 import com.avatarduel.model.card.Land;
 import com.avatarduel.model.card.Skill;
 import com.avatarduel.model.card.Summonedable;
@@ -55,7 +56,7 @@ public class PlayerController implements Observer {
     /**
      * Set player's total deck card
      * 
-     * @param totalDeckCard
+     * @param totalDeckCard amount total deck card in the first game
      */
     public void setTotalDeckCard(int totalDeckCard) {
         this.player.setTotalDeckCard(totalDeckCard);
@@ -95,12 +96,14 @@ public class PlayerController implements Observer {
             return;
         if (gameState.getTurn() == this.id) { // turn pemain
             if (gameState.getPhase() == Phase.READY) {
+                this.updateAllPower();
                 this.playerArena.setFaceCardInHand(false);
                 this.playerArena.setIsVisibleNextButton(true, "Ready");
             } else if (gameState.getPhase() == Phase.FINISHED) {
                 this.playerArena.setFaceCardInHand(true);
                 this.playerArena.setIsVisibleNextButton(false, null);
             } else if (gameState.getPhase() == Phase.DRAW) {
+                this.updateAllPower();
                 this.playerArena.setFaceCardInHand(true);
                 this.playerArena.setIsVisibleNextButton(false, null);
             } else if (gameState.getPhase() != Phase.END) {
@@ -111,6 +114,7 @@ public class PlayerController implements Observer {
             }
         } else {
             if (gameState.getPhase() == Phase.READY) {
+                this.updateAllPower();
                 this.playerArena.setFaceCardInHand(false);
                 this.playerArena.setIsVisibleNextButton(false, null);
             } else if (gameState.getPhase() == Phase.FINISHED) {
@@ -233,6 +237,18 @@ public class PlayerController implements Observer {
     }
 
     /**
+     * Update all power gui
+     */
+    public void updateAllPower() {
+        if (this.playerArena != null) {
+            for (Element element : Element.values()) {
+                this.playerArena.updatePowerCanUse(element, this.player.getPowerElementCanUse(element));
+                this.playerArena.updatePowerTotal(element, this.player.getPowerElementTotal(element));
+            }
+        }
+    }
+
+    /**
      * Change stance of character field
      * 
      * @param fieldColumn field's column
@@ -274,6 +290,10 @@ public class PlayerController implements Observer {
                                 // hapus click handler nya
                                 this.playerArena.getCardToBeMove().removeEventHandler(MouseEvent.MOUSE_CLICKED,
                                         cardOnClick);
+                                this.playerArena.updatePowerCanUse(this.player.getCardToBeMove().getElement(),
+                                        this.player.getPowerElementCanUse(this.player.getCardToBeMove().getElement()));
+                                this.playerArena.updatePowerTotal(this.player.getCardToBeMove().getElement(),
+                                        this.player.getPowerElementTotal(this.player.getCardToBeMove().getElement()));
                             } catch (Exception err) {
                                 errorHandler(err.getMessage());
                             }
@@ -366,6 +386,8 @@ public class PlayerController implements Observer {
             // TODO Hapus println
             System.out.println(this.player);
             if (this.playerArena != null) {
+                this.playerArena.updatePowerCanUse(card.getElement(),
+                        this.player.getPowerElementCanUse(card.getElement()));
                 this.playerArena.setCharacterCardAtField(this.playerArena.getCardToBeMove(), fieldColumn);
                 this.playerArena.getCardToBeMove().removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick);
             }
@@ -403,6 +425,8 @@ public class PlayerController implements Observer {
                     this.playerArena.setSkillCardAtField(this.playerArena.getCardToBeMove(), column);
                     this.playerArena.getCardToBeMove().removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick);
                 }
+                this.playerArena.updatePowerCanUse(card.getElement(),
+                        this.player.getPowerElementCanUse(card.getElement()));
             }
         } catch (PlaceCardException err) {
             this.player.insertCardInHand(index, card);

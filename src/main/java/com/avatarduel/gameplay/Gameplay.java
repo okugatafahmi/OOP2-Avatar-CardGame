@@ -138,15 +138,17 @@ public class Gameplay implements Subject, GlobalField {
     public Stack<Card> setDeck(int nCard) {
         Stack<Card> deck = new Stack<>();
         List<Card> listCard;
-        listCard = this.listCard.stream().filter(card -> card instanceof Character).collect(Collectors.toList());
-        Collections.shuffle(listCard);
-        listCard.subList(0, Math.round((float) nCard * 2 / 5)).stream().forEach(card -> deck.push(card));
-        listCard = this.listCard.stream().filter(card -> card instanceof Land).collect(Collectors.toList());
-        Collections.shuffle(listCard);
-        listCard.subList(0, Math.round((float) nCard * 2 / 5)).stream().forEach(card -> deck.push(card));
         listCard = this.listCard.stream().filter(card -> card instanceof Skill).collect(Collectors.toList());
         Collections.shuffle(listCard);
         listCard.subList(0, Math.round((float) nCard / 5)).stream().forEach(card -> deck.push(card));
+        nCard -= Math.round((float) nCard/5);
+        listCard = this.listCard.stream().filter(card -> card instanceof Character).collect(Collectors.toList());
+        Collections.shuffle(listCard);
+        listCard.subList(0, Math.round((float) nCard * 2 / 4)).stream().forEach(card -> deck.push(card));
+        nCard -= Math.round((float) nCard * 2/4);
+        listCard = this.listCard.stream().filter(card -> card instanceof Land).collect(Collectors.toList());
+        Collections.shuffle(listCard);
+        listCard.subList(0, nCard).stream().forEach(card -> deck.push(card));
         Collections.shuffle(deck);
         return deck;
     }
@@ -169,21 +171,18 @@ public class Gameplay implements Subject, GlobalField {
                     if (this.gameState.getTurn() == id) {
                         if (e.getButton() == MouseButton.SECONDARY) {
                             playerControllers[id].removeCardAtField(Type.CHARACTER, fieldColumn);
-                        }
-                        else if (playerControllers[id].getCardToBeMove() != null) {
+                        } else if (playerControllers[id].getCardToBeMove() != null) {
                             if (playerControllers[id].getCardToBeMove() instanceof Character) {
                                 playerControllers[id].summonCharacterCard(fieldColumn);
                             } else if (playerControllers[id].getCardToBeMove() instanceof Skill) {
                                 // Attach skill ke character sendiri)
                                 playerControllers[id].summonSkillCard(new FieldPos(id, fieldColumn));
                             }
-                        } 
-                        else {
+                        } else {
                             playerControllers[id].changeStance(fieldColumn);
                         }
-                    } 
-                    else if (playerControllers[(id+1)%2].getCardToBeMove() != null) {
-                        if (playerControllers[(id+1)%2].getCardToBeMove() instanceof Skill) {
+                    } else if (playerControllers[(id + 1) % 2].getCardToBeMove() != null) {
+                        if (playerControllers[(id + 1) % 2].getCardToBeMove() instanceof Skill) {
                             // Attach skill (ini skill ke character musuh)
                             playerControllers[(id + 1) % 2].summonSkillCard(new FieldPos(id, fieldColumn));
                         }
@@ -295,29 +294,26 @@ public class Gameplay implements Subject, GlobalField {
     private void showErrorAlert(String msg) {
         if (this.alertShower != null) {
             this.alertShower.showAlert(AlertType.ERROR, msg);
-        }
-        else {
+        } else {
             System.out.println(msg);
         }
     }
 
     private void showWinnerAlert(int player) {
         this.gameState.setFinish(player);
-        String msg = "Congratulation, player " + (player+1) + " win the game!!!";
+        String msg = "Congratulation, player " + (player + 1) + " win the game!!!";
         if (this.alertShower != null) {
             this.alertShower.showAlert(AlertType.ERROR, msg);
-        }
-        else {
+        } else {
             System.out.println(msg);
         }
     }
 
     public void checkWinner() {
-        if (this.playerControllers[0].getHp()==0 ) {
+        if (this.playerControllers[0].getHp() == 0) {
             this.gameState.setFinish(1);
             notifyObserver();
-        }
-        else if (this.playerControllers[1].getHp()==0) {
+        } else if (this.playerControllers[1].getHp() == 0) {
             this.gameState.setFinish(0);
             notifyObserver();
         }
@@ -348,9 +344,8 @@ public class Gameplay implements Subject, GlobalField {
             if (this.gameState.getPhase() == Phase.FINISHED) {
                 showWinnerAlert(this.gameState.getTurn());
             }
-        }
-        catch (DeckCardEmpty err) {
-            this.gameState.setFinish((err.getId()+1)%2);
+        } catch (DeckCardEmpty err) {
+            this.gameState.setFinish((err.getId() + 1) % 2);
             notifyObserver();
         }
     }
