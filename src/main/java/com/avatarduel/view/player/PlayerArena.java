@@ -17,7 +17,10 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
@@ -25,6 +28,7 @@ import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -43,6 +47,7 @@ public class PlayerArena extends GridPane {
     private GridPane statusPlayer;
     private boolean inHandFaceUp;
     private Button nextButton;
+    private CardView cardToBeMove;
 
     /**
      * Constructor of player's arena
@@ -124,6 +129,30 @@ public class PlayerArena extends GridPane {
             this.setAlignment(Pos.TOP_CENTER);
             this.setPadding(new Insets(15, 3, 0, 3));
         }
+    }
+
+    /**
+     * @param cardToBeMove the cardToBeMove to set
+     */
+    public void setCardToBeMove(CardView cardToBeMove) {
+        if (cardToBeMove == null) {
+            if (this.cardToBeMove != null) {
+                this.cardToBeMove.setBorder(Color.BLACK);
+            }
+        } else if (this.cardToBeMove != cardToBeMove) {
+            if (this.cardToBeMove != null) {
+                this.cardToBeMove.setBorder(Color.BLACK);
+            }
+            cardToBeMove.setBorder(Color.RED);
+        }
+        this.cardToBeMove = cardToBeMove;
+    }
+
+    /**
+     * @return the cardToBeMove
+     */
+    public CardView getCardToBeMove() {
+        return cardToBeMove;
     }
 
     /**
@@ -305,5 +334,11 @@ public class PlayerArena extends GridPane {
             card.getTransforms().remove(0);
         }
         throwPlace.getChildren().add(card);
+    }
+
+    public void showErrorAlert(String msg) {
+        Alert alert = new Alert(AlertType.ERROR, msg, ButtonType.OK);
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        alert.showAndWait();
     }
 }

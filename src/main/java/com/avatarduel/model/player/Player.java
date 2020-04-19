@@ -36,6 +36,7 @@ public class Player {
     private boolean isUsedLand;
     private int totalCharacterInField;
     private int totalSkillInField;
+    private Card cardToBeMove;
     private static final int TOTAL_CHARACTER_IN_FIELD = 6;
     private static final int TOTAL_SKILL_IN_FIELD = 6;
     public static final int N_COLUMN = 8;
@@ -92,6 +93,20 @@ public class Player {
      */
     public void setDeck(Stack<Card> deck) {
         this.deck = deck;
+    }
+
+    /**
+     * @param cardToBeMove the cardToBeMove to set
+     */
+    public void setCardToBeMove(Card cardToBeMove) {
+        this.cardToBeMove = cardToBeMove;
+    }
+
+    /**
+     * @return the cardToBeMove
+     */
+    public Card getCardToBeMove() {
+        return cardToBeMove;
     }
 
     /**

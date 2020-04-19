@@ -2,15 +2,6 @@ package com.avatarduel.controller;
 
 import java.util.Stack;
 
-import javafx.event.EventHandler;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-
 import com.avatarduel.gameplay.GameState;
 import com.avatarduel.gameplay.GlobalField;
 import com.avatarduel.gameplay.Observer;
@@ -31,35 +22,50 @@ import com.avatarduel.model.player.Player;
 import com.avatarduel.view.card.CardView;
 import com.avatarduel.view.player.PlayerArena;
 
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
+
 /**
  * Class that responsible as controller of model (player) and view (playerArena)
+ * if the view set
  */
 public class PlayerController implements Observer {
     private Player player;
     private PlayerArena playerArena;
     private Subject gameplay;
     private int id;
-    private static CardView cardToBeMove;
     private final EventHandler<MouseEvent> cardOnClick = this::cardOnClick;
 
-    public PlayerController(Player player, boolean isMirror) {
-        this.player = player;
-        this.id = player.getId();
-        this.playerArena = new PlayerArena(isMirror);
-        this.playerArena.setNextButtonHandler(e -> {
-            if (this.gameplay.getUpdate().equals(Phase.READY, id) || this.gameplay.getUpdate().equals(Phase.MAIN, id)
-                    || this.gameplay.getUpdate().equals(Phase.BATTLE, id)
-                    || this.gameplay.getUpdate().equals(Phase.END, (id + 1) % 2)) {
-                this.gameplay.update();
-            }
-        });
+    public PlayerController(int id) {
+        this.player = new Player(id);
+        this.id = id;
+    }
+
+    /**
+     * Set player's name
+     * 
+     * @param name name
+     */
+    public void setName(String name) {
+        this.player.setName(name);
+    }
+
+    /**
+     * Set player's total deck card
+     * 
+     * @param totalDeckCard
+     */
+    public void setTotalDeckCard(int totalDeckCard) {
+        this.player.setTotalDeckCard(totalDeckCard);
     }
 
     /**
      * @return the cardToBeMove
      */
-    public static CardView getCardToBeMove() {
-        return cardToBeMove;
+    public Card getCardToBeMove() {
+        return this.player.getCardToBeMove();
     }
 
     /**
@@ -76,6 +82,17 @@ public class PlayerController implements Observer {
     @Override
     public void update() throws DeckCardEmpty {
         GameState gameState = this.gameplay.getUpdate();
+        if (gameState.equals(Phase.DRAW, this.id)) {
+            this.player.setupDrawPhase();
+        } else if (gameState.equals(Phase.BATTLE, this.id) && this.player.getCardToBeMove() != null) {
+            this.player.setCardToBeMove(null);
+            if (this.playerArena != null) {
+                this.playerArena.setCardToBeMove(null);
+            }
+        }
+        // update arena kalau ada
+        if (this.playerArena == null)
+            return;
         if (gameState.getTurn() == this.id) { // turn pemain
             if (gameState.getPhase() == Phase.READY) {
                 this.playerArena.setFaceCardInHand(false);
@@ -84,14 +101,9 @@ public class PlayerController implements Observer {
                 this.playerArena.setFaceCardInHand(true);
                 this.playerArena.setIsVisibleNextButton(false, null);
             } else if (gameState.getPhase() == Phase.DRAW) {
-                this.player.setupDrawPhase();
                 this.playerArena.setFaceCardInHand(true);
                 this.playerArena.setIsVisibleNextButton(false, null);
             } else if (gameState.getPhase() != Phase.END) {
-                if (gameState.getPhase()==Phase.BATTLE && cardToBeMove!=null) {
-                    cardToBeMove.setBorder(Color.BLACK);
-                    cardToBeMove = null;
-                }
                 this.playerArena.setIsVisibleNextButton(true, "Done " + gameState.getPhase() + " phase");
             } else if (gameState.getPhase() == Phase.END) {
                 this.playerArena.setFaceCardInHand(false);
@@ -122,12 +134,17 @@ public class PlayerController implements Observer {
     }
 
     /**
-     * Return the view of player arena
-     * 
-     * @return view of player arena
+     * @param playerArena the playerArena to set
      */
-    public PlayerArena getPlayerArena() {
-        return playerArena;
+    public void setPlayerArena(PlayerArena playerArena) {
+        this.playerArena = playerArena;
+        this.playerArena.setNextButtonHandler(e -> {
+            if (this.gameplay.getUpdate().equals(Phase.READY, id) || this.gameplay.getUpdate().equals(Phase.MAIN, id)
+                    || this.gameplay.getUpdate().equals(Phase.BATTLE, id)
+                    || this.gameplay.getUpdate().equals(Phase.END, (id + 1) % 2)) {
+                this.gameplay.update();
+            }
+        });
     }
 
     /**
@@ -145,13 +162,15 @@ public class PlayerController implements Observer {
      */
     public void setDeck(Stack<Card> deck) {
         this.player.setDeck(deck);
-        this.playerArena.setDeck(deck);
-        this.playerArena.setDeckClickHandler(e -> {
-            if (gameplay.getUpdate().equals(Phase.DRAW, id) && player.getTotalCardInDeck() != 0) {
-                drawCard();
-                gameplay.update();
-            }
-        });
+        if (this.playerArena != null) {
+            this.playerArena.setDeck(deck);
+            this.playerArena.setDeckClickHandler(e -> {
+                if (gameplay.getUpdate().equals(Phase.DRAW, id) && player.getTotalCardInDeck() != 0) {
+                    drawCard();
+                    gameplay.update();
+                }
+            });
+        }
     }
 
     /**
@@ -161,7 +180,9 @@ public class PlayerController implements Observer {
      * @param hoverSpace space for the card hover
      */
     public void setDeckCardHover(StackPane hoverSpace) {
-        this.playerArena.setDeckCardHover(hoverSpace);
+        if (this.playerArena != null) {
+            this.playerArena.setDeckCardHover(hoverSpace);
+        }
     }
 
     /**
@@ -206,7 +227,9 @@ public class PlayerController implements Observer {
      */
     public void drawCard() {
         this.player.drawCard();
-        this.playerArena.drawCard(cardOnClick);
+        if (this.playerArena != null) {
+            this.playerArena.drawCard(cardOnClick);
+        }
     }
 
     /**
@@ -216,7 +239,9 @@ public class PlayerController implements Observer {
      */
     public void changeStance(int fieldColumn) {
         this.player.changeStance(fieldColumn);
-        this.playerArena.changeStance(fieldColumn);
+        if (this.playerArena != null) {
+            this.playerArena.changeStance(fieldColumn);
+        }
     }
 
     /**
@@ -231,35 +256,36 @@ public class PlayerController implements Observer {
                 this.player.removeCardInHand(cardView.getCard());
                 this.playerArena.addThrowPlaceCard(cardView);
                 cardView.removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick); // hapus click handler nya
-                if (cardView.equals(cardToBeMove)) {
-                    cardToBeMove.setBorder(Color.BLACK);
-                    cardToBeMove = null;
+                if (cardView == this.playerArena.getCardToBeMove()) {
+                    this.player.setCardToBeMove(null);
+                    this.playerArena.setCardToBeMove(null);
                 }
             } else {
                 boolean isNew = true;
-                if (cardToBeMove != null) {
-                    System.out.println(cardToBeMove.getCard());
-                    cardToBeMove.setBorder(Color.BLACK);
-                    if (e.getSource().equals(cardToBeMove)) {
+                if (this.player.getCardToBeMove() != null) {
+                    System.out.println(this.player.getCardToBeMove());
+                    if (e.getSource() == this.playerArena.getCardToBeMove()) {
                         isNew = false;
                         // menggunakan kartu land
-                        if (cardToBeMove.getCard() instanceof Land) {
+                        if (this.player.getCardToBeMove() instanceof Land) {
                             try {
-                                this.player.useCard(cardToBeMove.getCard());
-                                this.playerArena.addThrowPlaceCard(cardToBeMove);
+                                this.player.useCard(this.player.getCardToBeMove());
+                                this.playerArena.addThrowPlaceCard(this.playerArena.getCardToBeMove());
                                 // hapus click handler nya
-                                cardToBeMove.removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick);
+                                this.playerArena.getCardToBeMove().removeEventHandler(MouseEvent.MOUSE_CLICKED,
+                                        cardOnClick);
                             } catch (Exception err) {
-                                new Alert(AlertType.ERROR, err.getMessage(), ButtonType.OK).showAndWait();
+                                errorHandler(err.getMessage());
                             }
                         }
-                        cardToBeMove = null;
+                        this.player.setCardToBeMove(null);
+                        this.playerArena.setCardToBeMove(null);
                     }
                 }
 
                 if (isNew) {
-                    cardToBeMove = (CardView) e.getSource();
-                    cardToBeMove.setBorder(Color.RED);
+                    this.player.setCardToBeMove(((CardView) e.getSource()).getCard());
+                    this.playerArena.setCardToBeMove((CardView) e.getSource());
                 }
             }
         }
@@ -273,7 +299,9 @@ public class PlayerController implements Observer {
      */
     public void setFieldClickHandler(EventHandler<MouseEvent> characterFieldEventHandler,
             EventHandler<MouseEvent> skillFieldEventHandler) {
-        this.playerArena.setFieldClickHandler(characterFieldEventHandler, skillFieldEventHandler);
+        if (this.playerArena != null) {
+            this.playerArena.setFieldClickHandler(characterFieldEventHandler, skillFieldEventHandler);
+        }
     }
 
     /**
@@ -299,15 +327,15 @@ public class PlayerController implements Observer {
     public void removeCardAtField(Type type, int column) {
         // TODO hapus println
         if (type == Type.CHARACTER) {
-            if (this.player.removeCharacterCardAtField(column) != null) {
+            if (this.player.removeCharacterCardAtField(column) != null && this.playerArena != null) {
                 this.playerArena.removeCardAtField(type, column);
-                System.out.println(this.player);
             }
+            System.out.println(this.player);
         } else if (type == Type.SKILL) {
-            if (this.player.removeSkillCardAtField(column) != null) {
+            if (this.player.removeSkillCardAtField(column) != null && this.playerArena != null) {
                 this.playerArena.removeCardAtField(type, column);
-                System.out.println(this.player);
             }
+            System.out.println(this.player);
         }
     }
 
@@ -319,12 +347,17 @@ public class PlayerController implements Observer {
         this.player.attachSkill(skillPos, column);
     }
 
-    public void summonCharacterCard(CardView cardView, int fieldColumn) {
-        if (cardView == null)
+    /**
+     * Summon character card from player's attribute cardToBeMove
+     * 
+     * @param fieldColumn field's column
+     */
+    public void summonCharacterCard(int fieldColumn) {
+        if (this.getCardToBeMove() == null)
             return;
-        if (!(cardView.getCard() instanceof Character))
+        if (!(this.getCardToBeMove() instanceof Character))
             return;
-        Character card = (Character) cardView.getCard();
+        Character card = (Character) this.getCardToBeMove();
         int index = -1;
         // kalau card to be move di in hand
         try {
@@ -332,25 +365,30 @@ public class PlayerController implements Observer {
             this.player.setCharacterCardAtField(card, fieldColumn);
             // TODO Hapus println
             System.out.println(this.player);
-            this.playerArena.setCharacterCardAtField(cardView, fieldColumn);
-            cardView.removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick);
+            if (this.playerArena != null) {
+                this.playerArena.setCharacterCardAtField(this.playerArena.getCardToBeMove(), fieldColumn);
+                this.playerArena.getCardToBeMove().removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick);
+            }
         } catch (PlaceCardException err) {
             this.player.insertCardInHand(index, card);
-            new Alert(AlertType.ERROR, err.getMessage(), ButtonType.OK).showAndWait();
+            errorHandler(err.getMessage());
         } catch (Exception err) {
-            new Alert(AlertType.ERROR, err.getMessage(), ButtonType.OK).showAndWait();
+            errorHandler(err.getMessage());
         } finally {
-            cardToBeMove.setBorder(Color.BLACK);
-            cardToBeMove = null;
+            this.player.setCardToBeMove(null);
+            if (this.playerArena != null) {
+                this.playerArena.setCardToBeMove(null);
+            }
+
         }
     }
 
-    public void summonSkillCard(CardView cardView, FieldPos fieldPos) {
-        if (cardView == null)
+    public void summonSkillCard(FieldPos fieldPos) {
+        if (this.getCardToBeMove() == null)
             return;
-        if (!(cardView.getCard() instanceof Skill))
+        if (!(this.getCardToBeMove() instanceof Skill))
             return;
-        Skill card = (Skill) cardView.getCard();
+        Skill card = (Skill) this.getCardToBeMove();
         int index = -1;
         // kalau card to be move di in hand
         try {
@@ -358,20 +396,33 @@ public class PlayerController implements Observer {
             int column = this.player.setSkillCardAtField(card, fieldPos);
             // TODO Hapus println
             System.out.println(this.player);
-            if (card instanceof Destroy) {
-                this.playerArena.addThrowPlaceCard(cardView);
-            } else {
-                this.playerArena.setSkillCardAtField(cardView, column);
-                cardView.removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick);
+            if (this.playerArena != null) {
+                if (card instanceof Destroy) {
+                    this.playerArena.addThrowPlaceCard(this.playerArena.getCardToBeMove());
+                } else {
+                    this.playerArena.setSkillCardAtField(this.playerArena.getCardToBeMove(), column);
+                    this.playerArena.getCardToBeMove().removeEventHandler(MouseEvent.MOUSE_CLICKED, cardOnClick);
+                }
             }
         } catch (PlaceCardException err) {
             this.player.insertCardInHand(index, card);
-            new Alert(AlertType.ERROR, err.getMessage(), ButtonType.OK).showAndWait();
+            errorHandler(err.getMessage());
         } catch (Exception err) {
-            new Alert(AlertType.ERROR, err.getMessage(), ButtonType.OK).showAndWait();
+            errorHandler(err.getMessage());
         } finally {
-            cardToBeMove.setBorder(Color.BLACK);
-            cardToBeMove = null;
+            this.player.setCardToBeMove(null);
+            if (this.playerArena != null) {
+                this.playerArena.setCardToBeMove(null);
+            }
+
+        }
+    }
+
+    public void errorHandler(String msg) {
+        if (this.playerArena != null) {
+            this.playerArena.showErrorAlert(msg);
+        } else {
+            System.out.println(msg);
         }
     }
 }

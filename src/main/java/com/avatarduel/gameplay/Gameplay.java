@@ -21,6 +21,7 @@ import com.avatarduel.model.field.FieldPos;
 import com.avatarduel.model.field.Stance;
 import com.avatarduel.model.field.Field.Type;
 import com.avatarduel.model.player.DeckCardEmpty;
+import com.avatarduel.AlertShower;
 import com.avatarduel.controller.PlayerController;
 import com.avatarduel.model.card.Card;
 import com.avatarduel.model.card.CardFactory;
@@ -29,8 +30,6 @@ import com.avatarduel.util.CSVReader;
 import com.avatarduel.view.field.CharacterFieldView;
 import com.avatarduel.view.field.SkillFieldView;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Border;
@@ -38,7 +37,6 @@ import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -48,12 +46,13 @@ import javafx.scene.text.Text;
  */
 public class Gameplay implements Subject, GlobalField {
     private static final String CARD_CSV_FOLDER_PATH = "../card/data/";
-    private LinkedList<Card> listCard;
+    protected LinkedList<Card> listCard;
     private PlayerController[] playerControllers;
     private GameState gameState;
     private StackPane hoverSpace;
     private Text status;
-    private static CharacterFieldView fieldViewSrc;
+    private CharacterFieldView fieldViewSrc;
+    private AlertShower alertShower;
 
     public Gameplay(PlayerController[] playerControllers) {
         this.playerControllers = playerControllers;
@@ -65,6 +64,13 @@ public class Gameplay implements Subject, GlobalField {
 
         this.status = new Text();
         this.status.setText("Loading...");
+    }
+
+    /**
+     * @param alertShower the alertShower to set
+     */
+    public void setAlertShower(AlertShower alertShower) {
+        this.alertShower = alertShower;
     }
 
     /**
@@ -160,28 +166,26 @@ public class Gameplay implements Subject, GlobalField {
                 if (this.gameState.getPhase() == Phase.MAIN) {
                     int fieldColumn = ((CharacterFieldView) e.getSource()).getColumn();
                     // Menaruh kartu di field
-                    if (PlayerController.getCardToBeMove() != null) {
-                        if (this.gameState.getTurn() == id) {
-                            if (PlayerController.getCardToBeMove().getCard() instanceof Character) {
-                                playerControllers[id].summonCharacterCard(PlayerController.getCardToBeMove(),
-                                        fieldColumn);
-                            } else if (PlayerController.getCardToBeMove().getCard() instanceof Skill) {
-                                // Attach skill ke character sendiri)
-                                playerControllers[id].summonSkillCard(PlayerController.getCardToBeMove(),
-                                        new FieldPos(id, fieldColumn));
-                            }
-                        } else {
-                            if (PlayerController.getCardToBeMove().getCard() instanceof Skill) {
-                                // Attach skill (ini skill ke character musuh)
-                                playerControllers[(id + 1) % 2].summonSkillCard(PlayerController.getCardToBeMove(),
-                                        new FieldPos(id, fieldColumn));
-                            }
-                        }
-                    } else if (this.gameState.getTurn() == id) {
+                    if (this.gameState.getTurn() == id) {
                         if (e.getButton() == MouseButton.SECONDARY) {
                             playerControllers[id].removeCardAtField(Type.CHARACTER, fieldColumn);
-                        } else {
+                        }
+                        else if (playerControllers[id].getCardToBeMove() != null) {
+                            if (playerControllers[id].getCardToBeMove() instanceof Character) {
+                                playerControllers[id].summonCharacterCard(fieldColumn);
+                            } else if (playerControllers[id].getCardToBeMove() instanceof Skill) {
+                                // Attach skill ke character sendiri)
+                                playerControllers[id].summonSkillCard(new FieldPos(id, fieldColumn));
+                            }
+                        } 
+                        else {
                             playerControllers[id].changeStance(fieldColumn);
+                        }
+                    } 
+                    else if (playerControllers[(id+1)%2].getCardToBeMove() != null) {
+                        if (playerControllers[(id+1)%2].getCardToBeMove() instanceof Skill) {
+                            // Attach skill (ini skill ke character musuh)
+                            playerControllers[(id + 1) % 2].summonSkillCard(new FieldPos(id, fieldColumn));
                         }
                     }
                 } else if (this.gameState.getPhase() == Phase.BATTLE) {
@@ -289,17 +293,23 @@ public class Gameplay implements Subject, GlobalField {
     }
 
     private void showErrorAlert(String msg) {
-        Alert alert = new Alert(AlertType.ERROR, msg, ButtonType.OK);
-        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-        alert.showAndWait();
+        if (this.alertShower != null) {
+            this.alertShower.showAlert(AlertType.ERROR, msg);
+        }
+        else {
+            System.out.println(msg);
+        }
     }
 
     private void showWinnerAlert(int player) {
         this.gameState.setFinish(player);
-
-        Alert alert = new Alert(AlertType.INFORMATION, "Congratulation, player " + (player+1) + " win the game!!!", ButtonType.OK);
-        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-        alert.showAndWait();
+        String msg = "Congratulation, player " + (player+1) + " win the game!!!";
+        if (this.alertShower != null) {
+            this.alertShower.showAlert(AlertType.ERROR, msg);
+        }
+        else {
+            System.out.println(msg);
+        }
     }
 
     public void checkWinner() {

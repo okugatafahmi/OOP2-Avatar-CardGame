@@ -18,28 +18,36 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
-import com.avatarduel.model.player.Player;
-
+import com.avatarduel.view.player.PlayerArena;
 import com.avatarduel.controller.PlayerController;
 import com.avatarduel.gameplay.Gameplay;
 
-public class AvatarDuel extends Application {
+public class AvatarDuel extends Application implements AlertShower {
   private static final int WIDTH = 1280;
   private static final int HEIGHT = 720;
   private static final String LOGO_PATH = "Logo.png";
 
   @Override
+  public void showAlert(AlertType alertType, String msg) {
+    Alert alert = new Alert(alertType, msg, ButtonType.OK);
+    alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+    alert.showAndWait();
+  }
+
+  @Override
   public void start(Stage stage) {
-    Player[] players = new Player[2];
+    PlayerArena[] playerArenas = new PlayerArena[2];
     PlayerController[] playerControllers = new PlayerController[2];
     for (int i = 0; i < 2; ++i) {
-      players[i] = new Player(i);
-      playerControllers[i] = new PlayerController(players[i], ((i == 0) ? false : true));
+      playerArenas[i] = new PlayerArena(i==1);
+      playerControllers[i] = new PlayerController(i);
+      playerControllers[i].setPlayerArena(playerArenas[i]);
     }
     Gameplay gameplay = new Gameplay(playerControllers);
 
@@ -68,6 +76,7 @@ public class AvatarDuel extends Application {
       return;
     }
 
+    gameplay.setAlertShower(this);
     gridPane.getChildren().remove(gameplay.getStatus());
     gridPane.setBackground(new Background(new BackgroundFill(Color.DARKGREY, CornerRadii.EMPTY, Insets.EMPTY)));
 
@@ -104,12 +113,12 @@ public class AvatarDuel extends Application {
         gridPane.setVgap(0);
       // TODO bikin tampilan awal untuk memasukkan nama dan total deck
       for (int i = 0; i < 2; ++i) {
-        players[i].setName(playerNames[i].getText());
-        players[i].setTotalDeckCard((Integer) playerTotalDeck[i].getValue());
+        playerControllers[i].setName(playerNames[i].getText());
+        playerControllers[i].setTotalDeckCard((Integer) playerTotalDeck[i].getValue());
       }
 
-      gridPane.add(playerControllers[0].getPlayerArena(), 1, 2, 2, 1); // bawah
-      gridPane.add(playerControllers[1].getPlayerArena(), 1, 0, 2, 1); // atas
+      gridPane.add(playerArenas[0], 1, 2, 2, 1); // bawah
+      gridPane.add(playerArenas[1], 1, 0, 2, 1); // atas
       gridPane.add(line, 1, 1);
       gridPane.add(gameplay.getStatus(), 2, 1);
       gridPane.add(gameplay.getHoverSpace(), 0, 0, 1, 3);
