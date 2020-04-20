@@ -14,8 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.*;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
@@ -32,6 +31,8 @@ public class AvatarDuel extends Application implements AlertShower {
   private static final int WIDTH = 1280;
   private static final int HEIGHT = 720;
   private static final String LOGO_PATH = "Logo.png";
+  private static final String BACKGROUND_PATH1 = "Background1.png";
+  private static final String BACKGROUND_PATH2 = "Background2.png";
 
   @Override
   public void showAlert(AlertType alertType, String msg) {
@@ -58,7 +59,7 @@ public class AvatarDuel extends Application implements AlertShower {
     line.setEndY(HEIGHT / 2);
 
     GridPane gridPane = new GridPane();
-    gridPane.setAlignment(Pos.CENTER);
+    gridPane.setAlignment(Pos.CENTER_RIGHT);
     gridPane.getChildren().add(gameplay.getStatus());
 
     Scene scene = new Scene(gridPane, WIDTH, HEIGHT);
@@ -78,7 +79,15 @@ public class AvatarDuel extends Application implements AlertShower {
 
     gameplay.setAlertShower(this);
     gridPane.getChildren().remove(gameplay.getStatus());
-    gridPane.setBackground(new Background(new BackgroundFill(Color.DARKGREY, CornerRadii.EMPTY, Insets.EMPTY)));
+    // gridPane.setBackground(new Background(new BackgroundFill(Color.GREY, CornerRadii.EMPTY, Insets.EMPTY)));
+    Image back1 = new Image(getClass().getResource(BACKGROUND_PATH1).toString());
+    BackgroundImage backgroundImage1 = new BackgroundImage(back1,
+                                      BackgroundRepeat.NO_REPEAT,
+                                      BackgroundRepeat.NO_REPEAT,
+                                      BackgroundPosition.CENTER,  
+                                      BackgroundSize.DEFAULT);
+    Background background1 = new Background(backgroundImage1);
+    gridPane.setBackground(background1);
 
     Image logo = new Image(getClass().getResource(LOGO_PATH).toString());
     ImageView logoView = new ImageView(logo);
@@ -111,7 +120,8 @@ public class AvatarDuel extends Application implements AlertShower {
       else {
         gridPane.getChildren().clear();
         gridPane.setVgap(0);
-      
+
+      // TODO bikin tampilan awal untuk memasukkan nama dan total deck
       for (int i = 0; i < 2; ++i) {
         playerControllers[i].setName(playerNames[i].getText());
         playerControllers[i].setTotalDeckCard((Integer) playerTotalDeck[i].getValue());
@@ -126,6 +136,14 @@ public class AvatarDuel extends Application implements AlertShower {
       gridPane.getRowConstraints().add(new RowConstraints());
       gridPane.getRowConstraints().add(new RowConstraints(1));
       gridPane.getRowConstraints().add(new RowConstraints());
+      Image back2 = new Image(getClass().getResource(BACKGROUND_PATH2).toString());
+      BackgroundImage backgroundImage2 = new BackgroundImage(back2,
+                                        BackgroundRepeat.NO_REPEAT,
+                                        BackgroundRepeat.NO_REPEAT,
+                                        BackgroundPosition.CENTER,  
+                                        BackgroundSize.DEFAULT);
+      Background background2 = new Background(backgroundImage2);
+      gridPane.setBackground(background2);
       gameplay.run();
       }
     });
