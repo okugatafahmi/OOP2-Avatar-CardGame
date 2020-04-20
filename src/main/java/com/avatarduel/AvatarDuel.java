@@ -14,12 +14,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
-import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.RowConstraints;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
@@ -79,7 +81,6 @@ public class AvatarDuel extends Application implements AlertShower {
 
     gameplay.setAlertShower(this);
     gridPane.getChildren().remove(gameplay.getStatus());
-    // gridPane.setBackground(new Background(new BackgroundFill(Color.GREY, CornerRadii.EMPTY, Insets.EMPTY)));
     Image back1 = new Image(getClass().getResource(BACKGROUND_PATH1).toString());
     BackgroundImage backgroundImage1 = new BackgroundImage(back1,
                                       BackgroundRepeat.NO_REPEAT,
@@ -97,7 +98,12 @@ public class AvatarDuel extends Application implements AlertShower {
     Button playButton = new Button("Play!");
     gridPane.add(logoView, 0, 0);
     for (int i = 0; i < 2; ++i) {
-      playerNames[i] = new TextField();
+      playerNames[i] = new TextField(){
+        @Override
+        public void replaceText(int start, int end, String text) {
+          super.replaceText(start, end, text.toUpperCase());
+        }
+      };
       playerTotalDeck[i] = new Spinner<Integer>(40, 60, 40, 5);
       playerNames[i].setPromptText("Player " + (i+1) + " name");
       inputPane.add(new Label("Player " + (i + 1)), 0, i);
@@ -120,6 +126,7 @@ public class AvatarDuel extends Application implements AlertShower {
       else {
         gridPane.getChildren().clear();
         gridPane.setVgap(0);
+        gridPane.setAlignment(Pos.CENTER);
 
       // TODO bikin tampilan awal untuk memasukkan nama dan total deck
       for (int i = 0; i < 2; ++i) {

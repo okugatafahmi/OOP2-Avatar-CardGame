@@ -78,7 +78,6 @@ public class PlayerArena extends GridPane {
         cardInHand = new CardInHand();
         statusPlayer = new StatusPlayer();
         nextButton = new Button();
-        // statusPlayer.getChildren().add(new Text("Status Pemain"));
 
         nextButton.setVisible(false);
         nextButton.setAlignment(Pos.CENTER);
@@ -197,6 +196,7 @@ public class PlayerArena extends GridPane {
             card.faceDown();
             deck.getChildren().add(card);
         });
+        this.statusPlayer.setDeck(cards.size());
     }
 
     /**
@@ -205,8 +205,10 @@ public class PlayerArena extends GridPane {
      * @param cardInHandClickHandler handler when click card in hand
      */
     public void drawCard(EventHandler<MouseEvent> cardInHandClickHandler) {
-        Node node = deck.getChildren().get(deck.getChildren().size() - 1);
+        int totalDeck = deck.getChildren().size() - 1;
+        Node node = deck.getChildren().get(totalDeck);
         addInHand((CardView) node, cardInHandClickHandler);
+        this.statusPlayer.updateTotalDeck(totalDeck);
     }
 
     /**

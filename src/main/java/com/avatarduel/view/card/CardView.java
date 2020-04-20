@@ -91,7 +91,7 @@ public class CardView extends StackPane {
         header.setStyle("-fx-background-color: #000000");
         header.getColumnConstraints().add(new ColumnConstraints(40 * scale));
         header.getColumnConstraints().add(new ColumnConstraints(12 * scale));
-        header.getRowConstraints().add(new RowConstraints(1));
+        header.getRowConstraints().add(new RowConstraints(1 * scale));
         this.containerCardView.add(header, 0, 0, 2, 1);
         if (card instanceof Character || card instanceof Land) {
             this.containerCardView.add(tipeFlow, 0, 1, 2, 1);
@@ -112,7 +112,7 @@ public class CardView extends StackPane {
                         BorderWidths.DEFAULT)));
                 infoBbox.setAlignment(Pos.CENTER);
                 infoBbox.setStyle("-fx-background-color: #000000");
-                infoBbox.getColumnConstraints().add(new ColumnConstraints(50 *scale));
+                infoBbox.getColumnConstraints().add(new ColumnConstraints(50 * scale));
 
                 this.containerCardView.add(infoBbox, 0, 6, 2, 1);
 
@@ -124,7 +124,7 @@ public class CardView extends StackPane {
             effect.setFont((new Font("Helvetica", 4 * scale)));
             TextFlow effectFlow = new TextFlow(effect);
             effectFlow.setTextAlignment(TextAlignment.LEFT);
-            effectFlow.setPadding(new Insets(0, 0, 0, 4));
+            effectFlow.setPadding(new Insets(0 * scale, 0 * scale, 0 * scale, 4 * scale));
             this.containerCardView.add(effectFlow, 0, 1);
             this.containerCardView.add(tipeFlow, 1, 1);
 
@@ -183,7 +183,7 @@ public class CardView extends StackPane {
         deskripsiBox.setAlignment(Pos.CENTER);
         deskripsiBox.setStyle("-fx-background-color: #fffeb3");
         deskripsiBox.getColumnConstraints().add(new ColumnConstraints(50 * scale));
-        deskripsiBox.getRowConstraints().add(new RowConstraints(20 * scale));
+        deskripsiBox.getRowConstraints().add(new RowConstraints(21 * scale));
         this.containerCardView.add(deskripsiBox, 0, 5, 2, 1);
 
         this.containerCardView.setPadding(new Insets(3 * scale, 4 * scale, 3 * scale, 4 * scale));
