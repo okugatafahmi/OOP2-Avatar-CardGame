@@ -40,6 +40,7 @@ public class Player {
     private static final int TOTAL_CHARACTER_IN_FIELD = 6;
     private static final int TOTAL_SKILL_IN_FIELD = 6;
     public static final int N_COLUMN = 8;
+    public static final int HP = 80;
 
     /**
      * Constructor. The name player will be set "XXXX" and total card deck is 40
@@ -48,7 +49,7 @@ public class Player {
      */
     public Player(int id) {
         this.id = id;
-        this.hp = 80;
+        this.hp = HP;
         this.name = "XXX";
         this.inHand = new LinkedList<>();
         this.powerTotal = new HashMap<>();
@@ -146,6 +147,14 @@ public class Player {
     }
 
     /**
+     * Return total card in hand
+     * 
+     * @return total card in hand
+     */
+    public int getTotalCardInHand() {
+        return this.inHand.size();
+    }
+    /**
      * Get player's power total element
      * 
      * @param element element card
@@ -179,7 +188,7 @@ public class Player {
      */
     public void addPower(Element element) {
         Integer freqTotal = this.powerTotal.get(element);
-        Integer freqCanUse = this.powerTotal.get(element);
+        Integer freqCanUse = this.powerCanUse.get(element);
         this.powerTotal.put(element, freqTotal + 1);
         this.powerCanUse.put(element, freqCanUse + 1);
     }

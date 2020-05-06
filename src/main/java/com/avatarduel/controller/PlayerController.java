@@ -152,7 +152,12 @@ public class PlayerController implements Observer {
             if (this.gameplay.getUpdate().equals(Phase.READY, id) || this.gameplay.getUpdate().equals(Phase.MAIN, id)
                     || this.gameplay.getUpdate().equals(Phase.BATTLE, id)
                     || this.gameplay.getUpdate().equals(Phase.END, (id + 1) % 2)) {
-                this.gameplay.update();
+                if (this.gameplay.getUpdate().getPhase() == Phase.MAIN && this.player.getTotalCardInHand() > 9) {
+                    this.playerArena.showErrorAlert("Maximum cards in hand must be 9. Throw some card");
+                }
+                else{
+                    this.gameplay.update();
+                }
             }
         });
         this.playerArena.updatePlayerName(this.player.getName());

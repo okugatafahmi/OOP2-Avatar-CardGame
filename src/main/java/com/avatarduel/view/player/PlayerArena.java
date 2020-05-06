@@ -46,8 +46,8 @@ public class PlayerArena extends GridPane {
     private CardInHand cardInHand;
     private StackPane deck;
     private StackPane throwPlace;
-    // private GridPane statusPlayer;
     private StatusPlayer statusPlayer;
+    private HpBar hpBar;
     private boolean inHandFaceUp;
     private Button nextButton;
     private CardView cardToBeMove;
@@ -98,7 +98,6 @@ public class PlayerArena extends GridPane {
         throwPlace.getChildren().add(new Text("Throw"));
         GridPane.setHalignment(throwPlace, HPos.RIGHT);
 
-        int rowInHand = ((isMirror) ? 0 : 1);
         int inc = ((isMirror) ? 1 : -1);
 
         GridPane container = new GridPane();
@@ -118,18 +117,24 @@ public class PlayerArena extends GridPane {
         container.setVgap(5);
         container.setPadding(new Insets(40, 5, 40, 5));
 
-        this.add(cardInHand, 0, rowInHand);
-        rowInHand += inc;
-        this.add(arena, 0, rowInHand);
-        this.add(container, 1, 0, 1, 2);
+        row = ((isMirror) ? 0 : 2);
+        hpBar = new HpBar(1);
+        hpBar.prefWidthProperty().bind(this.widthProperty().subtract(20));
+        this.add(hpBar, 0, row, 2, 1);
+        GridPane.setHalignment(hpBar, HPos.CENTER);
+        row += inc;
+        this.add(cardInHand, 0, row);
+        row += inc;
+        this.add(arena, 0, row);
+        this.add(container, 1, (isMirror ? 1:0), 1, 2);
         this.setHgap(20);
         this.setVgap(10);
         if (isMirror) {
-            this.getRowConstraints().addAll(new RowConstraints(100), new RowConstraints(200));
+            this.getRowConstraints().addAll(new RowConstraints(), new RowConstraints(100), new RowConstraints(200));
             this.setAlignment(Pos.BOTTOM_CENTER);
             this.setPadding(new Insets(0, 3, 15, 3));
         } else {
-            this.getRowConstraints().addAll(new RowConstraints(200), new RowConstraints(100));
+            this.getRowConstraints().addAll(new RowConstraints(200), new RowConstraints(100), new RowConstraints());
             this.setAlignment(Pos.TOP_CENTER);
             this.setPadding(new Insets(15, 3, 0, 3));
         }
@@ -243,6 +248,7 @@ public class PlayerArena extends GridPane {
      */
     public void updatePlayerHp(int hp) {
         this.statusPlayer.updatePlayerHp(hp);
+        this.hpBar.setHp(hp);
     }
 
     /**

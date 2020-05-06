@@ -100,7 +100,6 @@ public class CardView extends StackPane {
                         + Integer.toString(((Character) this.card).getDefense()) + " | POW/"
                         + Integer.toString(((Character) this.card).getPower()));
                 infoChar.setFont(new Font("Helvetica", 3 * scale));
-                ;
                 infoChar.setFill(Color.WHITE);
 
                 TextFlow infoCharFlow = new TextFlow(infoChar);
