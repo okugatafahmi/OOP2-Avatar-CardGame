@@ -4,8 +4,13 @@ Tugas Besar 2 IF2210 OOP
 
 Here is a project using gradle as the build tools.
 To run this project, you can run these commands (for linux):
-
-`./gradlew run`
+```
+./gradlew run
+```
+or (for windows):
+```
+gradlew.bat
+```
 
 It will start the main function in this app.
 For this app, the main function lives in `AvatarDuel.java`.
@@ -24,6 +29,9 @@ All images and description are taken from [Avatar Wikia](https://avatar.fandom.c
 5. In `BATTLE` phase, player can attack enemy player. `Click` character card that player want to choose attack (character card must be in `ATTACK` mode). Player can't choose new summoned character card. After click the card, click the enemy character card field which want to be attacked. The target card must have total `STANCE` value which less than current choosed player's character card. If the enemy doesn't have any character card in field, player can simply click any enemy's field to make damage to enemy. If player has done things in this phase, click the `Done BATTLE phase` button.
 6. In `END` phase, player can't do anything and must change turn with other player
 
+## Gameplay Visual
+![Set Name](/img/set_name.png)
+![Gameplay](/img/gameplay.png)
 ## Contributor
 Kelompok 7 K-1
 Nama | NIM
